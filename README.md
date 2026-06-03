@@ -6,9 +6,9 @@
 
 ## 下载安装
 
-1. 安装 Steam 版 **Slay the Spire 2**，并启用 Mod 前置 **[BaseLib](https://github.com/search?q=sts2+BaseLib)**（【001】必装前置）。
+1. 安装 Steam 版 **Slay the Spire 2**。
 2. 打开本仓库 **Releases**，下载最新 `fat-baby-mod-x.y.z.zip`。
-3. 解压后将 **`fat_baby` 文件夹** 复制到游戏 `mods/fat_baby/` 目录（与 `mod.json` 同级），覆盖旧文件。
+3. 解压后将 **`fat_baby`** 和 **`【001】必装前置`** 两个文件夹复制到游戏 `mods/` 目录，覆盖旧文件。
 4. 完全退出游戏后重新启动，在 Mod 列表中勾选本模组。
 
 详细路径说明见 zip 内的 `INSTALL.md` 或 [docs/INSTALL.md](docs/INSTALL.md)。
@@ -31,7 +31,7 @@
 # 输出: dist/fat-baby-mod-<version>.zip
 ```
 
-zip 内容：`fat_baby/mod.json`、`fat_baby/mod.dll`、`fat_baby/mod.pck`、`INSTALL.md`。
+zip 内容：`fat_baby/`、`【001】必装前置/`、`INSTALL.md`。
 
 ### 发布到 GitHub Releases
 
