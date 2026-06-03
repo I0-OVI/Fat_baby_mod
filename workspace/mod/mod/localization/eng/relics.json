@@ -1,0 +1,13 @@
+{
+  "ELEMENT_FLASK_RELIC.title": "Element Flask",
+  "ELEMENT_FLASK_RELIC.description": "At the start of each combat, add an Element Flask to your hand.\nUpon entering a Rest Site, restore its uses to 3.",
+  "ELEMENT_FLASK_RELIC.flavor": "A golden chalice modeled after one graced by a tear of blessing.",
+
+  "mod-ELEMENT_FLASK_RELIC.title": "Element Flask",
+  "mod-ELEMENT_FLASK_RELIC.description": "At the start of each combat, add an Element Flask to your hand.\nUpon entering a Rest Site, restore its uses to 3.",
+  "mod-ELEMENT_FLASK_RELIC.flavor": "A golden chalice modeled after one graced by a tear of blessing.",
+
+  "MOD-ELEMENT_FLASK_RELIC.title": "Element Flask",
+  "MOD-ELEMENT_FLASK_RELIC.description": "At the start of each combat, add an Element Flask to your hand.\nUpon entering a Rest Site, restore its uses to 3.",
+  "MOD-ELEMENT_FLASK_RELIC.flavor": "A golden chalice modeled after one graced by a tear of blessing."
+}

@@ -1,0 +1,47 @@
+namespace Mod.ModCode;
+
+internal static class ModRunAssets
+{
+    internal static readonly string[] PersistentTexturePaths =
+    [
+        "res://mod/images/powers/atlases/imbalance_power.tres",
+        "res://mod/images/powers/atlases/scarlet_corruption_power.tres",
+        "res://mod/images/powers/atlases/glintblade_phalanx_power.tres",
+        "res://mod/images/powers/atlases/guard_counter_power.tres",
+        "res://mod/images/powers/atlases/totem_tablet_power.tres",
+        "res://mod/images/powers/imbalance_power.png",
+        "res://mod/images/powers/big/imbalance_power.png",
+        "res://mod/images/powers/scarlet_corruption_power.png",
+        "res://mod/images/powers/big/scarlet_corruption_power.png",
+        "res://mod/images/powers/glintblade_phalanx_power.png",
+        "res://mod/images/powers/big/glintblade_phalanx_power.png",
+        "res://mod/images/powers/guard_counter_power.png",
+        "res://mod/images/powers/big/guard_counter_power.png",
+        "res://mod/images/powers/totem_tablet_power.png",
+        "res://mod/images/powers/big/totem_tablet_power.png",
+        "res://mod/images/character_ui/fat_baby_onion_icon.svg",
+        "res://mod/images/character_select/fat_baby_select_icon.png",
+        "res://mod/scenes/screens/char_select/fat_baby_select_bg.tscn",
+        "res://mod/images/character_combat/fat_baby_combat_idle.png",
+        "res://mod/images/character_combat/fat_baby_combat_idle_14_pct28.png",
+        "res://mod/images/character_combat/fat_baby_combat_idle_15_pct30.png",
+        "res://mod/images/character_combat/fat_baby_combat_idle_15_pct30_stylized.png",
+        "res://mod/scenes/character/fat_baby_combat_visual.tscn",
+        "res://mod/images/merchant/fat_baby_merchant_idle_027_pct54.png",
+        "res://mod/images/merchant/fat_baby_merchant_battle_task_style.png",
+        "res://mod/images/rest_site/fat_baby_rest_site_sit_34_pct68.png",
+        "res://scenes/rest_site/characters/scarletacolyte_rest_site.tscn",
+        "res://mod/images/relics/atlases/element_flask.tres",
+        "res://mod/images/relics/element_flask.png",
+        "res://mod/images/card_portraits/basic_attack.png",
+        "res://mod/images/card_portraits/guard_counter.png",
+        "res://mod/images/card_portraits/small_round_shield_parry.png",
+        "res://mod/images/card_portraits/element_flask.png",
+        "res://mod/images/card_portraits/intimidation.png",
+        "res://mod/images/card_portraits/carian_retribution.png",
+        ModAncientCardVisuals.SilverBannerMaterialPath,
+        ModBufferPowerUi.IconPath,
+        "res://mod/images/powers/magic_realm_power.png",
+        "res://mod/images/powers/big/magic_realm_power.png",
+    ];
+}

@@ -1,0 +1,83 @@
+using Godot;
+using MegaCrit.Sts2.Core.Models;
+using Mod.ModCode.Cards;
+
+namespace Mod.ModCode.Character;
+
+public sealed class ScarletCardPool : CardPoolModel
+{
+    public override string Title => ScarletAcolyte.CharacterId;
+    public override string EnergyColorName => "ironclad";
+    public override string CardFrameMaterialPath => "card_frame_red";
+    public override Color DeckEntryCardColor => ScarletAcolyte.ScarletColor;
+    public override Color EnergyOutlineColor => new("631926");
+    public override bool IsColorless => false;
+
+    protected override CardModel[] GenerateAllCards() =>
+    [
+        ModelDb.Card<BasicAttack>(),
+        ModelDb.Card<BasicDefense>(),
+        ModelDb.Card<ChargedAttack>(),
+        ModelDb.Card<ChargedHeavyAttack>(),
+        ModelDb.Card<GuardCounter>(),
+        ModelDb.Card<ElementFlask>(),
+        ModelDb.Card<SmallRoundShieldParry>(),
+        ModelDb.Card<ScarletCost>(),
+        ModelDb.Card<FlamePurify>(),
+        ModelDb.Card<PrayerStrike>(),
+        ModelDb.Card<ScarletCredit>(),
+        ModelDb.Card<CorruptionStrength>(),
+        ModelDb.Card<CorruptionSense>(),
+        ModelDb.Card<ScarletTemptation>(),
+        ModelDb.Card<GarbageKingBlessing>(),
+        ModelDb.Card<ReturnPrinciple>(),
+        ModelDb.Card<JackWine>(),
+        ModelDb.Card<PlunderingFire>(),
+        ModelDb.Card<BloodLevy>(),
+        ModelDb.Card<WillToWin>(),
+        ModelDb.Card<Stormcaller>(),
+        ModelDb.Card<ErdtreeShock>(),
+        ModelDb.Card<CaestusStrike>(),
+        ModelDb.Card<ShieldCrash>(),
+        ModelDb.Card<FatalStrike>(),
+        ModelDb.Card<GiantHunt>(),
+        ModelDb.Card<CarianSlicer>(),
+        ModelDb.Card<StampUppercut>(),
+        ModelDb.Card<RockBall>(),
+        ModelDb.Card<GlintstoneChunk>(),
+        ModelDb.Card<ReadyStance>(),
+        ModelDb.Card<CarianPiercer>(),
+        ModelDb.Card<HoulouGroundSlam>(),
+        ModelDb.Card<CometShard>(),
+        ModelDb.Card<NightComet>(),
+        ModelDb.Card<CrystalBurst>(),
+        ModelDb.Card<LorettasGreatbow>(),
+        ModelDb.Card<AncientDeathsRancor>(),
+        ModelDb.Card<PunishingThorns>(),
+        ModelDb.Card<CarianRetribution>(),
+        ModelDb.Card<LionClaw>(),
+        ModelDb.Card<TotemTablet>(),
+        ModelDb.Card<RockBlade>(),
+        ModelDb.Card<GlintbladePhalanx>(),
+        ModelDb.Card<VictoryRush>(),
+        ModelDb.Card<BreakingMomentum>(),
+        ModelDb.Card<TwinStingPoisonFlower>(),
+        ModelDb.Card<Truce>(),
+        ModelDb.Card<Intimidation>(),
+        ModelDb.Card<Determination>(),
+        ModelDb.Card<Search>(),
+        ModelDb.Card<BattleCry>(),
+        ModelDb.Card<EasyHandling>(),
+        ModelDb.Card<Endure>(),
+        ModelDb.Card<Unburden>(),
+        ModelDb.Card<Seppuku>(),
+        ModelDb.Card<AllIn>(),
+        ModelDb.Card<ProfoundWisdom>(),
+        ModelDb.Card<GoodLuck>(),
+        ModelDb.Card<Ember>(),
+        ModelDb.Card<WaitForMeToStart>(),
+        ModelDb.Card<CometAzur>(),
+        ModelDb.Card<MagicRealm>(),
+        ModelDb.Card<TravelLight>()
+    ];
+}

@@ -1,0 +1,40 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Python
+scripts/.venv/
+__pycache__/
+*.pyc
+
+# Godot / .NET build
+**/.godot/
+**/bin/
+**/obj/
+workspace/mod/build/
+
+# Game install & vendored refs (copy locally; see deps/README.md)
+deps/game/*.dll
+deps/game/*.pdb
+
+# Decompiled game / huge reference trees (not for GitHub)
+extract/
+reference_mods/
+
+# Raw / reference art pipeline (videos/frames/reference boards; shipped assets live under workspace/mod/mod/images)
+assets/
+
+# Local handoff drafts (optional)
+handoff/conversation_raw.md
+
+# Release artifacts (built by scripts/package_release.sh; attached to GitHub Releases)
+dist/
+
+# GitHub workflow is kept local until the GitHub token has workflow scope.
+.github/workflows/
+
+# Logs
+*.log

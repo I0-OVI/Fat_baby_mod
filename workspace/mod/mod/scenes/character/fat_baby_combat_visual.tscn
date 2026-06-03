@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://mod/images/character_combat/fat_baby_combat_idle_15_pct30_stylized.png" id="1_idle"]
+
+[node name="FatBabyCombatVisual" type="Node2D"]
+metadata/_edit_group_ = true
+
+[node name="Visuals" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -184)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_idle")
+
+[node name="Bounds" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -135.0
+offset_top = -360.0
+offset_right = 135.0
+mouse_filter = 2
+
+[node name="CenterPos" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(0, -190)
+
+[node name="IntentPos" type="Marker2D" parent="."]
+position = Vector2(30, -385)

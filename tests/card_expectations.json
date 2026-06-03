@@ -1,0 +1,1149 @@
+{
+  "startingDeck": {
+    "BasicAttack": 4,
+    "BasicDefense": 4,
+    "ChargedAttack": 1,
+    "GuardCounter": 1
+  },
+  "cards": [
+    {
+      "class": "BasicAttack",
+      "id": "BASIC_ATTACK",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 6,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 9
+        }
+      }
+    },
+    {
+      "class": "ChargedAttack",
+      "id": "CHARGED_ATTACK",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 15,
+        "Imbalance": 5
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 18
+        }
+      }
+    },
+    {
+      "class": "ChargedHeavyAttack",
+      "id": "CHARGED_HEAVY_ATTACK",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Ancient",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 15,
+        "Imbalance": 5
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 18
+        }
+      }
+    },
+    {
+      "class": "SmallRoundShieldParry",
+      "id": "SMALL_ROUND_SHIELD_PARRY",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Ancient",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "Blocks": 1
+      }
+    },
+    {
+      "class": "BasicDefense",
+      "id": "BASIC_DEFENSE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Basic",
+      "target": "Self",
+      "gainsBlock": true,
+      "vars": {
+        "Block": 5
+      },
+      "upgrade": {
+        "vars": {
+          "Block": 8
+        }
+      }
+    },
+    {
+      "class": "GuardCounter",
+      "id": "GUARD_COUNTER",
+      "cost": 0,
+      "type": "Attack",
+      "rarity": "Basic",
+      "target": "AnyEnemy",
+      "keywords": [
+        "Exhaust",
+        "Retain"
+      ],
+      "vars": {
+        "Damage": 6,
+        "Imbalance": 5,
+        "Charge": 5
+      },
+      "upgrade": {
+        "vars": {
+          "Imbalance": 6,
+          "Charge": 4
+        }
+      }
+    },
+    {
+      "class": "ScarletCost",
+      "id": "SCARLET_COST",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "vars": {
+        "Cards": 3,
+        "ScarletCorruption": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 4
+        }
+      }
+    },
+    {
+      "class": "FlamePurify",
+      "id": "FLAME_PURIFY",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "gainsBlock": true,
+      "vars": {
+        "Block": 8,
+        "ScarletCorruption": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Block": 10,
+          "ScarletCorruption": 3
+        }
+      }
+    },
+    {
+      "class": "PrayerStrike",
+      "id": "PRAYER_STRIKE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 4,
+        "ScarletCorruption": 1,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 5,
+          "ScarletCorruption": 2
+        }
+      }
+    },
+    {
+      "class": "ScarletCredit",
+      "id": "SCARLET_CREDIT",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "ScarletCorruption": 2,
+        "Energy": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Energy": 3
+        }
+      }
+    },
+    {
+      "class": "CorruptionStrength",
+      "id": "CORRUPTION_STRENGTH",
+      "cost": 1,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Strength": 2,
+        "ScarletCorruption": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Strength": 5
+        }
+      }
+    },
+    {
+      "class": "CorruptionSense",
+      "id": "CORRUPTION_SENSE",
+      "cost": 1,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Cards": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 2
+        }
+      }
+    },
+    {
+      "class": "ScarletTemptation",
+      "id": "SCARLET_TEMPTATION",
+      "cost": 2,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Cards": 2,
+        "ScarletCorruption": 3
+      },
+      "upgrade": {
+        "keywords": [
+          "Innate"
+        ]
+      }
+    },
+    {
+      "class": "GarbageKingBlessing",
+      "id": "GARBAGE_KING_BLESSING",
+      "cost": 2,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Ethereal"
+      ],
+      "vars": {
+        "Strength": 4,
+        "ScarletCorruption": 3
+      },
+      "upgrade": {
+        "vars": {
+          "Strength": 5
+        }
+      }
+    },
+    {
+      "class": "ReturnPrinciple",
+      "id": "RETURN_PRINCIPLE",
+      "cost": 2,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "Strength": 2
+      },
+      "upgrade": {
+        "cost": 1
+      }
+    },
+    {
+      "class": "JackWine",
+      "id": "JACK_WINE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Heal": 5,
+        "Energy": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Heal": 8
+        }
+      }
+    },
+    {
+      "class": "PlunderingFire",
+      "id": "PLUNDERING_FIRE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {},
+      "upgrade": {
+        "cost": 0
+      }
+    },
+    {
+      "class": "BloodLevy",
+      "id": "BLOOD_LEVY",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 2,
+        "Heal": 3,
+        "Hits": 3,
+        "Imbalance": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 3,
+          "Heal": 4
+        }
+      }
+    },
+    {
+      "class": "WillToWin",
+      "id": "WILL_TO_WIN",
+      "cost": 3,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {},
+      "upgrade": {
+        "keywords": [
+          "Retain"
+        ]
+      }
+    },
+    {
+      "class": "Stormcaller",
+      "id": "STORMCALLER",
+      "cost": 0,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "xCost": true,
+      "vars": {
+        "Damage": 3,
+        "Imbalance": 2,
+        "BonusHits": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 4,
+          "BonusHits": 2
+        }
+      }
+    },
+    {
+      "class": "ErdtreeShock",
+      "id": "ERDTREE_SHOCK",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 7,
+        "Cards": 1,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 2
+        }
+      }
+    },
+    {
+      "class": "CaestusStrike",
+      "id": "CAESTUS_STRIKE",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 4,
+        "Imbalance": 8
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6,
+          "Imbalance": 10
+        }
+      }
+    },
+    {
+      "class": "ShieldCrash",
+      "id": "SHIELD_CRASH",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "gainsBlock": true,
+      "vars": {
+        "Damage": 4,
+        "Block": 6,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6,
+          "Block": 8
+        }
+      }
+    },
+    {
+      "class": "FatalStrike",
+      "id": "FATAL_STRIKE",
+      "cost": 0,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 9,
+        "Hits": 2
+      },
+      "upgrade": {
+        "keywords": [
+          "Retain"
+        ]
+      }
+    },
+    {
+      "class": "GiantHunt",
+      "id": "GIANT_HUNT",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 5,
+        "WeakPower": 1,
+        "Imbalance": 3,
+        "Hits": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 8
+        }
+      }
+    },
+    {
+      "class": "CarianSlicer",
+      "id": "CARIAN_SLICER",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "resultPile": "Hand",
+      "generatesSelfCopy": false,
+      "vars": {
+        "Damage": 6
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 9
+        }
+      }
+    },
+    {
+      "class": "StampUppercut",
+      "id": "STAMP_UPPERCUT",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "gainsBlock": true,
+      "vars": {
+        "Damage": 6,
+        "Block": 4,
+        "Imbalance": 6
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 8,
+          "Block": 6
+        }
+      }
+    },
+    {
+      "class": "ReadyStance",
+      "id": "READY_STANCE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 4,
+        "Strength": 1,
+        "Imbalance": 4
+      },
+      "upgrade": {
+        "vars": {
+          "Strength": 2,
+          "Imbalance": 5
+        }
+      }
+    },
+    {
+      "class": "CarianPiercer",
+      "id": "CARIAN_PIERCER",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 9,
+        "WeakPower": 1,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12,
+          "WeakPower": 2
+        }
+      }
+    },
+    {
+      "class": "LionClaw",
+      "id": "LION_CLAW",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 20,
+        "Imbalance": 6
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 27
+        }
+      }
+    },
+    {
+      "class": "TotemTablet",
+      "id": "TOTEM_TABLET",
+      "cost": 0,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "keywords": [
+        "Exhaust",
+        "Retain"
+      ],
+      "vars": {
+        "Damage": 10,
+        "Charge": 10
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 13,
+          "Charge": 8
+        }
+      }
+    },
+    {
+      "class": "RockBlade",
+      "id": "ROCK_BLADE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "vars": {
+        "Imbalance": 3
+      },
+      "upgrade": {
+        "cost": 0,
+        "vars": {
+          "Imbalance": 4
+        }
+      }
+    },
+    {
+      "class": "GlintbladePhalanx",
+      "id": "GLINTBLADE_PHALANX",
+      "cost": 3,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Imbalance": 5
+      },
+      "upgrade": {
+        "cost": 2
+      }
+    },
+    {
+      "class": "VictoryRush",
+      "id": "VICTORY_RUSH",
+      "cost": 2,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Energy": 1
+      },
+      "upgrade": {
+        "cost": 1
+      }
+    },
+    {
+      "class": "TwinStingPoisonFlower",
+      "id": "TWIN_STING_POISON_FLOWER",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 3,
+        "HpLoss": 1,
+        "ScarletCorruption": 3,
+        "Imbalance": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6
+        }
+      }
+    },
+    {
+      "class": "Truce",
+      "id": "TRUCE",
+      "cost": 2,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "gainsBlock": true,
+      "vars": {
+        "Block": 20,
+        "Energy": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Block": 23,
+          "Energy": 2
+        }
+      }
+    },
+    {
+      "class": "Intimidation",
+      "id": "INTIMIDATION",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "gainsBlock": true,
+      "vars": {
+        "WeakPower": 1,
+        "Block": 8
+      },
+      "upgrade": {
+        "vars": {
+          "WeakPower": 2,
+          "Block": 10
+        }
+      }
+    },
+    {
+      "class": "Determination",
+      "id": "DETERMINATION",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "vars": {},
+      "upgrade": {
+        "cost": 0
+      }
+    },
+    {
+      "class": "Search",
+      "id": "SEARCH",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "vars": {
+        "Exhaust": 2
+      },
+      "upgrade": {
+        "cost": 0
+      }
+    },
+    {
+      "class": "BattleCry",
+      "id": "BATTLE_CRY",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "vars": {
+        "Strength": 1,
+        "Cards": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 3
+        }
+      }
+    },
+    {
+      "class": "EasyHandling",
+      "id": "EASY_HANDLING",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Cards": 3,
+        "Exhaust": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 4
+        }
+      }
+    },
+    {
+      "class": "Endure",
+      "id": "ENDURE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Block": 0
+      },
+      "upgrade": {
+        "vars": {
+          "Block": 5
+        }
+      }
+    },
+    {
+      "class": "Unburden",
+      "id": "UNBURDEN",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Strength": 1,
+        "Energy": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Energy": 3
+        }
+      }
+    },
+    {
+      "class": "GoodLuck",
+      "id": "GOOD_LUCK",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "Strength": 1,
+        "Magic": 1,
+        "Energy": 1,
+        "Cards": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Energy": 2,
+          "Cards": 2
+        }
+      }
+    },
+    {
+      "class": "Ember",
+      "id": "EMBER",
+      "cost": 1,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Strength": 1,
+        "Magic": 1,
+        "MaxHp": 2,
+        "Imbalance": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Strength": 2,
+          "MaxHp": 3
+        }
+      }
+    },
+    {
+      "class": "WaitForMeToStart",
+      "id": "WAIT_FOR_ME_TO_START",
+      "cost": 3,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Innate",
+        "Exhaust"
+      ],
+      "vars": {
+        "Turns": 2,
+        "WeakPower": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Turns": 3,
+          "WeakPower": 3
+        }
+      }
+    },
+    {
+      "class": "MagicRealm",
+      "id": "MAGIC_REALM",
+      "cost": 2,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Magic": 3,
+        "Block": 10
+      },
+      "upgrade": {
+        "cost": 1,
+        "vars": {
+          "Magic": 4
+        }
+      }
+    },
+    {
+      "class": "TravelLight",
+      "id": "TRAVEL_LIGHT",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Common",
+      "target": "Self",
+      "gainsBlock": true,
+      "vars": {
+        "Block": 8,
+        "DiscardBlock": 4
+      },
+      "upgrade": {
+        "vars": {
+          "Block": 10,
+          "DiscardBlock": 5
+        }
+      }
+    },
+    {
+      "class": "RockBall",
+      "id": "ROCK_BALL",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 2,
+        "Hits": 3,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Hits": 4
+        }
+      }
+    },
+    {
+      "class": "HoulouGroundSlam",
+      "id": "HOULOU_GROUND_SLAM",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 5,
+        "Hits": 2,
+        "Imbalance": 3,
+        "NextDamage": 6,
+        "NextImbalance": 4
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6,
+          "NextDamage": 7
+        }
+      }
+    },
+    {
+      "class": "CometShard",
+      "id": "COMET_SHARD",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 9,
+        "Magic": 2,
+        "CostReduction": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12,
+          "Magic": 3
+        }
+      }
+    },
+    {
+      "class": "NightComet",
+      "id": "NIGHT_COMET",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 8,
+        "BonusDamage": 4,
+        "BonusHits": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 11,
+          "BonusDamage": 5
+        }
+      }
+    },
+    {
+      "class": "CrystalBurst",
+      "id": "CRYSTAL_BURST",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 4,
+        "Hits": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6
+        }
+      }
+    },
+    {
+      "class": "LorettasGreatbow",
+      "id": "LORETTAS_GREATBOW",
+      "cost": 3,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 24
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 32
+        }
+      }
+    },
+    {
+      "class": "AncientDeathsRancor",
+      "id": "ANCIENT_DEATHS_RANCOR",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 2,
+        "Hits": 6
+      },
+      "upgrade": {
+        "vars": {
+          "Hits": 7
+        }
+      }
+    },
+    {
+      "class": "CarianRetribution",
+      "id": "CARIAN_RETRIBUTION",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Blocks": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Blocks": 2
+        }
+      }
+    },
+    {
+      "class": "ProfoundWisdom",
+      "id": "PROFOUND_WISDOM",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Magic": 2,
+        "Cards": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Magic": 4
+        }
+      }
+    },
+    {
+      "class": "CometAzur",
+      "id": "COMET_AZUR",
+      "cost": 3,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 5,
+        "Strength": 3,
+        "Magic": 3
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 8
+        }
+      }
+    },
+    {
+      "class": "GlintstoneChunk",
+      "id": "GLINTSTONE_CHUNK",
+      "cost": 0,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "Damage": 2,
+        "Hits": 6
+      },
+      "upgrade": {
+        "vars": {
+          "Hits": 8
+        }
+      }
+    },
+    {
+      "class": "PunishingThorns",
+      "id": "PUNISHING_THORNS",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 9,
+        "HpLoss": 1,
+        "Magic": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12,
+          "Magic": 2
+        }
+      }
+    },
+    {
+      "class": "Seppuku",
+      "id": "SEPPUKU",
+      "cost": 2,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "HpLoss": 5,
+        "Strength": 1,
+        "Magic": 1
+      },
+      "upgrade": {
+        "vars": {
+          "HpLoss": 2
+        }
+      }
+    },
+    {
+      "class": "AllIn",
+      "id": "ALL_IN",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "xCost": true,
+      "vars": {
+        "BonusPlays": 0
+      },
+      "upgrade": {
+        "vars": {
+          "BonusPlays": 1
+        }
+      }
+    },
+    {
+      "class": "BreakingMomentum",
+      "id": "BREAKING_MOMENTUM",
+      "cost": 3,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Imbalance": 1,
+        "Strength": 0
+      },
+      "upgrade": {
+        "vars": {
+          "Strength": 1
+        }
+      }
+    },
+    {
+      "class": "ElementFlask",
+      "id": "ELEMENT_FLASK",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Token",
+      "target": "Self",
+      "keywords": ["Retain"],
+      "vars": {
+        "Heal": 8,
+        "Remaining": 0
+      }
+    }
+  ]
+}
