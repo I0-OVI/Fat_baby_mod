@@ -92,8 +92,8 @@ public sealed class CarianRetributionPower : CustomPowerModel
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/buffer_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/buffer_power.png";
+    public override string CustomPackedIconPath => "res://mod/images/powers/buckler_shield_power.png";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/buckler_shield_power.png";
 
     public override decimal ModifyHpLostAfterOstyLate(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {

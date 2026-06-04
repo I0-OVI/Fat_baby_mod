@@ -17,6 +17,7 @@ public partial class MainFile : Node
     public static void Initialize()
     {
         SavedPropertiesTypeCache.InjectTypeIntoCache(typeof(ElementFlaskRelic));
+        SavedPropertiesTypeCache.InjectTypeIntoCache(typeof(RefinedElementFlaskRelic));
         Harmony harmony = new(ModId);
         harmony.PatchAll();
     }

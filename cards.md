@@ -2,74 +2,153 @@
 
 用于记录卡牌名称、费用和简介。
 
+## 卡牌索引（名称 · ModelId）
+
+与代码 `workspace/mod/ModCode/Cards/*.cs`、本地化 `mod/localization/zhs/cards.json` 的 `{ModelId}.title` 对齐。C# 类名 PascalCase，ModelId 为类名的 `SCREAMING_SNAKE_CASE`。`+` 升级牌不单独列出。
+
+| 显示名 | ModelId | C# 类 | 稀有度 | 类型 |
+|--------|---------|-------|--------|------|
+| 孤注一掷 | `ALL_IN` | `AllIn` | 罕见 | 技能 |
+| 古老死亡怨魂 | `ANCIENT_DEATHS_RANCOR` | `AncientDeathsRancor` | 罕见 | 攻击 |
+| 打击 | `BASIC_ATTACK` | `BasicAttack` | 其他 | 攻击 |
+| 防御 | `BASIC_DEFENSE` | `BasicDefense` | 其他 | 技能 |
+| 夸耀咆哮 | `BATTLE_CRY` | `BattleCry` | 普通 | 技能 |
+| 鲜血征收 | `BLOOD_LEVY` | `BloodLevy` | 罕见 | 攻击 |
+| 破势如潮 | `BREAKING_MOMENTUM` | `BreakingMomentum` | 稀有 | 能力 |
+| 拳套打击 | `CAESTUS_STRIKE` | `CaestusStrike` | 普通 | 攻击 |
+| 卡利亚贯刺 | `CARIAN_PIERCER` | `CarianPiercer` | 罕见 | 攻击 |
+| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | `CarianRetribution` | 稀有 | 攻击 |
+| 卡利亚迅剑 | `CARIAN_SLICER` | `CarianSlicer` | 普通 | 攻击 |
+| 蓄力攻击 | `CHARGED_ATTACK` | `ChargedAttack` | 其他 | 攻击 |
+| 蓄力重击 | `CHARGED_HEAVY_ATTACK` | `ChargedHeavyAttack` | 先古 | 攻击 |
+| 彗星亚兹勒 | `COMET_AZUR` | `CometAzur` | 稀有 | 攻击 |
+| 帚星 | `COMET_SHARD` | `CometShard` | 罕见 | 攻击 |
+| 腐败感知 | `CORRUPTION_SENSE` | `CorruptionSense` | 罕见 | 能力 |
+| 腐败力量 | `CORRUPTION_STRENGTH` | `CorruptionStrength` | 罕见 | 能力 |
+| 爆散结晶 | `CRYSTAL_BURST` | `CrystalBurst` | 罕见 | 攻击 |
+| 决心 | `DETERMINATION` | `Determination` | 普通 | 技能 |
+| 游刃有余 | `EASY_HANDLING` | `EasyHandling` | 罕见 | 技能 |
+| 元素瓶 | `ELEMENT_FLASK` | `ElementFlask` | 衍生 | 技能 |
+| 余火 | `EMBER` | `Ember` | 罕见 | 能力 |
+| 忍耐 | `ENDURE` | `Endure` | 罕见 | 技能 |
+| 黄金树坠落震击 | `ERDTREE_SHOCK` | `ErdtreeShock` | 普通 | 攻击 |
+| 致命一击 | `FATAL_STRIKE` | `FatalStrike` | 普通 | 攻击 |
+| 火焰啊，净化 | `FLAME_PURIFY` | `FlamePurify` | 普通 | 技能 |
+| 垃圾王的庇佑 | `GARBAGE_KING_BLESSING` | `GarbageKingBlessing` | 稀有 | 能力 |
+| 特大跳劈 | `GIANT_HUNT` | `GiantHunt` | 普通 | 攻击 |
+| 巨剑阵 | `GLINTBLADE_PHALANX` | `GlintbladePhalanx` | 罕见 | 技能 |
+| 大块崩裂辉石 | `GLINTSTONE_CHUNK` | `GlintstoneChunk` | 普通 | 攻击 |
+| 好运 | `GOOD_LUCK` | `GoodLuck` | 稀有 | 技能 |
+| 反击 | `GUARD_COUNTER` | `GuardCounter` | 其他 | 攻击 |
+| 荷莱露的撼地 | `HOULOU_GROUND_SLAM` | `HoulouGroundSlam` | 罕见 | 攻击 |
+| 恫吓 | `INTIMIDATION` | `Intimidation` | 普通 | 技能 |
+| 杰克的酒 | `JACK_WINE` | `JackWine` | 罕见 | 技能 |
+| 狮子斩 | `LION_CLAW` | `LionClaw` | 罕见 | 攻击 |
+| 罗蕾塔的大弓 | `LORETTAS_GREATBOW` | `LorettasGreatbow` | 罕见 | 攻击 |
+| 魔法之境 | `MAGIC_REALM` | `MagicRealm` | 稀有 | 能力 |
+| 黑夜彗星 | `NIGHT_COMET` | `NightComet` | 罕见 | 攻击 |
+| 掠夺之火 | `PLUNDERING_FIRE` | `PlunderingFire` | 稀有 | 技能 |
+| 祈祷一击 | `PRAYER_STRIKE` | `PrayerStrike` | 罕见 | 攻击 |
+| 深具睿智 | `PROFOUND_WISDOM` | `ProfoundWisdom` | 罕见 | 技能 |
+| 责罚荆棘 | `PUNISHING_THORNS` | `PunishingThorns` | 罕见 | 攻击 |
+| 准备架势 | `READY_STANCE` | `ReadyStance` | 罕见 | 攻击 |
+| 回归性原理 | `RETURN_PRINCIPLE` | `ReturnPrinciple` | 稀有 | 技能 |
+| 岩石球 | `ROCK_BALL` | `RockBall` | 普通 | 攻击 |
+| 岩石剑 | `ROCK_BLADE` | `RockBlade` | 普通 | 技能 |
+| 猩红代价 | `SCARLET_COST` | `ScarletCost` | 普通 | 技能 |
+| 赊账 | `SCARLET_CREDIT` | `ScarletCredit` | 罕见 | 技能 |
+| 猩红诱惑 | `SCARLET_TEMPTATION` | `ScarletTemptation` | 稀有 | 能力 |
+| 寻找 | `SEARCH` | `Search` | 普通 | 技能 |
+| 切腹 | `SEPPUKU` | `Seppuku` | 罕见 | 技能 |
+| 盾牌冲击 | `SHIELD_CRASH` | `ShieldCrash` | 普通 | 攻击 |
+| 小圆盾弹反 | `SMALL_ROUND_SHIELD_PARRY` | `SmallRoundShieldParry` | 先古 | 技能 |
+| 箭步-上砍 | `STAMP_UPPERCUT` | `StampUppercut` | 普通 | 攻击 |
+| 唤起风暴 | `STORMCALLER` | `Stormcaller` | 普通 | 攻击 |
+| 图腾碑石 | `TOTEM_TABLET` | `TotemTablet` | 稀有 | 攻击 |
+| 轻装上阵 | `TRAVEL_LIGHT` | `TravelLight` | 普通 | 技能 |
+| 休战 | `TRUCE` | `Truce` | 普通 | 技能 |
+| 双刺毒花 | `TWIN_STING_POISON_FLOWER` | `TwinStingPoisonFlower` | 罕见 | 攻击 |
+| 卸力 | `UNBURDEN` | `Unburden` | 罕见 | 技能 |
+| 乘胜追击 | `VICTORY_RUSH` | `VictoryRush` | 罕见 | 能力 |
+| 别急，等我启动 | `WAIT_FOR_ME_TO_START` | `WaitForMeToStart` | 稀有 | 技能 |
+| 好胜心 | `WILL_TO_WIN` | `WillToWin` | 稀有 | 能力 |
+
 ## 实现状态（代码）
 
-| 卡牌 | ModelId | 状态 |
-|------|---------|------|
-| 攻击 | `BASIC_ATTACK` | 已实现（含削韧） |
-| 防御 | `BASIC_DEFENSE` | 已实现 |
-| 蓄力攻击 | `CHARGED_ATTACK` | 已实现（含削韧） |
-| 蓄力重击 | `CHARGED_HEAVY_ATTACK` | 已实现（先古；古老牙齿由蓄力攻击变化） |
-| 反击 | `GUARD_COUNTER` | 已实现（含充能） |
-| 小圆盾弹反 | `SMALL_ROUND_SHIELD_PARRY` | 已实现（先古；尘封魔典候选） |
-| 猩红代价 | `SCARLET_COST` | 已实现 |
-| 火焰啊，净化 | `FLAME_PURIFY` | 已实现（普通牌） |
-| 祈祷一击 | `PRAYER_STRIKE` | 已实现（含削韧） |
-| 赊账 | `SCARLET_CREDIT` | 已实现 |
-| 腐败力量 | `CORRUPTION_STRENGTH` | 已实现 |
-| 腐败感知 | `CORRUPTION_SENSE` | 已实现 |
-| 猩红诱惑 | `SCARLET_TEMPTATION` | 已实现（消耗手牌为当前可落地版本） |
-| 垃圾王的庇佑 | `GARBAGE_KING_BLESSING` | 已实现；接入塔二已有虚无/Ethereal |
-| 回归性原理 | `RETURN_PRINCIPLE` | 已实现 |
-| 杰克的酒 | `JACK_WINE` | 已实现 |
-| 掠夺之火 | `PLUNDERING_FIRE` | 已实现 |
-| 鲜血征收 | `BLOOD_LEVY` | 已实现（含逐段削韧） |
-| 好胜心 | `WILL_TO_WIN` | 已实现 |
-| 唤起风暴 | `STORMCALLER` | 已实现（X 费多段削韧） |
-| 黄金树坠落震击 | `ERDTREE_SHOCK` | 已实现 |
-| 拳套打击 | `CAESTUS_STRIKE` | 已实现 |
-| 盾牌冲击 | `SHIELD_CRASH` | 已实现 |
-| 致命一击 | `FATAL_STRIKE` | 已实现 |
-| 特大跳劈 | `GIANT_HUNT` | 已实现 |
-| 卡利亚迅剑 | `CARIAN_SLICER` | 已实现（6 魔力伤，无削韧） |
-| 箭步-上砍 | `STAMP_UPPERCUT` | 已实现 |
-| 岩石球 | `ROCK_BALL` | 已实现（多段魔法削韧） |
-| 准备架势 | `READY_STANCE` | 已实现 |
-| 卡利亚贯刺 | `CARIAN_PIERCER` | 已实现 |
-| 荷莱露的撼地 | `HOULOU_GROUND_SLAM` | 已实现（含下回合追击） |
-| 帚星 | `COMET_SHARD` | 已实现 |
-| 黑夜彗星 | `NIGHT_COMET` | 已实现 |
-| 爆散结晶 | `CRYSTAL_BURST` | 已实现（溅射为其他敌人半伤） |
-| 罗蕾塔的大弓 | `LORETTAS_GREATBOW` | 已实现（溅射为其他敌人半伤） |
+共 **63** 张奖池牌 + **1** 张衍生牌（`ELEMENT_FLASK`）。下表与索引一一对应。
+
+| 显示名 | ModelId | 状态 |
+|--------|---------|------|
+| 孤注一掷 | `ALL_IN` | 已实现（X 费；选手牌消耗后打出 X 遍） |
 | 古老死亡怨魂 | `ANCIENT_DEATHS_RANCOR` | 已实现（含下回合重复） |
-| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | 已实现（阻止伤害并反击） |
-| 狮子斩 | `LION_CLAW` | 已实现 |
-| 图腾碑石 | `TOTEM_TABLET` | 已实现（含充能） |
-| 岩石剑 | `ROCK_BLADE` | 已实现 |
-| 巨剑阵 | `GLINTBLADE_PHALANX` | 已实现 |
-| 乘胜追击 | `VICTORY_RUSH` | 已实现为下一张攻击双倍伤害 |
-| 双刺毒花 | `TWIN_STING_POISON_FLOWER` | 已实现 |
-| 休战 | `TRUCE` | 已实现 |
-| 恫吓 | `INTIMIDATION` | 已实现 |
-| 决心 | `DETERMINATION` | 已实现 |
-| 寻找 | `SEARCH` | 已实现（1 费，升级 0） |
+| 打击 | `BASIC_ATTACK` | 已实现（含削韧；显示名「打击」） |
+| 防御 | `BASIC_DEFENSE` | 已实现 |
 | 夸耀咆哮 | `BATTLE_CRY` | 已实现 |
+| 鲜血征收 | `BLOOD_LEVY` | 已实现 |
+| 破势如潮 | `BREAKING_MOMENTUM` | 已实现 |
+| 拳套打击 | `CAESTUS_STRIKE` | 已实现 |
+| 卡利亚贯刺 | `CARIAN_PIERCER` | 已实现 |
+| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | 已实现（阻止伤害并反击） |
+| 卡利亚迅剑 | `CARIAN_SLICER` | 已实现（纯法术；无削韧） |
+| 蓄力攻击 | `CHARGED_ATTACK` | 已实现 |
+| 蓄力重击 | `CHARGED_HEAVY_ATTACK` | 已实现（先古；由蓄力攻击变化） |
+| 彗星亚兹勒 | `COMET_AZUR` | 已实现（选抽牌堆消耗） |
+| 帚星 | `COMET_SHARD` | 已实现 |
+| 腐败感知 | `CORRUPTION_SENSE` | 已实现 |
+| 腐败力量 | `CORRUPTION_STRENGTH` | 已实现 |
+| 爆散结晶 | `CRYSTAL_BURST` | 已实现（溅射；侧栏规则） |
+| 决心 | `DETERMINATION` | 已实现 |
 | 游刃有余 | `EASY_HANDLING` | 已实现 |
-| 忍耐 | `ENDURE` | 已实现 |
-| 卸力 | `UNBURDEN` | 已实现 |
-| 深具睿智 | `PROFOUND_WISDOM` | 已实现 |
-| 好运 | `GOOD_LUCK` | 已实现 |
+| 元素瓶 | `ELEMENT_FLASK` | 已实现（衍生；不进牌库/录制清单） |
 | 余火 | `EMBER` | 已实现 |
-| 别急，等我启动 | `WAIT_FOR_ME_TO_START` | 已实现 |
-| 彗星亚兹勒 | `COMET_AZUR` | 已实现（选择抽牌堆消耗） |
+| 忍耐 | `ENDURE` | 已实现 |
+| 黄金树坠落震击 | `ERDTREE_SHOCK` | 已实现 |
+| 致命一击 | `FATAL_STRIKE` | 已实现 |
+| 火焰啊，净化 | `FLAME_PURIFY` | 已实现 |
+| 垃圾王的庇佑 | `GARBAGE_KING_BLESSING` | 已实现（虚无） |
+| 特大跳劈 | `GIANT_HUNT` | 已实现 |
+| 巨剑阵 | `GLINTBLADE_PHALANX` | 已实现 |
+| 大块崩裂辉石 | `GLINTSTONE_CHUNK` | 已实现（0 费随机多段；消耗） |
+| 好运 | `GOOD_LUCK` | 已实现 |
+| 反击 | `GUARD_COUNTER` | 已实现（含充能） |
+| 荷莱露的撼地 | `HOULOU_GROUND_SLAM` | 已实现（含下回合追击） |
+| 恫吓 | `INTIMIDATION` | 已实现 |
+| 杰克的酒 | `JACK_WINE` | 已实现 |
+| 狮子斩 | `LION_CLAW` | 已实现 |
+| 罗蕾塔的大弓 | `LORETTAS_GREATBOW` | 已实现（溅射；侧栏规则） |
 | 魔法之境 | `MAGIC_REALM` | 已实现 |
+| 黑夜彗星 | `NIGHT_COMET` | 已实现 |
+| 掠夺之火 | `PLUNDERING_FIRE` | 已实现（消耗） |
+| 祈祷一击 | `PRAYER_STRIKE` | 已实现 |
+| 深具睿智 | `PROFOUND_WISDOM` | 已实现 |
+| 责罚荆棘 | `PUNISHING_THORNS` | 已实现 |
+| 准备架势 | `READY_STANCE` | 已实现 |
+| 回归性原理 | `RETURN_PRINCIPLE` | 已实现 |
+| 岩石球 | `ROCK_BALL` | 已实现（多段魔法削韧） |
+| 岩石剑 | `ROCK_BLADE` | 已实现 |
+| 猩红代价 | `SCARLET_COST` | 已实现 |
+| 赊账 | `SCARLET_CREDIT` | 已实现 |
+| 猩红诱惑 | `SCARLET_TEMPTATION` | 已实现（每回合选手牌消耗） |
+| 寻找 | `SEARCH` | 已实现（升级后 0 费） |
+| 切腹 | `SEPPUKU` | 已实现 |
+| 盾牌冲击 | `SHIELD_CRASH` | 已实现 |
+| 小圆盾弹反 | `SMALL_ROUND_SHIELD_PARRY` | 已实现（先古） |
+| 箭步-上砍 | `STAMP_UPPERCUT` | 已实现 |
+| 唤起风暴 | `STORMCALLER` | 已实现（X 费多段削韧） |
+| 图腾碑石 | `TOTEM_TABLET` | 已实现（含充能） |
 | 轻装上阵 | `TRAVEL_LIGHT` | 已实现 |
+| 休战 | `TRUCE` | 已实现 |
+| 双刺毒花 | `TWIN_STING_POISON_FLOWER` | 已实现 |
+| 卸力 | `UNBURDEN` | 已实现 |
+| 乘胜追击 | `VICTORY_RUSH` | 已实现（击晕后下一张攻击双倍伤害） |
+| 别急，等我启动 | `WAIT_FOR_ME_TO_START` | 已实现 |
+| 好胜心 | `WILL_TO_WIN` | 已实现 |
 
 机制缺口见 `implementation_log.md`：卡牌正式卡面、更多魔法牌与数值实战调优等。
 
 ## 设计原则（当前）
 
-- 基础/其他牌只有 `攻击`、`防御`、`蓄力攻击`、`反击`；出生牌组为 4 攻击、4 防御、1 蓄力攻击、1 反击。
+- 基础/其他牌只有 `打击`（`BASIC_ATTACK`）、`防御`、`蓄力攻击`、`反击`；出生牌组为 4 打击、4 防御、1 蓄力攻击、1 反击。
 - 基础牌尽量「不升级也能打」；升级是锦上添花，不是刚需（塔二篝火偏少）。
 - `垃圾王的庇佑` 带 **虚无**，避免每回合白送力量叠太高。
 - `掠夺之火` 带 **消耗**，避免一回合吸血爆发过强。
@@ -115,6 +194,8 @@
 ```md
 ### 卡牌名称
 
+- ModelId: `SCREAMING_SNAKE_CASE`（与 C# 类名对应，如 `AllIn` → `ALL_IN`）
+- 显示名: 与 `mod/localization/zhs/cards.json` 的 `{ModelId}.title` 一致
 - 费用:
 - 类型:
 - 效果:
@@ -122,7 +203,7 @@
 ```
 # 效果
 猩红腐败 n层: 你的回合开始时失去 n 点生命值。n 的上限是 5。不会自然衰减；卡牌可以减少或清除层数；该失血无视格挡。
-充能 n: 开局时消耗该牌 打出n张牌后回到手上 
+充能 n: 开局放入消耗堆。每当你打出其他牌，充能减少 1；减到 0 时该牌回到手牌并可打出。若该牌被强制消耗（未打出），充能重置为 n，留在消耗堆并重新计时（此时无法打出），直至再次减到 0 回手。 
 削韧 n: 每段攻击造成 n 点失衡值。敌人的失衡值为 0 时，敌人会进入眩晕状态，然后重置失衡值。
 虚无: 如果回合结束时这张牌仍在手牌中，将其消耗
 小怪 失衡值 10
@@ -138,14 +219,15 @@ boss 失衡值 25
 
 ## 攻击牌
 
-### 攻击
+### 打击
 
+- ModelId: `BASIC_ATTACK`
 - 费用: 1
 - 类型: 攻击
 - 效果: 造成6点伤害 削韧 2
 - 稀有度: 其他
 
-### 攻击+
+### 打击+
 
 - 费用: 1
 - 类型: 攻击
@@ -153,6 +235,7 @@ boss 失衡值 25
 - 稀有度: 其他
 
 ### 蓄力攻击
+- ModelId: `CHARGED_ATTACK`
 
 - 费用: 2
 - 类型: 攻击
@@ -167,6 +250,7 @@ boss 失衡值 25
 - 稀有度: 其他
 
 ### 蓄力重击
+- ModelId: `CHARGED_HEAVY_ATTACK`
 
 - 费用: 1
 - 类型: 攻击
@@ -181,6 +265,7 @@ boss 失衡值 25
 - 稀有度: 先古
 
 ### 反击
+- ModelId: `GUARD_COUNTER`
 
 - 费用: 0
 - 类型: 攻击
@@ -195,6 +280,7 @@ boss 失衡值 25
 - 稀有度: 其他
 
 ### 唤起风暴
+- ModelId: `STORMCALLER`
 
 - 费用: X
 - 类型: 攻击
@@ -209,6 +295,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 大块崩裂辉石
+- ModelId: `GLINTSTONE_CHUNK`
 
 - 费用: 0
 - 类型: 攻击
@@ -223,6 +310,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 黄金树坠落震击
+- ModelId: `ERDTREE_SHOCK`
 
 - 费用: 1
 - 类型: 攻击
@@ -237,6 +325,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 拳套打击
+- ModelId: `CAESTUS_STRIKE`
 
 - 费用: 2
 - 类型: 攻击
@@ -251,6 +340,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 盾牌冲击
+- ModelId: `SHIELD_CRASH`
 
 - 费用: 1
 - 类型: 攻击
@@ -265,6 +355,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 致命一击
+- ModelId: `FATAL_STRIKE`
 
 - 费用: 0
 - 类型: 攻击
@@ -279,6 +370,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 特大跳劈
+- ModelId: `GIANT_HUNT`
 
 - 费用: 1
 - 类型: 攻击
@@ -293,6 +385,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 卡利亚迅剑
+- ModelId: `CARIAN_SLICER`
 
 - 费用: 1
 - 类型: 攻击
@@ -307,6 +400,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 箭步-上砍
+- ModelId: `STAMP_UPPERCUT`
 
 - 费用: 2
 - 类型: 攻击
@@ -321,6 +415,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 岩石球
+- ModelId: `ROCK_BALL`
 
 - 费用: 1
 - 类型: 攻击
@@ -335,6 +430,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 准备架势
+- ModelId: `READY_STANCE`
 
 - 费用: 1
 - 类型: 攻击
@@ -349,6 +445,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 祈祷一击
+- ModelId: `PRAYER_STRIKE`
 
 - 费用: 1
 - 类型: 攻击
@@ -363,6 +460,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 双刺毒花
+- ModelId: `TWIN_STING_POISON_FLOWER`
 
 - 费用: 1
 - 类型: 攻击
@@ -377,6 +475,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 荷莱露的撼地
+- ModelId: `HOULOU_GROUND_SLAM`
 
 - 费用: 2
 - 类型: 攻击
@@ -391,6 +490,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 卡利亚贯刺
+- ModelId: `CARIAN_PIERCER`
 
 - 费用: 2
 - 类型: 攻击
@@ -405,6 +505,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 帚星
+- ModelId: `COMET_SHARD`
 
 - 费用: 2
 - 类型: 攻击
@@ -419,6 +520,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 黑夜彗星
+- ModelId: `NIGHT_COMET`
 
 - 费用: 1
 - 类型: 攻击
@@ -433,6 +535,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 爆散结晶
+- ModelId: `CRYSTAL_BURST`
 
 - 费用: 1
 - 类型: 攻击
@@ -447,6 +550,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 罗蕾塔的大弓
+- ModelId: `LORETTAS_GREATBOW`
 
 - 费用: 3
 - 类型: 攻击
@@ -461,6 +565,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 古老死亡怨魂
+- ModelId: `ANCIENT_DEATHS_RANCOR`
 
 - 费用: 2
 - 类型: 攻击
@@ -475,6 +580,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 责罚荆棘
+- ModelId: `PUNISHING_THORNS`
 
 - 费用: 1
 - 类型: 攻击
@@ -489,6 +595,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 狮子斩
+- ModelId: `LION_CLAW`
 
 - 费用: 2
 - 类型: 攻击
@@ -503,6 +610,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 鲜血征收
+- ModelId: `BLOOD_LEVY`
 
 - 费用: 1
 - 类型: 攻击
@@ -517,6 +625,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 彗星亚兹勒
+- ModelId: `COMET_AZUR`
 
 - 费用: 3
 - 类型: 攻击
@@ -531,6 +640,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 图腾碑石
+- ModelId: `TOTEM_TABLET`
 
 - 费用: 0
 - 类型: 攻击
@@ -547,6 +657,7 @@ boss 失衡值 25
 ## 技能牌
 
 ### 防御
+- ModelId: `BASIC_DEFENSE`
 
 - 费用: 1
 - 类型: 技能
@@ -561,6 +672,7 @@ boss 失衡值 25
 - 稀有度: 其他
 
 ### 小圆盾弹反
+- ModelId: `SMALL_ROUND_SHIELD_PARRY`
 
 - 费用: 1
 - 类型: 技能
@@ -575,6 +687,7 @@ boss 失衡值 25
 - 稀有度: 先古
 
 ### 火焰啊，净化
+- ModelId: `FLAME_PURIFY`
 
 - 费用: 1
 - 类型: 技能
@@ -589,6 +702,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 休战
+- ModelId: `FAT_BABY-TRUCE`
 - 费用: 2
 - 类型: 技能
 - 效果: 获得20点格挡 下回合获得1点能量
@@ -601,6 +715,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 恫吓
+- ModelId: `INTIMIDATION`
 
 - 费用: 1
 - 类型: 技能
@@ -615,6 +730,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 轻装上阵
+- ModelId: `TRAVEL_LIGHT`
 
 - 费用: 1
 - 类型: 技能
@@ -629,6 +745,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 决心
+- ModelId: `DETERMINATION`
 
 - 费用: 1
 - 类型: 技能
@@ -643,6 +760,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 岩石剑
+- ModelId: `ROCK_BLADE`
 
 - 费用: 1
 - 类型: 技能
@@ -657,6 +775,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 寻找
+- ModelId: `SEARCH`
 
 - 费用: 1
 - 类型: 技能
@@ -671,6 +790,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 猩红代价
+- ModelId: `SCARLET_COST`
 
 - 费用: 0 
 - 类型: 技能
@@ -685,6 +805,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 夸耀咆哮
+- ModelId: `BATTLE_CRY`
 
 - 费用: 1
 - 类型: 技能
@@ -699,6 +820,7 @@ boss 失衡值 25
 - 稀有度: 普通
 
 ### 游刃有余
+- ModelId: `EASY_HANDLING`
 
 - 费用: 1
 - 类型: 技能
@@ -713,6 +835,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 忍耐
+- ModelId: `ENDURE`
 
 - 费用: 1
 - 类型: 技能
@@ -727,6 +850,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 杰克的酒
+- ModelId: `JACK_WINE`
 
 - 费用: 1
 - 类型: 技能
@@ -741,6 +865,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 卸力
+- ModelId: `UNBURDEN`
 
 - 费用: 0
 - 类型: 技能
@@ -755,6 +880,7 @@ boss 失衡值 25
 - 稀有度: 罕见
  
 ### 赊账
+- ModelId: `SCARLET_CREDIT`
 
 - 费用: 0
 - 类型: 技能
@@ -769,6 +895,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 深具睿智
+- ModelId: `PROFOUND_WISDOM`
 
 - 费用: 1
 - 类型: 技能
@@ -783,6 +910,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 巨剑阵
+- ModelId: `GLINTBLADE_PHALANX`
 
 - 费用: 3
 - 类型: 技能
@@ -797,6 +925,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 切腹
+- ModelId: `SEPPUKU`
 
 - 费用: 2
 - 类型: 技能
@@ -811,6 +940,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 孤注一掷
+- ModelId: `ALL_IN`
 
 - 费用: X
 - 类型: 技能
@@ -825,6 +955,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 掠夺之火
+- ModelId: `PLUNDERING_FIRE`
 
 - 费用: 1
 - 类型: 技能
@@ -839,6 +970,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 好运
+- ModelId: `GOOD_LUCK`
 
 - 费用: 0
 - 类型: 技能
@@ -853,6 +985,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 别急，等我启动
+- ModelId: `WAIT_FOR_ME_TO_START`
 
 - 费用: 3
 - 类型: 技能
@@ -867,6 +1000,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 卡利亚式奉还
+- ModelId: `CARIAN_RETRIBUTION`
 
 - 费用: 1
 - 类型: 攻击
@@ -881,6 +1015,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 回归性原理
+- ModelId: `FAT_BABY-RETURN_PRINCIPLE`
 - 费用: 2
 - 类型: 技能
 - 效果: 消耗 消除自身所有负面效果 获得2点力量
@@ -895,6 +1030,7 @@ boss 失衡值 25
 ## 能力
 
 ### 余火
+- ModelId: `EMBER`
 
 - 费用: 1
 - 类型: 能力
@@ -909,6 +1045,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 腐败力量
+- ModelId: `CORRUPTION_STRENGTH`
 
 - 费用: 1
 - 类型: 能力
@@ -923,6 +1060,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 腐败感知
+- ModelId: `CORRUPTION_SENSE`
 
 - 费用: 1
 - 类型: 能力
@@ -937,6 +1075,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 乘胜追击
+- ModelId: `VICTORY_RUSH`
 
 - 费用: 2
 - 类型: 能力
@@ -951,6 +1090,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 猩红诱惑
+- ModelId: `SCARLET_TEMPTATION`
 
 - 费用: 2
 - 类型: 能力
@@ -965,6 +1105,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 魔法之境
+- ModelId: `MAGIC_REALM`
 
 - 费用: 2
 - 类型: 能力
@@ -979,6 +1120,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 垃圾王的庇佑
+- ModelId: `GARBAGE_KING_BLESSING`
 
 - 费用: 2
 - 类型: 能力
@@ -993,6 +1135,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 好胜心
+- ModelId: `WILL_TO_WIN`
 
 - 费用: 3
 - 类型: 能力
@@ -1007,6 +1150,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 破势如潮
+- ModelId: `BREAKING_MOMENTUM`
 
 - 费用: 3
 - 类型: 能力

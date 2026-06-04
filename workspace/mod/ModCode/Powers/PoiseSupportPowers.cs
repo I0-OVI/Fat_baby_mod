@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
@@ -121,13 +122,15 @@ public sealed class BreakingMomentumPower : CustomPowerModel
 public sealed class SmallRoundShieldParryPower : CustomPowerModel
 {
     private bool _parriedDamage;
+    private bool _removeAfterInterruptedAttack;
     private int _fatalStrikeGrantCount = 1;
+    private Creature? _interruptedAttackTarget;
     private Creature? _parryTarget;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override string CustomPackedIconPath => "res://mod/images/powers/atlases/guard_counter_power.tres";
-    public override string CustomBigIconPath => "res://mod/images/powers/big/guard_counter_power.png";
+    public override string CustomPackedIconPath => "res://mod/images/powers/buckler_shield_power.png";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/buckler_shield_power.png";
 
     public void SetFatalStrikeGrantCount(int count)
     {
@@ -136,6 +139,11 @@ public sealed class SmallRoundShieldParryPower : CustomPowerModel
 
     public override decimal ModifyHpLostAfterOstyLate(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
+        if (Owner != null && target == Owner && amount > 0m && dealer != null && dealer == _interruptedAttackTarget && dealer.IsStunned)
+        {
+            return 0m;
+        }
+
         if (Owner == null || target != Owner || amount <= 0m)
         {
             return amount;
@@ -156,11 +164,17 @@ public sealed class SmallRoundShieldParryPower : CustomPowerModel
         Creature? parryTarget = _parryTarget;
         _parriedDamage = false;
         _parryTarget = null;
+        bool interruptedAttack = false;
 
         if (parryTarget is { IsAlive: true })
         {
             await CreatureCmd.Stun(parryTarget);
             await BreakingMomentumPower.Trigger(choiceContext, Owner, cardSource);
+            interruptedAttack = parryTarget.IsStunned;
+            if (interruptedAttack)
+            {
+                _interruptedAttackTarget = parryTarget;
+            }
         }
 
         Player? player = Owner.Player;
@@ -177,7 +191,28 @@ public sealed class SmallRoundShieldParryPower : CustomPowerModel
             await CardPileCmd.Add(fatalStrike, PileType.Hand);
         }
 
+        if (interruptedAttack && Amount <= 1)
+        {
+            _removeAfterInterruptedAttack = true;
+            return;
+        }
+
         await PowerCmd.Decrement(this);
+    }
+
+    internal async Task CompleteInterruptedAttackAsync(Creature attacker)
+    {
+        if (_interruptedAttackTarget == null || attacker != _interruptedAttackTarget)
+        {
+            return;
+        }
+
+        _interruptedAttackTarget = null;
+        if (_removeAfterInterruptedAttack)
+        {
+            _removeAfterInterruptedAttack = false;
+            await PowerCmd.Remove(this);
+        }
     }
 }
 

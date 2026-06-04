@@ -409,6 +409,8 @@ public sealed class TotemTablet() : ChargedModCard<TotemTabletChargePower>(0, Ca
             await VictoryRushPower.Trigger(choiceContext, Owner.Creature, this);
             await BreakingMomentumPower.Trigger(choiceContext, Owner.Creature, this);
         }
+
+        await TotemTabletKnowledgeDemonMechanic.RegisterTotemTabletRelease(choiceContext, Owner);
     }
 
     protected override void OnUpgrade()

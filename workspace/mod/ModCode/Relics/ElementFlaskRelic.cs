@@ -19,12 +19,14 @@ using Mod.ModCode.Powers;
 
 namespace Mod.ModCode.Relics;
 
-public sealed class ElementFlaskRelic : RelicModel
+public class ElementFlaskRelic : RelicModel
 {
-    public const int MaxCharges = 3;
+    public const int DefaultChargeCap = 3;
     private const string ChargesKey = "Charges";
 
-    private int _chargesRemaining = MaxCharges;
+    protected virtual int ChargeCap => DefaultChargeCap;
+
+    private int _chargesRemaining = DefaultChargeCap;
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
@@ -36,7 +38,7 @@ public sealed class ElementFlaskRelic : RelicModel
     protected override string PackedIconOutlinePath => "res://mod/images/relics/atlases/element_flask.tres";
     protected override string BigIconPath => "res://mod/images/relics/element_flask.png";
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar(ChargesKey, MaxCharges)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar(ChargesKey, ChargeCap)];
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromCard<ElementFlask>()];
 
@@ -51,32 +53,34 @@ public sealed class ElementFlaskRelic : RelicModel
         }
     }
 
+    public static ElementFlaskRelic? GetForPlayer(Player player) =>
+        player.Relics.OfType<ElementFlaskRelic>().FirstOrDefault();
+
     public static void RestoreChargesForPlayer(Player player)
     {
-        ElementFlaskRelic? relic = player.GetRelic<ElementFlaskRelic>();
-        relic?.RestoreToFullCharges(flash: true);
+        GetForPlayer(player)?.RestoreToFullCharges(flash: true);
     }
 
     public static void SetCharges(Player player, int remaining)
     {
-        player.GetRelic<ElementFlaskRelic>()?.ApplyCharges(remaining);
+        GetForPlayer(player)?.ApplyCharges(remaining);
     }
 
-    private void RestoreToFullCharges(bool flash)
+    protected void RestoreToFullCharges(bool flash)
     {
         if (!IsMutable)
         {
             return;
         }
 
-        ApplyCharges(MaxCharges);
+        ApplyCharges(ChargeCap);
         if (flash)
         {
             Flash();
         }
     }
 
-    private void ApplyCharges(int remaining)
+    protected void ApplyCharges(int remaining)
     {
         _chargesRemaining = remaining;
         DynamicVars[ChargesKey].BaseValue = _chargesRemaining;
@@ -112,7 +116,7 @@ public sealed class ElementFlaskRelic : RelicModel
 
     public override Task AfterRoomEntered(AbstractRoom room)
     {
-        if (room.RoomType == RoomType.RestSite)
+        if (room.RoomType == RoomType.RestSite || room is EventRoom { CanonicalEvent: AncientEventModel })
         {
             RestoreToFullCharges(flash: true);
         }

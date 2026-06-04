@@ -43,5 +43,7 @@ internal static class ModRunAssets
         ModBufferPowerUi.IconPath,
         "res://mod/images/powers/magic_realm_power.png",
         "res://mod/images/powers/big/magic_realm_power.png",
+        "res://mod/images/powers/buckler_shield_power.png",
+        "res://mod/images/powers/big/buckler_shield_power.png",
     ];
 }

@@ -36,6 +36,11 @@ internal static class ElementFlaskCardPatch
     [HarmonyPrefix]
     private static bool BlockExhaust(CardModel card)
     {
-        return card is not ElementFlask;
+        if (card is ElementFlask)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

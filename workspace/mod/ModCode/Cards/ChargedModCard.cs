@@ -13,6 +13,9 @@ namespace Mod.ModCode.Cards;
 public interface IChargedCard
 {
     Task InitializeChargeAtCombatStart();
+
+    /// <summary>Called when this combat card instance enters the exhaust pile from any other pile.</summary>
+    Task OnEnteredExhaustFromOtherPileAsync(PileType oldPileType, bool showInSidebar = false);
 }
 
 public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity rarity, TargetType target)
@@ -50,7 +53,7 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
         }
     }
 
-    private async Task SyncChargePower()
+    private async Task SyncChargePower(bool showInSidebar = false)
     {
         if (Owner?.Creature == null)
         {
@@ -68,26 +71,53 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
             int delta = _remainingCharge - _chargePower.Amount;
             if (delta != 0)
             {
-                await PowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this);
+                await PowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this, silent: !showInSidebar);
+            }
+            else if (showInSidebar)
+            {
+                _chargePower.RefreshSidebarDisplay();
+            }
+
+            return;
+        }
+
+        TPower? existing = Owner.Creature.GetPower<TPower>();
+        if (existing != null)
+        {
+            _chargePower = existing;
+            int delta = _remainingCharge - _chargePower.Amount;
+            if (delta != 0)
+            {
+                await PowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this, silent: !showInSidebar);
+            }
+            else if (showInSidebar)
+            {
+                _chargePower.RefreshSidebarDisplay();
             }
 
             return;
         }
 
         await RemoveTrackedChargePower();
-        _chargePower = await PowerCmd.Apply<TPower>(Owner.Creature, _remainingCharge, Owner.Creature, this, silent: true);
+        _chargePower = await PowerCmd.Apply<TPower>(Owner.Creature, _remainingCharge, Owner.Creature, this, silent: !showInSidebar);
     }
 
-    protected async Task StartChargeCycle()
+    protected async Task StartChargeCycle(bool showInSidebar = false)
     {
         _remainingCharge = ChargeAmount;
-        await SyncChargePower();
+        await SyncChargePower(showInSidebar);
     }
 
     private async Task ReturnToHandFromExhaust()
     {
         if (Owner == null || _remainingCharge > 0 || Pile?.Type != PileType.Exhaust)
         {
+            return;
+        }
+
+        if (CardPile.Get(PileType.Hand, Owner)?.Cards.Count >= UtilityCardActions.MaxHandSize)
+        {
+            await StartChargeCycle(showInSidebar: true);
             return;
         }
 
@@ -152,16 +182,31 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
         }
     }
 
-    public override async Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)
+    public async Task OnEnteredExhaustFromOtherPileAsync(PileType oldPileType, bool showInSidebar = false)
     {
-        if (Owner == null || card != this)
+        if (Owner == null || Pile?.Type != PileType.Exhaust || oldPileType == PileType.Exhaust)
         {
             return;
         }
 
-        if (oldPileType == PileType.Play && Pile?.Type == PileType.Exhaust)
+        // Entering exhaust (played or forced) restarts the charge cycle: unplayable in exhaust
+        // until other cards tick the counter down to 0, then it returns to hand.
+        await StartChargeCycle(showInSidebar);
+    }
+
+    public override async Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)
+    {
+        if (card == this)
         {
-            await StartChargeCycle();
+            await OnEnteredExhaustFromOtherPileAsync(oldPileType, showInSidebar: true);
+        }
+    }
+
+    public override async Task AfterCardExhausted(PlayerChoiceContext choiceContext, CardModel card, bool causedByEthereal)
+    {
+        if (card == this)
+        {
+            await OnEnteredExhaustFromOtherPileAsync(PileType.None, showInSidebar: true);
         }
     }
 

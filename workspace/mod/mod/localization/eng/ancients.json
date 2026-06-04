@@ -30,5 +30,35 @@
   "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.0-3.char": "My colossal... won't... lose...",
   "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-0r.ancient": "Submit to CE.",
   "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-0r.next": "Continue",
-  "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-1r.char": "My colossal... won't... lose..."
+  "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-1r.char": "My colossal... won't... lose...",
+
+  "OROBAS.talk.SCARLET_ACOLYTE.0-0.ancient": "Try this!!!",
+  "OROBAS.talk.SCARLET_ACOLYTE.0-0.next": "Continue",
+  "OROBAS.talk.SCARLET_ACOLYTE.0-1.ancient": "Pick one! They're all good!!!",
+  "OROBAS.talk.SCARLET_ACOLYTE.1-0.ancient": "Back again? I saved good stuff for you!!",
+  "OROBAS.talk.SCARLET_ACOLYTE.1-0.next": "Continue",
+  "OROBAS.talk.SCARLET_ACOLYTE.1-1.ancient": "Pick one! They're all good!!!",
+  "OROBAS.talk.SCARLET_ACOLYTE.4-0.ancient": "Good friend!! Come pick again!!",
+  "OROBAS.talk.SCARLET_ACOLYTE.4-0.next": "Continue",
+  "OROBAS.talk.SCARLET_ACOLYTE.4-1.ancient": "Pick one! They're all good!!!",
+
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.0-0.ancient": "Try this!!!",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.0-0.next": "Continue",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.0-1.ancient": "Pick one! They're all good!!!",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.1-0.ancient": "Back again? I saved good stuff for you!!",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.1-0.next": "Continue",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.1-1.ancient": "Pick one! They're all good!!!",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.4-0.ancient": "Good friend!! Come pick again!!",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.4-0.next": "Continue",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.4-1.ancient": "Pick one! They're all good!!!",
+
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.0-0.ancient": "Try this!!!",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.0-0.next": "Continue",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.0-1.ancient": "Pick one! They're all good!!!",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.1-0.ancient": "Back again? I saved good stuff for you!!",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.1-0.next": "Continue",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.1-1.ancient": "Pick one! They're all good!!!",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.4-0.ancient": "Good friend!! Come pick again!!",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.4-0.next": "Continue",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.4-1.ancient": "Pick one! They're all good!!!"
 }

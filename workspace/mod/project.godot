@@ -16,4 +16,4 @@ config/icon="res://icon.svg"
 
 [dotnet]
 
-project/assembly_name="mod"
+project/assembly_name="fat_baby"

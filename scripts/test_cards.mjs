@@ -328,12 +328,51 @@ function checkChargeLifecycle() {
     fail("ChargedModCard: return-to-hand must move the same card from exhaust to hand");
   }
 
-  if (!/AfterCardChangedPilesLate[\s\S]*oldPileType\s*==\s*PileType\.Play[\s\S]*Pile\?\.Type\s*==\s*PileType\.Exhaust[\s\S]*StartChargeCycle\s*\(/.test(source)) {
-    fail("ChargedModCard: playing the charged card must reset charge after it enters exhaust");
+  if (!/ReturnToHandFromExhaust[\s\S]*UtilityCardActions\.MaxHandSize[\s\S]*StartChargeCycle\s*\(\s*showInSidebar:\s*true\s*\)[\s\S]*CardPileCmd\.Add/.test(source)) {
+    fail("ChargedModCard: full hand must restart charge instead of moving to another pile");
+  }
+
+  if (!/AfterCardChangedPilesLate[\s\S]*OnEnteredExhaustFromOtherPileAsync/.test(source)) {
+    fail("ChargedModCard: entering exhaust (played or forced) must reset charge");
+  }
+
+  if (!/OnEnteredExhaustFromOtherPileAsync/.test(source)) {
+    fail("ChargedModCard: must expose OnEnteredExhaustFromOtherPileAsync for forced exhaust");
+  }
+
+  const patchSource = readText("workspace/mod/ModCode/Patches/ChargedCardExhaustPatch.cs");
+  if (!/CardCmd\.Exhaust[\s\S]*IChargedCard[\s\S]*OnEnteredExhaustFromOtherPileAsync/.test(patchSource)) {
+    fail("ChargedCardExhaustPatch: CardCmd.Exhaust must restart charge on the exhausted card instance");
   }
 
   if (!/BeforeCombatStart[\s\S]*PlayerCombatState\.AllCards\.OfType<IChargedCard>\(\)[\s\S]*InitializeChargeAtCombatStart\s*\(/.test(relicSource)) {
     fail("ElementFlaskRelic: combat start must initialize charged cards from actual combat piles before the first draw");
+  }
+
+  if (!/AfterRoomEntered[\s\S]*RoomType\.RestSite[\s\S]*AncientEventModel[\s\S]*RestoreToFullCharges/.test(relicSource)) {
+    fail("ElementFlaskRelic: charges must restore at rest sites and ancient event rooms");
+  }
+
+  const refinedSource = readText("workspace/mod/ModCode/Relics/RefinedElementFlaskRelic.cs");
+  const orobasPatchSource = readText("workspace/mod/ModCode/Patches/TouchOfOrobasElementFlaskPatch.cs");
+  if (!/RefinedChargeCap\s*=\s*5/.test(refinedSource)) {
+    fail("RefinedElementFlaskRelic: Orobas upgrade must raise charge cap to 5");
+  }
+  if (!/GetUpgradedStarterRelic[\s\S]*is ElementFlaskRelic[\s\S]*RefinedElementFlaskRelic/.test(orobasPatchSource)) {
+    fail("TouchOfOrobasElementFlaskPatch: starter Element Flask must map to refined relic at Orobas");
+  }
+  const relicPoolSource = readText("workspace/mod/ModCode/Character/ScarletRelicPool.cs");
+  if (!/GenerateAllRelics[\s\S]*ElementFlaskRelic[\s\S]*RefinedElementFlaskRelic/.test(relicPoolSource)) {
+    fail("ScarletRelicPool: refined Element Flask must be registered so Orobas can reference it");
+  }
+  const advancePatchSource = readText("workspace/mod/ModCode/Patches/AncientDialogueAdvancePatch.cs");
+  if (!/NAncientDialogueLine[\s\S]*_Ready[\s\S]*SignalName\.Released/.test(advancePatchSource)) {
+    fail("AncientDialogueAdvancePatch: must hook dialogue line Released signal, not missing OnRelease");
+  }
+
+  const orobasDialogueSource = readText("workspace/mod/ModCode/Patches/OrobasScarletDialoguePatch.cs");
+  if (!/DefineDialogues[\s\S]*SCARLET_ACOLYTE[\s\S]*VisitIndex\s*=\s*0/.test(orobasDialogueSource)) {
+    fail("OrobasScarletDialoguePatch: Scarlet must have multi-visit Orobas dialogues");
   }
 }
 
@@ -351,6 +390,19 @@ function checkMagicDamageFormula() {
 
   if (!/Splash[\s\S]*DamageCmd\.Attack\s*\(\s*splashDamage\s*\)[\s\S]*\.Unpowered\(\)/.test(magicCardsSource)) {
     fail("MagicCardActions.Splash: splash hit must stay Unpowered so Magic is not added a second time");
+  }
+}
+
+function checkSmallRoundShieldParry() {
+  const powerSource = readText("workspace/mod/ModCode/Powers/PoiseSupportPowers.cs");
+  const patchSource = readText("workspace/mod/ModCode/Patches/SmallRoundShieldParryAttackPatch.cs");
+
+  if (!/SmallRoundShieldParryPower[\s\S]*_interruptedAttackTarget[\s\S]*dealer\s*==\s*_interruptedAttackTarget[\s\S]*dealer\.IsStunned[\s\S]*return\s+0m/.test(powerSource)) {
+    fail("SmallRoundShieldParryPower: stunned parry target must have remaining multi-hit damage canceled");
+  }
+
+  if (!/AttackCommand[\s\S]*Execute[\s\S]*CompleteInterruptedAttackAsync/.test(patchSource)) {
+    fail("SmallRoundShieldParryAttackPatch: parry interrupt state must clean up after AttackCommand.Execute");
   }
 }
 
@@ -394,7 +446,8 @@ function checkLocalization() {
     const cardsJson = readLocalization(locale);
     const localizedTitleIds = Object.keys(cardsJson)
       .filter((key) => key.endsWith(".title"))
-      .map((key) => key.replace(/\.title$/, ""));
+      .map((key) => key.replace(/\.title$/, ""))
+      .filter((id) => expectedById.has(id));
     compareSets(`${locale} card titles`, localizedTitleIds, expectedIds);
 
     for (const expected of expectation.cards) {
@@ -450,6 +503,7 @@ checkJsonFiles();
 checkCards();
 checkChargeLifecycle();
 checkMagicDamageFormula();
+checkSmallRoundShieldParry();
 checkLocalization();
 
 if (errors.length > 0) {

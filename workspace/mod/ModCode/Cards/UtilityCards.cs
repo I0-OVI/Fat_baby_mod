@@ -289,19 +289,47 @@ public sealed class Seppuku() : ModCard(2, CardType.Skill, CardRarity.Uncommon, 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<StrengthPower>(), HoverTipFactory.FromPower<MagicPower>()];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("HpLoss", 5m), new DynamicVar("Strength", 1m), new DynamicVar("Magic", 1m)];
 
+    private PlayerChoiceContext? _pendingHandExhaustContext;
+
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        List<CardModel> handCards = CardPile.GetCards(Owner, [PileType.Hand]).ToList();
+        _pendingHandExhaustContext = choiceContext;
         await CreatureCmd.Damage(choiceContext, Owner.Creature, DynamicVars["HpLoss"].BaseValue, ValueProp.Unblockable | ValueProp.Unpowered | ValueProp.Move, this);
+    }
 
-        foreach (CardModel card in handCards)
-        {
-            await CardCmd.Exhaust(choiceContext, card);
-        }
-
-        if (handCards.Count <= 0)
+    public override async Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)
+    {
+        if (card != this || Owner == null)
         {
             return;
+        }
+
+        if (oldPileType != PileType.Play || Pile?.Type != PileType.Exhaust)
+        {
+            return;
+        }
+
+        PlayerChoiceContext? choiceContext = _pendingHandExhaustContext;
+        _pendingHandExhaustContext = null;
+        if (choiceContext == null)
+        {
+            return;
+        }
+
+        // Wait until this card leaves Play before exhausting the hand (charged-card deadlock fix).
+        // Element Flask cannot be exhausted and bounces back from Exhaust via AfterCardChangedPilesLate.
+        List<CardModel> handCards = CardPile.GetCards(Owner, [PileType.Hand])
+            .Where(handCard => handCard != this && handCard is not ElementFlask)
+            .ToList();
+
+        if (handCards.Count == 0)
+        {
+            return;
+        }
+
+        foreach (CardModel handCard in handCards)
+        {
+            await CardCmd.Exhaust(choiceContext, handCard);
         }
 
         await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue * handCards.Count, Owner.Creature, this);

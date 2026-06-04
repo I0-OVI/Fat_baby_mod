@@ -30,5 +30,35 @@
   "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.0-3.char": "我的特大。。不会。。输。。",
   "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-0r.ancient": "臣服于 CE 吧。",
   "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-0r.next": "继续",
-  "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-1r.char": "我的特大。。不会。。输。。"
+  "THE_ARCHITECT.talk.MOD-SCARLET_ACOLYTE.1-1r.char": "我的特大。。不会。。输。。",
+
+  "OROBAS.talk.SCARLET_ACOLYTE.0-0.ancient": "试试这个！！！",
+  "OROBAS.talk.SCARLET_ACOLYTE.0-0.next": "继续",
+  "OROBAS.talk.SCARLET_ACOLYTE.0-1.ancient": "挑一个吧！都是好东西！！",
+  "OROBAS.talk.SCARLET_ACOLYTE.1-0.ancient": "又来了？给你留了好东西！！",
+  "OROBAS.talk.SCARLET_ACOLYTE.1-0.next": "继续",
+  "OROBAS.talk.SCARLET_ACOLYTE.1-1.ancient": "挑一个吧！都是好东西！！",
+  "OROBAS.talk.SCARLET_ACOLYTE.4-0.ancient": "好朋友！！再来挑一个！！",
+  "OROBAS.talk.SCARLET_ACOLYTE.4-0.next": "继续",
+  "OROBAS.talk.SCARLET_ACOLYTE.4-1.ancient": "挑一个吧！都是好东西！！",
+
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.0-0.ancient": "试试这个！！！",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.0-0.next": "继续",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.0-1.ancient": "挑一个吧！都是好东西！！",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.1-0.ancient": "又来了？给你留了好东西！！",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.1-0.next": "继续",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.1-1.ancient": "挑一个吧！都是好东西！！",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.4-0.ancient": "好朋友！！再来挑一个！！",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.4-0.next": "继续",
+  "OROBAS.talk.mod-SCARLET_ACOLYTE.4-1.ancient": "挑一个吧！都是好东西！！",
+
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.0-0.ancient": "试试这个！！！",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.0-0.next": "继续",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.0-1.ancient": "挑一个吧！都是好东西！！",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.1-0.ancient": "又来了？给你留了好东西！！",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.1-0.next": "继续",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.1-1.ancient": "挑一个吧！都是好东西！！",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.4-0.ancient": "好朋友！！再来挑一个！！",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.4-0.next": "继续",
+  "OROBAS.talk.MOD-SCARLET_ACOLYTE.4-1.ancient": "挑一个吧！都是好东西！！"
 }

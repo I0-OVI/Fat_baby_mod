@@ -15,6 +15,7 @@ __pycache__/
 **/bin/
 **/obj/
 workspace/mod/build/
+workspace/mod/fat_baby/
 
 # Game install & vendored refs (copy locally; see deps/README.md)
 deps/game/*.dll

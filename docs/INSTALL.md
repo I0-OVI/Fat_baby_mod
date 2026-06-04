@@ -38,6 +38,7 @@ fat_baby/
 ## 故障排查
 
 - 进游戏后 Mod 列表里没有：检查 `mods/fat_baby/` 与 `mods/【001】必装前置/` 是否都在游戏 Mod 目录下。
+- 若提示 `FileLoadException` / `Assembly with same name is already loaded`：删除旧的 `mods/mod/` 文件夹（改名前的残留），只保留 `mods/fat_baby/`。
 - 更新版本：用新版本 zip 覆盖上述三个文件，重启游戏。
 
 源码与更新日志见 GitHub 仓库的 **Releases** 页面。

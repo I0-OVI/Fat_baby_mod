@@ -3,12 +3,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOD_DIR="$ROOT_DIR/workspace/mod"
+MOD_ID="fat_baby"
 
 GAME_ROOT="${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}"
 GAME_APP="$GAME_ROOT/SlayTheSpire2.app"
 GAME_MACOS_DIR="$GAME_APP/Contents/MacOS"
 GAME_MODS_DIR="$GAME_MACOS_DIR/mods"
-INSTALLED_MOD_DIR="$GAME_MODS_DIR/fat_baby"
+INSTALLED_MOD_DIR="$GAME_MODS_DIR/$MOD_ID"
 
 PREREQ_SOURCE="$GAME_ROOT/mods/【001】必装前置"
 PREREQ_DEST="$GAME_MODS_DIR/【001】必装前置"
@@ -22,12 +23,12 @@ Usage: scripts/sts2_mod_dev.sh <command>
 
 Commands:
   test      Run card static tests and build the C# DLL.
-  code      Build C# DLL and install mod.json + mod.dll. Fast path for card logic.
-  pck       Export PCK and install mod.json + mod.pck. Use after localization/assets.
+  code      Build C# DLL and install mod.json + fat_baby.dll. Fast path for card logic.
+  pck       Export PCK and install mod.json + fat_baby.pck. Use after localization/assets.
   all       Sync BaseLib, build DLL, export PCK, and install everything.
   package   Test, build DLL, and export PCK (no install; for release zip).
   deps      Sync BaseLib into the actual game-scanned mods directory.
-  install   Install existing mod.json + mod.dll + mod.pck without rebuilding.
+  install   Install existing mod.json + fat_baby.dll + fat_baby.pck without rebuilding.
   log       Show recent mod-loading lines from godot.log.
   launch    Open Slay the Spire 2.
 EOF
@@ -56,8 +57,19 @@ build_dll() {
   (cd "$MOD_DIR" && dotnet build mod.sln)
 }
 
+sync_manifest_localization() {
+  local src="$MOD_DIR/mod/localization"
+  local dest="$MOD_DIR/$MOD_ID/localization"
+
+  rm -rf "$dest"
+  mkdir -p "$dest"
+  rsync -a "$src/" "$dest/"
+  echo "Synced localization alias -> res://$MOD_ID/localization"
+}
+
 export_pck() {
   require_file "$GODOT_BIN"
+  sync_manifest_localization
   (cd "$MOD_DIR" && "$GODOT_BIN" --headless --path . --export-pack mod_pck build/mod.pck)
   patch_pck_offsets "$MOD_DIR/build/mod.pck"
 }
@@ -104,15 +116,15 @@ install_json() {
 }
 
 install_dll() {
-  local dll="$MOD_DIR/.godot/mono/temp/bin/Debug/mod.dll"
+  local dll="$MOD_DIR/.godot/mono/temp/bin/Debug/fat_baby.dll"
   require_file "$dll"
-  install -m 0644 "$dll" "$INSTALLED_MOD_DIR/mod.dll"
+  install -m 0644 "$dll" "$INSTALLED_MOD_DIR/$MOD_ID.dll"
 }
 
 install_pck() {
   local pck="$MOD_DIR/build/mod.pck"
   require_file "$pck"
-  install -m 0644 "$pck" "$INSTALLED_MOD_DIR/mod.pck"
+  install -m 0644 "$pck" "$INSTALLED_MOD_DIR/$MOD_ID.pck"
 }
 
 install_all() {

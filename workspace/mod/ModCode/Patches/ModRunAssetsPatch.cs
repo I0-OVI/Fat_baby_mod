@@ -5,11 +5,9 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace Mod.ModCode.Patches;
 
-[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRunAssets))]
-internal static class ModRunAssetsPatch
+internal static class ModRunAssetsPatchLogic
 {
-    [HarmonyPostfix]
-    private static void EnsureModTexturesInRunSet(IEnumerable<CharacterModel> characters)
+    internal static void EnsurePersistentAssetsInRunSet()
     {
         if (AssetSets.RunSet == null)
         {
@@ -24,4 +22,29 @@ internal static class ModRunAssetsPatch
 
         AssetSets.RunSet = expanded;
     }
+}
+
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRunAssets))]
+internal static class ModRunAssetsLoadRunPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
+}
+
+/// <summary>
+/// Elite and other combat rooms reload assets here; without this postfix mod combat visuals can unload
+/// and both the player and enemies fail to appear.
+/// </summary>
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRoomCombatAssets))]
+internal static class ModRunAssetsLoadRoomCombatPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
+}
+
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadActAssets))]
+internal static class ModRunAssetsLoadActPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
 }

@@ -9,5 +9,17 @@
 
   "MOD-ELEMENT_FLASK_RELIC.title": "元素瓶",
   "MOD-ELEMENT_FLASK_RELIC.description": "每场战斗开始时，将 1 张元素瓶加入手牌。\n进入篝火后，使用次数恢复至 3。",
-  "MOD-ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。"
+  "MOD-ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。",
+
+  "REFINED_ELEMENT_FLASK_RELIC.title": "元素瓶+",
+  "REFINED_ELEMENT_FLASK_RELIC.description": "每场战斗开始时，将 1 张元素瓶加入手牌。\n进入篝火或先古后，使用次数恢复至 5。",
+  "REFINED_ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。",
+
+  "mod-REFINED_ELEMENT_FLASK_RELIC.title": "元素瓶+",
+  "mod-REFINED_ELEMENT_FLASK_RELIC.description": "每场战斗开始时，将 1 张元素瓶加入手牌。\n进入篝火或先古后，使用次数恢复至 5。",
+  "mod-REFINED_ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。",
+
+  "MOD-REFINED_ELEMENT_FLASK_RELIC.title": "元素瓶+",
+  "MOD-REFINED_ELEMENT_FLASK_RELIC.description": "每场战斗开始时，将 1 张元素瓶加入手牌。\n进入篝火或先古后，使用次数恢复至 5。",
+  "MOD-REFINED_ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。"
 }

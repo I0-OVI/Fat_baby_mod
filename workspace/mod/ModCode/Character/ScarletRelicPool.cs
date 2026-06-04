@@ -12,6 +12,7 @@ public sealed class ScarletRelicPool : RelicPoolModel
 
     protected override IEnumerable<RelicModel> GenerateAllRelics() =>
     [
-        ModelDb.Relic<ElementFlaskRelic>()
+        ModelDb.Relic<ElementFlaskRelic>(),
+        ModelDb.Relic<RefinedElementFlaskRelic>()
     ];
 }

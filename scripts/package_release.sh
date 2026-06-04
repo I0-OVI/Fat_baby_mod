@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOD_DIR="$ROOT_DIR/workspace/mod"
 DIST_DIR="$ROOT_DIR/dist"
 STAGING_DIR="$DIST_DIR/staging"
-BUILD_DLL="$MOD_DIR/.godot/mono/temp/bin/Debug/mod.dll"
+BUILD_DLL="$MOD_DIR/.godot/mono/temp/bin/Debug/fat_baby.dll"
 BUILD_PCK="$MOD_DIR/build/mod.pck"
 GAME_ROOT="${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}"
 BASELIB_SOURCE="$GAME_ROOT/mods/【001】必装前置"
@@ -15,10 +15,10 @@ usage() {
 Usage: scripts/package_release.sh [version] [--skip-build]
 
   version     Defaults to "version" field in workspace/mod/mod.json.
-  --skip-build  Only zip existing mod.dll / mod.pck (do not run sts2_mod_dev.sh all).
+  --skip-build  Only zip existing build artifacts (do not run sts2_mod_dev.sh all).
 
 Creates: dist/fat-baby-mod-<version>.zip
-  fat_baby/mod.json, fat_baby/mod.dll, fat_baby/mod.pck
+  fat_baby/mod.json, fat_baby/fat_baby.dll, fat_baby/fat_baby.pck
   【001】必装前置/ (BaseLib)
   INSTALL.md
 EOF
@@ -92,8 +92,8 @@ main() {
   mkdir -p "$STAGING_DIR/fat_baby" "$DIST_DIR"
 
   cp "$MOD_DIR/mod.json" "$STAGING_DIR/fat_baby/mod.json"
-  cp "$BUILD_DLL" "$STAGING_DIR/fat_baby/mod.dll"
-  cp "$BUILD_PCK" "$STAGING_DIR/fat_baby/mod.pck"
+  cp "$BUILD_DLL" "$STAGING_DIR/fat_baby/fat_baby.dll"
+  cp "$BUILD_PCK" "$STAGING_DIR/fat_baby/fat_baby.pck"
   cp "$ROOT_DIR/docs/INSTALL.md" "$STAGING_DIR/INSTALL.md"
   rsync -a --exclude='.DS_Store' "$BASELIB_SOURCE/" "$STAGING_DIR/【001】必装前置/"
 
@@ -101,14 +101,33 @@ main() {
   local zip_path="$DIST_DIR/$zip_name"
 
   rm -f "$zip_path"
-  (
-    cd "$STAGING_DIR"
-    zip -r "$zip_path" fat_baby "【001】必装前置" INSTALL.md
-  )
+  # macOS `zip` stores Chinese paths without UTF-8 flags; Windows extractors often
+  # skip those entries, so players only see fat_baby/. Use Python with flag 0x800.
+  python3 - <<'PY' "$STAGING_DIR" "$zip_path"
+import os, sys, zipfile
+from pathlib import Path
+
+staging = Path(sys.argv[1])
+out = Path(sys.argv[2])
+
+with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+    for root, dirs, files in os.walk(staging):
+        dirs.sort()
+        for name in sorted(files):
+            if name == ".DS_Store":
+                continue
+            path = Path(root) / name
+            arc = path.relative_to(staging).as_posix()
+            info = zipfile.ZipInfo(arc)
+            info.flag_bits |= 0x800
+            info.compress_type = zipfile.ZIP_DEFLATED
+            zf.writestr(info, path.read_bytes())
+PY
 
   rm -rf "$STAGING_DIR"
   echo "Created $zip_path"
   ls -lh "$zip_path"
+  unzip -l "$zip_path" | tail -3
 }
 
 main "$@"
