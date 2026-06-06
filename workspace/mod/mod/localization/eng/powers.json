@@ -154,5 +154,17 @@
   "mod-BREAKING_MOMENTUM_POWER.smartDescription": "Grow when you Stun enemies.",
   "MOD-BREAKING_MOMENTUM_POWER.title": "Breaking Momentum",
   "MOD-BREAKING_MOMENTUM_POWER.description": "Whenever you Stun an enemy, gain extra poise damage. The upgraded version also grants Strength.",
-  "MOD-BREAKING_MOMENTUM_POWER.smartDescription": "Grow when you Stun enemies."
+  "MOD-BREAKING_MOMENTUM_POWER.smartDescription": "Grow when you Stun enemies.",
+  "mod-NEXT_DAMAGE_REDUCTION_POWER.title": "Charged Heavy Attack",
+  "mod-NEXT_DAMAGE_REDUCTION_POWER.description": "The next damage you take is reduced by 75%.",
+  "mod-NEXT_DAMAGE_REDUCTION_POWER.smartDescription": "Greatly reduce the next damage you take.",
+  "MOD-NEXT_DAMAGE_REDUCTION_POWER.title": "Charged Heavy Attack",
+  "MOD-NEXT_DAMAGE_REDUCTION_POWER.description": "The next damage you take is reduced by 75%.",
+  "MOD-NEXT_DAMAGE_REDUCTION_POWER.smartDescription": "Greatly reduce the next damage you take.",
+  "mod-MAGIC_SCORPION_CHARM_POWER.title": "Magic Clutch Ring",
+  "mod-MAGIC_SCORPION_CHARM_POWER.description": "Take 15% more damage from enemies.",
+  "mod-MAGIC_SCORPION_CHARM_POWER.smartDescription": "Take 15% more damage from enemies.",
+  "MOD-MAGIC_SCORPION_CHARM_POWER.title": "Magic Clutch Ring",
+  "MOD-MAGIC_SCORPION_CHARM_POWER.description": "Take 15% more damage from enemies.",
+  "MOD-MAGIC_SCORPION_CHARM_POWER.smartDescription": "Take 15% more damage from enemies."
 }

@@ -21,5 +21,29 @@
 
   "MOD-REFINED_ELEMENT_FLASK_RELIC.title": "元素瓶+",
   "MOD-REFINED_ELEMENT_FLASK_RELIC.description": "每场战斗开始时，将 1 张元素瓶加入手牌。\n进入篝火或先古后，使用次数恢复至 5。",
-  "MOD-REFINED_ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。"
+  "MOD-REFINED_ELEMENT_FLASK_RELIC.flavor": "曾承接恩惠露滴的金色圣杯仿制品，绯色药液仍在其中荡漾。",
+
+  "RED_TEARSTONE_RING_RELIC.title": "红泪石戒指",
+  "RED_TEARSTONE_RING_RELIC.description": "当你的生命值不高于最大生命值的 {HpThreshold:diff()}% 时，获得 {Strength:diff()} 点力量和 {Magic:diff()} 点魔力。",
+  "RED_TEARSTONE_RING_RELIC.flavor": "以泪石为名的珍贵大宝石戒指。传说那是女神夸特所流下的哀悼眼泪，而正是因为与死亡相连，眼泪才显得美丽。",
+
+  "mod-RED_TEARSTONE_RING_RELIC.title": "红泪石戒指",
+  "mod-RED_TEARSTONE_RING_RELIC.description": "当你的生命值不高于最大生命值的 {HpThreshold:diff()}% 时，获得 {Strength:diff()} 点力量和 {Magic:diff()} 点魔力。",
+  "mod-RED_TEARSTONE_RING_RELIC.flavor": "以泪石为名的珍贵大宝石戒指。传说那是女神夸特所流下的哀悼眼泪，而正是因为与死亡相连，眼泪才显得美丽。",
+
+  "MOD-RED_TEARSTONE_RING_RELIC.title": "红泪石戒指",
+  "MOD-RED_TEARSTONE_RING_RELIC.description": "当你的生命值不高于最大生命值的 {HpThreshold:diff()}% 时，获得 {Strength:diff()} 点力量和 {Magic:diff()} 点魔力。",
+  "MOD-RED_TEARSTONE_RING_RELIC.flavor": "以泪石为名的珍贵大宝石戒指。传说那是女神夸特所流下的哀悼眼泪，而正是因为与死亡相连，眼泪才显得美丽。",
+
+  "MAGIC_SCORPION_CHARM_RELIC.title": "魔力怪手戒指",
+  "MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
+  "MAGIC_SCORPION_CHARM_RELIC.flavor": "握着蓝石的怪异手掌戒指，虽然可以提升魔力属性攻击力，但会降低减伤率。根据隆道尔自古流传的传说，怪异手掌只会在屈服绝望者面前现身。",
+
+  "mod-MAGIC_SCORPION_CHARM_RELIC.title": "魔力怪手戒指",
+  "mod-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
+  "mod-MAGIC_SCORPION_CHARM_RELIC.flavor": "握着蓝石的怪异手掌戒指，虽然可以提升魔力属性攻击力，但会降低减伤率。根据隆道尔自古流传的传说，怪异手掌只会在屈服绝望者面前现身。",
+
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.title": "魔力怪手戒指",
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.flavor": "握着蓝石的怪异手掌戒指，虽然可以提升魔力属性攻击力，但会降低减伤率。根据隆道尔自古流传的传说，怪异手掌只会在屈服绝望者面前现身。"
 }

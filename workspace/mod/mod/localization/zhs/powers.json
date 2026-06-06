@@ -154,5 +154,17 @@
   "mod-BREAKING_MOMENTUM_POWER.smartDescription": "击晕敌人时成长。",
   "MOD-BREAKING_MOMENTUM_POWER.title": "破势如潮",
   "MOD-BREAKING_MOMENTUM_POWER.description": "每当你击晕敌人时，获得额外削韧。升级版还会获得力量。",
-  "MOD-BREAKING_MOMENTUM_POWER.smartDescription": "击晕敌人时成长。"
+  "MOD-BREAKING_MOMENTUM_POWER.smartDescription": "击晕敌人时成长。",
+  "mod-NEXT_DAMAGE_REDUCTION_POWER.title": "蓄力重击",
+  "mod-NEXT_DAMAGE_REDUCTION_POWER.description": "下一次受到的伤害降低 75%。",
+  "mod-NEXT_DAMAGE_REDUCTION_POWER.smartDescription": "下一次受伤大幅减免。",
+  "MOD-NEXT_DAMAGE_REDUCTION_POWER.title": "蓄力重击",
+  "MOD-NEXT_DAMAGE_REDUCTION_POWER.description": "下一次受到的伤害降低 75%。",
+  "MOD-NEXT_DAMAGE_REDUCTION_POWER.smartDescription": "下一次受伤大幅减免。",
+  "mod-MAGIC_SCORPION_CHARM_POWER.title": "魔力怪手戒指",
+  "mod-MAGIC_SCORPION_CHARM_POWER.description": "敌人对你造成的伤害增加 15%。",
+  "mod-MAGIC_SCORPION_CHARM_POWER.smartDescription": "受到敌人伤害增加 15%。",
+  "MOD-MAGIC_SCORPION_CHARM_POWER.title": "魔力怪手戒指",
+  "MOD-MAGIC_SCORPION_CHARM_POWER.description": "敌人对你造成的伤害增加 15%。",
+  "MOD-MAGIC_SCORPION_CHARM_POWER.smartDescription": "受到敌人伤害增加 15%。"
 }

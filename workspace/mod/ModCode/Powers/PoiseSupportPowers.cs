@@ -39,6 +39,35 @@ public sealed class GuardCounterPower : CustomPowerModel
     }
 }
 
+public sealed class NextDamageReductionPower : CustomPowerModel
+{
+    private bool _reducedDamage;
+
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/intangible_power.tres";
+    public override string CustomBigIconPath => "res://images/powers/intangible_power.png";
+
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target != Owner || amount <= 0m)
+        {
+            return 1m;
+        }
+
+        _reducedDamage = true;
+        return 0.25m;
+    }
+
+    public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (target == Owner && _reducedDamage)
+        {
+            await PowerCmd.Remove(this);
+        }
+    }
+}
+
 public sealed class NextPoiseBonusPower : CustomPowerModel
 {
     public override PowerType Type => PowerType.Buff;

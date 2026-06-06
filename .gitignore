@@ -16,10 +16,17 @@ __pycache__/
 **/obj/
 workspace/mod/build/
 workspace/mod/fat_baby/
+workspace/mod-beta/.godot/
+workspace/mod-beta/build/
+workspace/mod-beta/fat_baby_beta/
+workspace/mod-beta/mod/
+workspace/mod-beta/scenes/
 
 # Game install & vendored refs (copy locally; see deps/README.md)
 deps/game/*.dll
 deps/game/*.pdb
+deps/game-beta/*.dll
+deps/game-beta/*.pdb
 
 # Decompiled game / huge reference trees (not for GitHub)
 extract/

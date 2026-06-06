@@ -23,6 +23,20 @@
 ./scripts/sts2_mod_dev.sh test   # 卡牌静态检查 + 编译
 ```
 
+### Beta 分支开发
+
+正式版和 beta 版使用两个独立工作区，不要互相覆盖：
+
+- 正式版：`workspace/mod`，mod id / DLL 为 `fat_baby`
+- Beta 版：`workspace/mod-beta`，mod id / DLL 为 `fat_baby_beta`
+
+```bash
+# 可选：把 beta 游戏 DLL 拷到 deps/game-beta/，见 deps/game-beta/README.md
+./scripts/sts2_mod_dev_beta.sh sync  # 从正式版刷新代码和资源到 beta，并应用 beta API 兼容层
+./scripts/sts2_mod_dev_beta.sh test  # beta 静态检查 + 编译
+./scripts/sts2_mod_dev_beta.sh all   # beta 构建并安装到 beta 游戏目录
+```
+
 ### 打开发布 zip
 
 ```bash
@@ -60,10 +74,10 @@ git push origin main --tags
 
 | 变量名             | 示例值                                                                              |
 | --------------- | -------------------------------------------------------------------------------- |
-| `STS2_GAME_DIR` | `/Users/you/Library/Application Support/Steam/steamapps/common/Slay the Spire 2` |
+| `STS2_STABLE_GAME_DIR` | `/Users/you/Library/Application Support/Steam/steamapps/common/Slay the Spire 2` |
 
 
-或在 `deps/game/` 放入 `sts2.dll`、`BaseLib.dll`、`0Harmony.dll`（不提交到 Git，仅 CI 自托管 runner 可用）。
+或在 `deps/game/` 放入稳定版 `sts2.dll`、`BaseLib.dll`、`0Harmony.dll`（不提交到 Git，仅 CI 自托管 runner 可用）。
 
 ### 首次推送到 GitHub
 
@@ -87,7 +101,9 @@ git push origin v0.0.1
 | ---------------------------- | --------------- |
 | `workspace/mod/ModCode/`     | C# 模组逻辑         |
 | `workspace/mod/mod/`         | 资源、本地化、立绘       |
+| `workspace/mod-beta/`        | beta 版独立适配工作区    |
 | `scripts/sts2_mod_dev.sh`    | 本地构建安装          |
+| `scripts/sts2_mod_dev_beta.sh` | beta 构建安装       |
 | `scripts/package_release.sh` | 生成 Releases zip |
 | `cards.md`                   | 卡牌设计表           |
 | `tests/`                     | 卡牌静态测试基线        |
@@ -99,4 +115,3 @@ git push origin v0.0.1
 
 - **游玩**：Windows / macOS 均可（使用 Releases 中的 zip）。
 - **开发脚本**：当前以 macOS + Steam 安装路径为主；Windows 可参考 [deps/README.md](deps/README.md) 配置 `STS2_GAME_DIR` 与 `dotnet build`。
-

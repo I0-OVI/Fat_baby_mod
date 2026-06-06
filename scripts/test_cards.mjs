@@ -5,9 +5,15 @@ import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
-const cardsDir = path.join(rootDir, "workspace/mod/ModCode/Cards");
-const characterDir = path.join(rootDir, "workspace/mod/ModCode/Character");
-const localizationDir = path.join(rootDir, "workspace/mod/mod/localization");
+const modDir = process.env.MOD_DIR
+  ? path.resolve(process.env.MOD_DIR)
+  : path.join(rootDir, "workspace/mod");
+const modCodeDir = process.env.MOD_CODE_DIR
+  ? path.resolve(process.env.MOD_CODE_DIR)
+  : path.join(modDir, "ModCode");
+const cardsDir = path.join(modCodeDir, "Cards");
+const characterDir = path.join(modCodeDir, "Character");
+const localizationDir = path.join(modDir, "mod/localization");
 const expectationsPath = path.join(rootDir, "tests/card_expectations.json");
 
 const expectation = JSON.parse(fs.readFileSync(expectationsPath, "utf8"));
@@ -17,8 +23,8 @@ function fail(message) {
   errors.push(message);
 }
 
-function readText(relativePath) {
-  return fs.readFileSync(path.join(rootDir, relativePath), "utf8");
+function readModCodeText(relativePath) {
+  return fs.readFileSync(path.join(modCodeDir, relativePath), "utf8");
 }
 
 function listFiles(dir, suffix) {
@@ -309,8 +315,8 @@ function checkCards() {
 }
 
 function checkChargeLifecycle() {
-  const source = readText("workspace/mod/ModCode/Cards/ChargedModCard.cs");
-  const relicSource = readText("workspace/mod/ModCode/Relics/ElementFlaskRelic.cs");
+  const source = readModCodeText("Cards/ChargedModCard.cs");
+  const relicSource = readModCodeText("Relics/ElementFlaskRelic.cs");
 
   if (!/InitializeChargeAtCombatStart[\s\S]*!IsInCombat[\s\S]*CardPileCmd\.Add\s*\(\s*this\s*,\s*PileType\.Exhaust/.test(source)) {
     fail("ChargedModCard: combat start must move charged cards into the exhaust pile");
@@ -340,7 +346,7 @@ function checkChargeLifecycle() {
     fail("ChargedModCard: must expose OnEnteredExhaustFromOtherPileAsync for forced exhaust");
   }
 
-  const patchSource = readText("workspace/mod/ModCode/Patches/ChargedCardExhaustPatch.cs");
+  const patchSource = readModCodeText("Patches/ChargedCardExhaustPatch.cs");
   if (!/CardCmd\.Exhaust[\s\S]*IChargedCard[\s\S]*OnEnteredExhaustFromOtherPileAsync/.test(patchSource)) {
     fail("ChargedCardExhaustPatch: CardCmd.Exhaust must restart charge on the exhausted card instance");
   }
@@ -353,32 +359,46 @@ function checkChargeLifecycle() {
     fail("ElementFlaskRelic: charges must restore at rest sites and ancient event rooms");
   }
 
-  const refinedSource = readText("workspace/mod/ModCode/Relics/RefinedElementFlaskRelic.cs");
-  const orobasPatchSource = readText("workspace/mod/ModCode/Patches/TouchOfOrobasElementFlaskPatch.cs");
+  const refinedSource = readModCodeText("Relics/RefinedElementFlaskRelic.cs");
+  const orobasPatchSource = readModCodeText("Patches/TouchOfOrobasElementFlaskPatch.cs");
   if (!/RefinedChargeCap\s*=\s*5/.test(refinedSource)) {
     fail("RefinedElementFlaskRelic: Orobas upgrade must raise charge cap to 5");
   }
   if (!/GetUpgradedStarterRelic[\s\S]*is ElementFlaskRelic[\s\S]*RefinedElementFlaskRelic/.test(orobasPatchSource)) {
     fail("TouchOfOrobasElementFlaskPatch: starter Element Flask must map to refined relic at Orobas");
   }
-  const relicPoolSource = readText("workspace/mod/ModCode/Character/ScarletRelicPool.cs");
+  const relicPoolSource = readModCodeText("Character/ScarletRelicPool.cs");
   if (!/GenerateAllRelics[\s\S]*ElementFlaskRelic[\s\S]*RefinedElementFlaskRelic/.test(relicPoolSource)) {
     fail("ScarletRelicPool: refined Element Flask must be registered so Orobas can reference it");
   }
-  const advancePatchSource = readText("workspace/mod/ModCode/Patches/AncientDialogueAdvancePatch.cs");
+  const advancePatchSource = readModCodeText("Patches/AncientDialogueAdvancePatch.cs");
   if (!/NAncientDialogueLine[\s\S]*_Ready[\s\S]*SignalName\.Released/.test(advancePatchSource)) {
     fail("AncientDialogueAdvancePatch: must hook dialogue line Released signal, not missing OnRelease");
   }
 
-  const orobasDialogueSource = readText("workspace/mod/ModCode/Patches/OrobasScarletDialoguePatch.cs");
+  const orobasDialogueSource = readModCodeText("Patches/OrobasScarletDialoguePatch.cs");
   if (!/DefineDialogues[\s\S]*SCARLET_ACOLYTE[\s\S]*VisitIndex\s*=\s*0/.test(orobasDialogueSource)) {
     fail("OrobasScarletDialoguePatch: Scarlet must have multi-visit Orobas dialogues");
   }
 }
 
 function checkMagicDamageFormula() {
-  const magicCardsSource = readText("workspace/mod/ModCode/Cards/MagicCards.cs");
-  const utilityPowersSource = readText("workspace/mod/ModCode/Powers/UtilityPowers.cs");
+  const magicCardsSource = readModCodeText("Cards/MagicCards.cs");
+  const utilityPowersSource = readModCodeText("Powers/UtilityPowers.cs");
+  const magicMarkerSource = readModCodeText("Cards/IMagicDamageCard.cs");
+  const strengthPatchSource = readModCodeText("Patches/StrengthPowerMagicDamagePatch.cs");
+
+  if (!/interface IMagicAttributeCard[\s\S]*interface IMagicDamageCard\s*:\s*IMagicAttributeCard/.test(magicMarkerSource)) {
+    fail("IMagicDamageCard: magic scaling cards must extend IMagicAttributeCard");
+  }
+
+  if (!/class SpiralGlintstone\(\)[^\n]*IMagicAttributeCard/.test(magicCardsSource) || /class SpiralGlintstone\(\)[^\n]*IMagicDamageCard/.test(magicCardsSource)) {
+    fail("SpiralGlintstone: must be IMagicAttributeCard without IMagicDamageCard so Magic bonus does not apply");
+  }
+
+  if (!/IMagicAttributeCard/.test(strengthPatchSource)) {
+    fail("StrengthPowerMagicDamagePatch: magic attribute cards must ignore Strength");
+  }
 
   if (!/MagicPower[\s\S]*ModifyDamageAdditive[\s\S]*props\.IsPoweredAttack\(\)/.test(utilityPowersSource)) {
     fail("MagicPower: magic damage bonus must only apply to powered attacks");
@@ -394,8 +414,8 @@ function checkMagicDamageFormula() {
 }
 
 function checkSmallRoundShieldParry() {
-  const powerSource = readText("workspace/mod/ModCode/Powers/PoiseSupportPowers.cs");
-  const patchSource = readText("workspace/mod/ModCode/Patches/SmallRoundShieldParryAttackPatch.cs");
+  const powerSource = readModCodeText("Powers/PoiseSupportPowers.cs");
+  const patchSource = readModCodeText("Patches/SmallRoundShieldParryAttackPatch.cs");
 
   if (!/SmallRoundShieldParryPower[\s\S]*_interruptedAttackTarget[\s\S]*dealer\s*==\s*_interruptedAttackTarget[\s\S]*dealer\.IsStunned[\s\S]*return\s+0m/.test(powerSource)) {
     fail("SmallRoundShieldParryPower: stunned parry target must have remaining multi-hit damage canceled");

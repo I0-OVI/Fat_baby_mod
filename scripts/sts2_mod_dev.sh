@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOD_DIR="$ROOT_DIR/workspace/mod"
 MOD_ID="fat_baby"
 
-GAME_ROOT="${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}"
+GAME_ROOT="${STS2_STABLE_GAME_DIR:-${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}}"
 GAME_APP="$GAME_ROOT/SlayTheSpire2.app"
 GAME_MACOS_DIR="$GAME_APP/Contents/MacOS"
 GAME_MODS_DIR="$GAME_MACOS_DIR/mods"
@@ -31,6 +31,11 @@ Commands:
   install   Install existing mod.json + fat_baby.dll + fat_baby.pck without rebuilding.
   log       Show recent mod-loading lines from godot.log.
   launch    Open Slay the Spire 2.
+
+Environment:
+  STS2_STABLE_GAME_DIR Preferred stable-channel game root.
+  STS2_GAME_DIR        Fallback game root.
+  GODOT_BIN            Godot mono binary for PCK export.
 EOF
 }
 
@@ -75,39 +80,7 @@ export_pck() {
 }
 
 patch_pck_offsets() {
-  local pck="$1"
-  python3 - "$pck" <<'PY'
-import struct
-import sys
-from pathlib import Path
-
-pck = Path(sys.argv[1])
-data = bytearray(pck.read_bytes())
-
-if data[:4] != b"GDPC":
-    raise SystemExit(f"Not a Godot PCK: {pck}")
-
-file_base = struct.unpack_from("<Q", data, 24)[0]
-if file_base == 0:
-    print(f"PCK offsets already absolute: {pck}")
-    raise SystemExit(0)
-
-dir_offset = struct.unpack_from("<Q", data, 32)[0]
-file_count = struct.unpack_from("<I", data, dir_offset)[0]
-pos = dir_offset + 4
-
-for _ in range(file_count):
-    path_len = struct.unpack_from("<I", data, pos)[0]
-    pos += 4 + path_len
-    offset_pos = pos
-    offset = struct.unpack_from("<Q", data, offset_pos)[0]
-    struct.pack_into("<Q", data, offset_pos, offset + file_base)
-    pos += 8 + 8 + 16 + 4
-
-struct.pack_into("<Q", data, 24, 0)
-pck.write_bytes(data)
-print(f"Patched PCK offsets to absolute paths: {pck}")
-PY
+  "$ROOT_DIR/scripts/patch_pck_offsets.sh" "$1"
 }
 
 install_json() {

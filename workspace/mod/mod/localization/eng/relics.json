@@ -21,5 +21,29 @@
 
   "MOD-REFINED_ELEMENT_FLASK_RELIC.title": "Element Flask+",
   "MOD-REFINED_ELEMENT_FLASK_RELIC.description": "At the start of each combat, add an Element Flask to your hand.\nUpon entering a Rest Site or Ancient, restore its uses to 5.",
-  "MOD-REFINED_ELEMENT_FLASK_RELIC.flavor": "A golden chalice modeled after one graced by a tear of blessing."
+  "MOD-REFINED_ELEMENT_FLASK_RELIC.flavor": "A golden chalice modeled after one graced by a tear of blessing.",
+
+  "RED_TEARSTONE_RING_RELIC.title": "Red Tearstone Ring",
+  "RED_TEARSTONE_RING_RELIC.description": "While your HP is at or below {HpThreshold:diff()}% of your Max HP, gain {Strength:diff()} Strength and {Magic:diff()} Magic.",
+  "RED_TEARSTONE_RING_RELIC.flavor": "A rare tearstone jewel set in a ring. Said to be a tear of mourning from the goddess Caitha—and tears are always more beautiful near death.",
+
+  "mod-RED_TEARSTONE_RING_RELIC.title": "Red Tearstone Ring",
+  "mod-RED_TEARSTONE_RING_RELIC.description": "While your HP is at or below {HpThreshold:diff()}% of your Max HP, gain {Strength:diff()} Strength and {Magic:diff()} Magic.",
+  "mod-RED_TEARSTONE_RING_RELIC.flavor": "A rare tearstone jewel set in a ring. Said to be a tear of mourning from the goddess Caitha—and tears are always more beautiful near death.",
+
+  "MOD-RED_TEARSTONE_RING_RELIC.title": "Red Tearstone Ring",
+  "MOD-RED_TEARSTONE_RING_RELIC.description": "While your HP is at or below {HpThreshold:diff()}% of your Max HP, gain {Strength:diff()} Strength and {Magic:diff()} Magic.",
+  "MOD-RED_TEARSTONE_RING_RELIC.flavor": "A rare tearstone jewel set in a ring. Said to be a tear of mourning from the goddess Caitha—and tears are always more beautiful near death.",
+
+  "MAGIC_SCORPION_CHARM_RELIC.title": "Magic Clutch Ring",
+  "MAGIC_SCORPION_CHARM_RELIC.description": "At the start of each combat, gain {Magic:diff()} Magic.\nTake {DamageTaken:diff()}% more damage from enemies.",
+  "MAGIC_SCORPION_CHARM_RELIC.flavor": "A ring depicting a hand grasping a blue stone. Increases magic attack, but compromises damage absorption. An old fable in Londor claims that the lure of the clutch ring reaches out to the crestfallen, who might otherwise be overcome by despair.",
+
+  "mod-MAGIC_SCORPION_CHARM_RELIC.title": "Magic Clutch Ring",
+  "mod-MAGIC_SCORPION_CHARM_RELIC.description": "At the start of each combat, gain {Magic:diff()} Magic.\nTake {DamageTaken:diff()}% more damage from enemies.",
+  "mod-MAGIC_SCORPION_CHARM_RELIC.flavor": "A ring depicting a hand grasping a blue stone. Increases magic attack, but compromises damage absorption. An old fable in Londor claims that the lure of the clutch ring reaches out to the crestfallen, who might otherwise be overcome by despair.",
+
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.title": "Magic Clutch Ring",
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.description": "At the start of each combat, gain {Magic:diff()} Magic.\nTake {DamageTaken:diff()}% more damage from enemies.",
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.flavor": "A ring depicting a hand grasping a blue stone. Increases magic attack, but compromises damage absorption. An old fable in Londor claims that the lure of the clutch ring reaches out to the crestfallen, who might otherwise be overcome by despair."
 }

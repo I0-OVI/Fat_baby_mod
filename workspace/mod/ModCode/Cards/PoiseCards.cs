@@ -2,16 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using Mod.ModCode.Commands;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
 
@@ -102,34 +101,32 @@ public sealed class ChargedAttack() : ModCard(2, CardType.Attack, CardRarity.Bas
         await PoiseCardActions.AttackAndPoise(this, choiceContext, cardPlay.Target);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars["Imbalance"].UpgradeValueBy(1m);
+    }
 }
 
 public sealed class ChargedHeavyAttack() : ModCard(1, CardType.Attack, CardRarity.Ancient, TargetType.AnyEnemy)
 {
     public override string PortraitPath => "res://mod/images/card_portraits/charged_heavy_attack.png";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ImbalancePower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ImbalancePower>(), HoverTipFactory.FromPower<NextDamageReductionPower>()];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(15m, ValueProp.Move), new DynamicVar("Imbalance", 5m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await PoiseCardActions.AttackAndPoise(this, choiceContext, cardPlay.Target);
-
-        CardModel? card = (await CardSelectCmd.FromSimpleGrid(
-            choiceContext,
-            PileType.Discard.GetPile(Owner).Cards,
-            Owner,
-            new CardSelectorPrefs(SelectionScreenPrompt, 1))).FirstOrDefault();
-
-        if (card != null)
-        {
-            await CardPileCmd.Add(card, PileType.Hand);
-        }
+        await ModPowerCmd.Apply<NextDamageReductionPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(4m);
+        DynamicVars["Imbalance"].UpgradeValueBy(1m);
+    }
 }
 
 public sealed class GuardCounter() : ChargedModCard<GuardCounterChargePower>(0, CardType.Attack, CardRarity.Basic, TargetType.AnyEnemy)

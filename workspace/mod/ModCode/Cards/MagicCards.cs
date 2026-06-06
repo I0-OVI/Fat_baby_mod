@@ -58,6 +58,19 @@ internal static class MagicCardActions
         return owner.Player?.RunState.Rng.CombatTargets.NextItem(enemies) ?? enemies[0];
     }
 
+    public static decimal MaxHpPercentDamage(Creature target, decimal percent) =>
+        Math.Max(1m, Math.Floor(target.MaxHp * percent / 100m));
+
+    public static async Task MagicMaxHpPercentAttack(ModCard card, PlayerChoiceContext choiceContext, Creature target, decimal percent)
+    {
+        decimal damage = MaxHpPercentDamage(target, percent);
+        await DamageCmd.Attack(damage)
+            .FromCard(card)
+            .Targeting(target)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .Execute(choiceContext);
+    }
+
     public static async Task Splash(ModCard card, PlayerChoiceContext choiceContext, Creature primaryTarget)
     {
         if (card.CombatState == null)
@@ -349,6 +362,19 @@ public sealed class ProfoundWisdom() : ModCard(1, CardType.Skill, CardRarity.Unc
     }
 
     protected override void OnUpgrade() => DynamicVars["Magic"].UpgradeValueBy(2m);
+}
+
+public sealed class SpiralGlintstone() : ModCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy), IMagicAttributeCard
+{
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("HpPercent", 10m)];
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        await MagicCardActions.MagicMaxHpPercentAttack(this, choiceContext, cardPlay.Target, DynamicVars["HpPercent"].BaseValue);
+    }
+
+    protected override void OnUpgrade() => DynamicVars["HpPercent"].UpgradeValueBy(2m);
 }
 
 public sealed class CometAzur() : ModCard(3, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy), IMagicDamageCard

@@ -347,31 +347,69 @@ public sealed class AllIn() : ModCard(0, CardType.Skill, CardRarity.Uncommon, Ta
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromKeyword(CardKeyword.Exhaust)];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("BonusPlays", 0m)];
 
-    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    private PlayerChoiceContext? _pendingChoiceContext;
+    private int _pendingPlayCount;
+
+    protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        _pendingChoiceContext = choiceContext;
+        int xValue = cardPlay.Resources.EnergySpent;
+        if (xValue <= 0 && HasEnergyCostX)
+        {
+            xValue = ResolveEnergyXValue();
+        }
+
+        _pendingPlayCount = Math.Max(0, xValue + DynamicVars["BonusPlays"].IntValue);
+        return Task.CompletedTask;
+    }
+
+    public override async Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)
+    {
+        if (card != this || Owner == null || CombatState == null)
+        {
+            return;
+        }
+
+        if (oldPileType != PileType.Play || Pile?.Type != PileType.Discard)
+        {
+            return;
+        }
+
+        PlayerChoiceContext? choiceContext = _pendingChoiceContext;
+        int playCount = _pendingPlayCount;
+        if (playCount <= 0)
+        {
+            playCount = Math.Max(0, ResolveEnergyXValue() + DynamicVars["BonusPlays"].IntValue);
+        }
+
+        _pendingChoiceContext = null;
+        _pendingPlayCount = 0;
+        if (choiceContext == null)
+        {
+            return;
+        }
+
         CardModel? selectedCard = (await CardSelectCmd.FromHand(
             choiceContext,
             Owner,
             new CardSelectorPrefs(CardSelectorPrefs.ExhaustSelectionPrompt, 1),
             null,
             this)).FirstOrDefault();
-        if (selectedCard == null || CombatState == null)
+        if (selectedCard == null)
         {
             return;
         }
 
-        int playCount = Math.Max(0, ResolveEnergyXValue() + DynamicVars["BonusPlays"].IntValue);
         await CardCmd.Exhaust(choiceContext, selectedCard);
+        if (playCount <= 0)
+        {
+            return;
+        }
 
         for (int i = 0; i < playCount; i++)
         {
-            CardModel copy = CombatState.CreateCard(selectedCard, Owner);
-            if (selectedCard.IsUpgraded && copy.IsUpgradable)
-            {
-                CardCmd.Upgrade(copy, CardPreviewStyle.None);
-            }
-
-            await CardCmd.AutoPlay(choiceContext, copy, null, skipXCapture: true, skipCardPileVisuals: i > 0);
+            CardModel copy = CombatState.CloneCard(selectedCard);
+            AllInReplayTracker.EnqueueCopy(Owner, choiceContext, copy);
         }
     }
 

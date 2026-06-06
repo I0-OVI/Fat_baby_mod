@@ -36,7 +36,8 @@
       },
       "upgrade": {
         "vars": {
-          "Damage": 18
+          "Damage": 19,
+          "Imbalance": 6
         }
       }
     },
@@ -53,7 +54,8 @@
       },
       "upgrade": {
         "vars": {
-          "Damage": 18
+          "Damage": 19,
+          "Imbalance": 6
         }
       }
     },
@@ -264,7 +266,8 @@
         "Exhaust"
       ],
       "vars": {
-        "Strength": 2
+        "Strength": 2,
+        "Magic": 2
       },
       "upgrade": {
         "cost": 1
@@ -463,6 +466,22 @@
       "upgrade": {
         "vars": {
           "Damage": 9
+        }
+      }
+    },
+    {
+      "class": "SpiralGlintstone",
+      "id": "SPIRAL_GLINTSTONE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "HpPercent": 10
+      },
+      "upgrade": {
+        "vars": {
+          "HpPercent": 12
         }
       }
     },
