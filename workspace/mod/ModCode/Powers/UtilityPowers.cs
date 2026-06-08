@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
 using Mod.ModCode.Cards;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Powers;
 
@@ -81,7 +82,7 @@ public sealed class MagicRealmPower : CustomPowerModel
             return;
         }
 
-        await PowerCmd.Apply<MagicPower>(Owner, Amount, Owner, null);
+        await ModPowerCmd.Apply<MagicPower>(Owner, Amount, Owner, null);
         await CreatureCmd.GainBlock(Owner, BlockPerTurn, ValueProp.Unpowered, null);
     }
 }

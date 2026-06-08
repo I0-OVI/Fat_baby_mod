@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -30,7 +31,7 @@ public sealed class GarbageKingBlessing() : ModCard(2, CardType.Power, CardRarit
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<GarbageKingBlessingPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<GarbageKingBlessingPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

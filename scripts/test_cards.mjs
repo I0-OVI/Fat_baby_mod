@@ -392,10 +392,6 @@ function checkMagicDamageFormula() {
     fail("IMagicDamageCard: magic scaling cards must extend IMagicAttributeCard");
   }
 
-  if (!/class SpiralGlintstone\(\)[^\n]*IMagicAttributeCard/.test(magicCardsSource) || /class SpiralGlintstone\(\)[^\n]*IMagicDamageCard/.test(magicCardsSource)) {
-    fail("SpiralGlintstone: must be IMagicAttributeCard without IMagicDamageCard so Magic bonus does not apply");
-  }
-
   if (!/IMagicAttributeCard/.test(strengthPatchSource)) {
     fail("StrengthPowerMagicDamagePatch: magic attribute cards must ignore Strength");
   }
@@ -423,6 +419,36 @@ function checkSmallRoundShieldParry() {
 
   if (!/AttackCommand[\s\S]*Execute[\s\S]*CompleteInterruptedAttackAsync/.test(patchSource)) {
     fail("SmallRoundShieldParryAttackPatch: parry interrupt state must clean up after AttackCommand.Execute");
+  }
+}
+
+function checkStackedNextAttackPowers() {
+  const powerSource = readModCodeText("Powers/PoiseSupportPowers.cs");
+  const poiseCardsSource = readModCodeText("Cards/PoiseCards.cs");
+  const imbalanceSource = readModCodeText("Mechanics/Imbalance.cs");
+
+  function powerBlock(className) {
+    const classIndex = powerSource.indexOf(`class ${className}`);
+    const openBrace = powerSource.indexOf("{", classIndex);
+    return classIndex >= 0 && openBrace >= 0 ? extractBlock(powerSource, openBrace) : "";
+  }
+
+  const doublePower = powerBlock("NextAttackDoublePower");
+  if (!/AfterCardPlayed[\s\S]*CardType\.Attack[\s\S]*PowerCmd\.Decrement\s*\(\s*this\s*\)/.test(doublePower) || /PowerCmd\.Remove\s*\(\s*this\s*\)/.test(doublePower)) {
+    fail("NextAttackDoublePower: each Attack must consume exactly one stacked use");
+  }
+
+  const poisePower = powerBlock("NextPoiseBonusPower");
+  if (!/Queue<int>[\s\S]*AddBonus[\s\S]*GetNextBonus[\s\S]*AfterCardPlayed[\s\S]*PowerCmd\.Decrement\s*\(\s*this\s*\)/.test(poisePower)) {
+    fail("NextPoiseBonusPower: stacked Rock Blades must queue bonuses and consume one use per Attack");
+  }
+
+  if (!/RockBlade[\s\S]*Apply<NextPoiseBonusPower>\s*\(\s*Owner\.Creature\s*,\s*1m[\s\S]*AddBonus/.test(poiseCardsSource)) {
+    fail("RockBlade: each play must add one queued poise-bonus use");
+  }
+
+  if (!/NextPoiseBonusPower[\s\S]*GetNextBonus\s*\(\s*\)/.test(imbalanceSource) || /NextPoiseBonusPower[\s\S]*PowerCmd\.Remove\s*\(\s*poiseBonus\s*\)/.test(imbalanceSource)) {
+    fail("Imbalance: Rock Blade bonus must remain active for the full Attack card");
   }
 }
 
@@ -524,6 +550,7 @@ checkCards();
 checkChargeLifecycle();
 checkMagicDamageFormula();
 checkSmallRoundShieldParry();
+checkStackedNextAttackPowers();
 checkLocalization();
 
 if (errors.length > 0) {

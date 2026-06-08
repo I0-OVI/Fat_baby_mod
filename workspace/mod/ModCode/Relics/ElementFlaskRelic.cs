@@ -16,6 +16,7 @@ using MegaCrit.Sts2.Core.Saves.Runs;
 using Mod.ModCode.Cards;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Relics;
 
@@ -149,7 +150,7 @@ public class ElementFlaskRelic : RelicModel
             return;
         }
 
-        await PowerCmd.Apply<ImbalancePower>(
+        await ModPowerCmd.Apply<ImbalancePower>(
             creature,
             Imbalance.GetInitialValue(creature),
             Owner.Creature,

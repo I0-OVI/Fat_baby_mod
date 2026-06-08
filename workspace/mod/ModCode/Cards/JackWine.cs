@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -24,7 +25,7 @@ public sealed class JackWine() : ModCard(1, CardType.Skill, CardRarity.Uncommon,
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.BaseValue, false);
-        await PowerCmd.Apply<NextTurnEnergyPower>(Owner.Creature, DynamicVars["Energy"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<NextTurnEnergyPower>(Owner.Creature, DynamicVars["Energy"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

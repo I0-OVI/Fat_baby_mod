@@ -140,7 +140,7 @@ public sealed class GuardCounter() : ChargedModCard<GuardCounterChargePower>(0, 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await PowerCmd.Apply<GuardCounterPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await ModPowerCmd.Apply<GuardCounterPower>(Owner.Creature, 1m, Owner.Creature, this);
         await PoiseCardActions.AttackAndPoise(this, choiceContext, cardPlay.Target);
     }
 
@@ -261,7 +261,7 @@ public sealed class GiantHunt() : ModCard(1, CardType.Attack, CardRarity.Common,
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await PoiseCardActions.AttackAndPoise(this, choiceContext, cardPlay.Target, DynamicVars["Hits"].IntValue);
-        await PowerCmd.Apply<WeakPower>(cardPlay.Target, DynamicVars.Weak.BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<WeakPower>(cardPlay.Target, DynamicVars.Weak.BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
@@ -327,7 +327,7 @@ public sealed class ReadyStance() : ModCard(1, CardType.Attack, CardRarity.Uncom
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await PoiseCardActions.AttackAndPoise(this, choiceContext, cardPlay.Target);
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
@@ -352,7 +352,7 @@ public sealed class CarianPiercer() : ModCard(2, CardType.Attack, CardRarity.Unc
         }
 
         await PoiseCardActions.AttackAllAndPoise(this, choiceContext);
-        await PowerCmd.Apply<WeakPower>(CombatState.HittableEnemies, DynamicVars.Weak.BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<WeakPower>(CombatState.HittableEnemies, DynamicVars.Weak.BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
@@ -426,7 +426,8 @@ public sealed class RockBlade() : ModCard(1, CardType.Skill, CardRarity.Common, 
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<NextPoiseBonusPower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
+        NextPoiseBonusPower? power = await ModPowerCmd.Apply<NextPoiseBonusPower>(Owner.Creature, 1m, Owner.Creature, this);
+        power?.AddBonus(DynamicVars["Imbalance"].IntValue);
     }
 
     protected override void OnUpgrade()
@@ -445,7 +446,7 @@ public sealed class GlintbladePhalanx() : ModCard(3, CardType.Skill, CardRarity.
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<GlintbladePhalanxPower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<GlintbladePhalanxPower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
@@ -460,7 +461,7 @@ public sealed class VictoryRush() : ModCard(2, CardType.Power, CardRarity.Uncomm
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<VictoryRushPower>(Owner.Creature, DynamicVars["Energy"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<VictoryRushPower>(Owner.Creature, DynamicVars["Energy"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
@@ -481,7 +482,7 @@ public sealed class BreakingMomentum() : ModCard(3, CardType.Power, CardRarity.R
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        BreakingMomentumPower? power = await PowerCmd.Apply<BreakingMomentumPower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
+        BreakingMomentumPower? power = await ModPowerCmd.Apply<BreakingMomentumPower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
         power?.AddStrengthBonus(DynamicVars["Strength"].BaseValue);
     }
 

@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -85,7 +86,7 @@ public sealed class SmallRoundShieldParry() : ModCard(1, CardType.Skill, CardRar
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        SmallRoundShieldParryPower? power = await PowerCmd.Apply<SmallRoundShieldParryPower>(Owner.Creature, DynamicVars["Blocks"].BaseValue, Owner.Creature, this);
+        SmallRoundShieldParryPower? power = await ModPowerCmd.Apply<SmallRoundShieldParryPower>(Owner.Creature, DynamicVars["Blocks"].BaseValue, Owner.Creature, this);
         power?.SetFatalStrikeGrantCount(IsUpgraded ? 2 : 1);
     }
 }
@@ -103,7 +104,7 @@ public sealed class Truce() : ModCard(2, CardType.Skill, CardRarity.Common, Targ
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
-        await PowerCmd.Apply<NextTurnEnergyPower>(Owner.Creature, DynamicVars["Energy"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<NextTurnEnergyPower>(Owner.Creature, DynamicVars["Energy"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
@@ -126,7 +127,7 @@ public sealed class Intimidation() : ModCard(1, CardType.Skill, CardRarity.Commo
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await PowerCmd.Apply<WeakPower>(cardPlay.Target, DynamicVars.Weak.BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<WeakPower>(cardPlay.Target, DynamicVars.Weak.BaseValue, Owner.Creature, this);
         await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
     }
 
@@ -145,7 +146,7 @@ public sealed class Determination() : ModCard(1, CardType.Skill, CardRarity.Comm
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<NextAttackDoublePower>(Owner.Creature, 1m, Owner.Creature, this);
+        await ModPowerCmd.Apply<NextAttackDoublePower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
@@ -186,7 +187,7 @@ public sealed class BattleCry() : ModCard(1, CardType.Skill, CardRarity.Common, 
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
     }
 
@@ -222,7 +223,7 @@ public sealed class Endure() : ModCard(1, CardType.Skill, CardRarity.Uncommon, T
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<EndurePower>(Owner.Creature, 1m, Owner.Creature, this);
+        await ModPowerCmd.Apply<EndurePower>(Owner.Creature, 1m, Owner.Creature, this);
         if (IsUpgraded)
         {
             await CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, cardPlay);
@@ -242,7 +243,7 @@ public sealed class Unburden() : ModCard(0, CardType.Skill, CardRarity.Uncommon,
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, -DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, -DynamicVars["Strength"].BaseValue, Owner.Creature, this);
         await PlayerCmd.GainEnergy(DynamicVars["Energy"].BaseValue, Owner);
     }
 
@@ -267,8 +268,8 @@ public sealed class GoodLuck() : ModCard(0, CardType.Skill, CardRarity.Rare, Tar
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
         await PlayerCmd.GainEnergy(DynamicVars["Energy"].BaseValue, Owner);
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
     }
@@ -332,8 +333,8 @@ public sealed class Seppuku() : ModCard(2, CardType.Skill, CardRarity.Uncommon, 
             await CardCmd.Exhaust(choiceContext, handCard);
         }
 
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue * handCards.Count, Owner.Creature, this);
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue * handCards.Count, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue * handCards.Count, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue * handCards.Count, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars["HpLoss"].UpgradeValueBy(-3m);
@@ -438,10 +439,10 @@ public sealed class Ember() : ModCard(1, CardType.Power, CardRarity.Uncommon, Ta
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
         await CreatureCmd.GainMaxHp(Owner.Creature, DynamicVars["MaxHp"].BaseValue);
-        await PowerCmd.Apply<ExtraPoisePower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<ExtraPoisePower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
@@ -469,9 +470,9 @@ public sealed class WaitForMeToStart() : ModCard(3, CardType.Skill, CardRarity.R
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<StartupProtectionPower>(Owner.Creature, DynamicVars["Turns"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<RetainHandPower>(Owner.Creature, DynamicVars["Turns"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<WeakPower>(Owner.Creature, DynamicVars.Weak.BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StartupProtectionPower>(Owner.Creature, DynamicVars["Turns"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<RetainHandPower>(Owner.Creature, DynamicVars["Turns"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<WeakPower>(Owner.Creature, DynamicVars.Weak.BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
@@ -491,7 +492,7 @@ public sealed class MagicRealm() : ModCard(2, CardType.Power, CardRarity.Rare, T
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<MagicRealmPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicRealmPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

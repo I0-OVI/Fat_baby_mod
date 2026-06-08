@@ -365,8 +365,49 @@ public sealed class ProfoundWisdom() : ModCard(1, CardType.Skill, CardRarity.Unc
     protected override void OnUpgrade() => DynamicVars["Magic"].UpgradeValueBy(2m);
 }
 
+public sealed class AdulasMoonblade() : ModCard(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy), IMagicDamageCard
+{
+    public override string PortraitPath => "res://mod/images/card_portraits/adulas_moonblade.png";
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<MagicPower>(),
+        HoverTipFactory.FromPower<FrostbitePower>(),
+        HoverTipFactory.FromPower<AdulasMoonbladePower>()
+    ];
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(20m, ValueProp.Move),
+        new DynamicVar("Repeats", 1m)
+    ];
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        await ExecuteEffect(this, choiceContext, cardPlay.Target);
+        AdulasMoonbladePower? power = await ModPowerCmd.Apply<AdulasMoonbladePower>(
+            Owner.Creature,
+            DynamicVars["Repeats"].BaseValue,
+            Owner.Creature,
+            this);
+        power?.SetSourceCard(this);
+    }
+
+    internal static async Task ExecuteEffect(AdulasMoonblade card, PlayerChoiceContext choiceContext, Creature target)
+    {
+        await MagicCardActions.MagicAttack(card, choiceContext, target);
+        await MagicCardActions.Splash(card, choiceContext, target);
+        await FrostbiteMechanic.Apply(choiceContext, [target], card.Owner.Creature, card);
+    }
+
+    protected override void OnUpgrade() => DynamicVars["Repeats"].UpgradeValueBy(1m);
+}
+
 public sealed class SpiralGlintstone() : ModCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy), IMagicAttributeCard
 {
+    public override string PortraitPath => "res://mod/images/card_portraits/spiral_glintstone.png";
+
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("HpPercent", 10m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)

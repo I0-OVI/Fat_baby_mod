@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -22,7 +23,7 @@ public sealed class CorruptionSense() : ModCard(1, CardType.Power, CardRarity.Un
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<CorruptionSensePower>(Owner.Creature, DynamicVars["Cards"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<CorruptionSensePower>(Owner.Creature, DynamicVars["Cards"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()

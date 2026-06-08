@@ -12,13 +12,13 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace Mod.ModCode.Powers;
 
-public sealed class PlunderingFirePower : CustomPowerModel
+public sealed class PlunderingFirePower : ModCustomPowerModel
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/regeneration_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/regeneration_power.png";
+    public override string CustomPackedIconPath => "res://mod/images/powers/plundering_fire_power.png";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/plundering_fire_power.png";
 
     public override async Task AfterDamageReceived(
         PlayerChoiceContext choiceContext,

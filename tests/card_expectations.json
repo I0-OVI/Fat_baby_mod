@@ -470,22 +470,6 @@
       }
     },
     {
-      "class": "SpiralGlintstone",
-      "id": "SPIRAL_GLINTSTONE",
-      "cost": 1,
-      "type": "Attack",
-      "rarity": "Uncommon",
-      "target": "AnyEnemy",
-      "vars": {
-        "HpPercent": 10
-      },
-      "upgrade": {
-        "vars": {
-          "HpPercent": 12
-        }
-      }
-    },
-    {
       "class": "StampUppercut",
       "id": "STAMP_UPPERCUT",
       "cost": 2,
@@ -938,6 +922,22 @@
       }
     },
     {
+      "class": "SpiralGlintstone",
+      "id": "SPIRAL_GLINTSTONE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "HpPercent": 10
+      },
+      "upgrade": {
+        "vars": {
+          "HpPercent": 12
+        }
+      }
+    },
+    {
       "class": "NightComet",
       "id": "NIGHT_COMET",
       "cost": 1,
@@ -1118,6 +1118,23 @@
       }
     },
     {
+      "class": "AdulasMoonblade",
+      "id": "ADULAS_MOONBLADE",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 20,
+        "Repeats": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Repeats": 2
+        }
+      }
+    },
+    {
       "class": "AllIn",
       "id": "ALL_IN",
       "cost": 0,
@@ -1150,6 +1167,111 @@
           "Strength": 1
         }
       }
+    },
+    {
+      "class": "HoarfrostStomp",
+      "id": "HOARFROST_STOMP",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 3
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6
+        }
+      }
+    },
+    {
+      "class": "BloodSlash",
+      "id": "BLOOD_SLASH",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 10,
+        "HpLoss": 1,
+        "Exhaust": 2,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12
+        }
+      }
+    },
+    {
+      "class": "ZamorIceStorm",
+      "id": "ZAMOR_ICE_STORM",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 1,
+        "Hits": 5,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Hits": 7
+        }
+      }
+    },
+    {
+      "class": "RennalasFullMoon",
+      "id": "RENNALAS_FULL_MOON",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 15,
+        "VulnerableTurns": 3
+      },
+      "upgrade": {
+        "cost": 1,
+        "vars": {
+          "Damage": 17
+        }
+      }
+    },
+    {
+      "class": "RaptorOfMists",
+      "id": "RAPTOR_OF_MISTS",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {}
+    },
+    {
+      "class": "SealOfPromise",
+      "id": "SEAL_OF_PROMISE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Gold": 0
+      },
+      "upgrade": {
+        "vars": {
+          "Gold": 50
+        }
+      }
+    },
+    {
+      "class": "WhyAreTheyFighting",
+      "id": "WHY_ARE_THEY_FIGHTING",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {}
     },
     {
       "class": "ElementFlask",

@@ -47,6 +47,43 @@ public sealed class HoulouGroundSlamPower : CustomPowerModel
     }
 }
 
+public sealed class AdulasMoonbladePower : CustomPowerModel
+{
+    private AdulasMoonblade? _sourceCard;
+
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+
+    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/focus_power.tres";
+    public override string CustomBigIconPath => "res://images/powers/focus_power.png";
+
+    public void SetSourceCard(AdulasMoonblade sourceCard)
+    {
+        _sourceCard = sourceCard;
+    }
+
+    public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
+    {
+        if (Owner == null || player.Creature != Owner || _sourceCard == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < Amount; i++)
+        {
+            Creature? target = MagicCardActions.RandomEnemy(Owner);
+            if (target == null)
+            {
+                break;
+            }
+
+            await AdulasMoonblade.ExecuteEffect(_sourceCard, choiceContext, target);
+        }
+
+        await PowerCmd.Remove(this);
+    }
+}
+
 public sealed class AncientDeathsRancorPower : CustomPowerModel
 {
     private int _hits = 6;

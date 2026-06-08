@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
 using Mod.ModCode.Mechanics;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Powers;
 
@@ -24,7 +25,7 @@ public sealed class GarbageKingBlessingPower : CustomPowerModel
             return;
         }
 
-        await PowerCmd.Apply<StrengthPower>(Owner, Amount, Owner, null);
+        await ModPowerCmd.Apply<StrengthPower>(Owner, Amount, Owner, null);
         await ScarletCorruption.Apply(choiceContext, Owner, 3, Owner);
     }
 }

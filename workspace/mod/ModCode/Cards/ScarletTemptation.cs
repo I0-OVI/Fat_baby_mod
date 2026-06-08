@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -28,7 +29,7 @@ public sealed class ScarletTemptation() : ModCard(2, CardType.Power, CardRarity.
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<ScarletTemptationPower>(Owner.Creature, DynamicVars["Cards"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<ScarletTemptationPower>(Owner.Creature, DynamicVars["Cards"].BaseValue, Owner.Creature, this);
         await ScarletCorruption.Apply(choiceContext, Owner.Creature, DynamicVars["ScarletCorruption"].IntValue, Owner.Creature, this);
     }
 

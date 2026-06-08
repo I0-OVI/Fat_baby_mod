@@ -107,6 +107,7 @@ sync_manifest_localization() {
 
 export_pck() {
   require_file "$GODOT_BIN"
+  "$ROOT_DIR/scripts/sync_beta_assets.sh"
   sync_manifest_localization
   (cd "$MOD_DIR" && "$GODOT_BIN" --headless --path . --export-pack mod_pck build/mod.pck)
   "$ROOT_DIR/scripts/patch_pck_offsets.sh" "$MOD_DIR/build/mod.pck"

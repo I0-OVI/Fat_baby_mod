@@ -8,6 +8,9 @@ STAGING_DIR="$DIST_DIR/staging-beta"
 BUILD_DLL="$MOD_DIR/.godot/mono/temp/bin/Debug/fat_baby_beta.dll"
 BUILD_PCK="$MOD_DIR/build/mod.pck"
 MOD_ID="fat_baby_beta"
+GAME_ROOT="${STS2_BETA_GAME_DIR:-${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}}"
+GAME_MACOS_DIR="$GAME_ROOT/SlayTheSpire2.app/Contents/MacOS"
+GAME_MODS_DIR="$GAME_MACOS_DIR/mods"
 
 usage() {
   cat <<'EOF'
@@ -18,10 +21,37 @@ Usage: scripts/package_release_beta.sh [version] [--skip-build]
 
 Creates: dist/fat-baby-mod-beta-<version>.zip
   fat_baby_beta/mod.json, fat_baby_beta/fat_baby_beta.dll, fat_baby_beta/fat_baby_beta.pck
+  BaseLib/ (beta-compatible BaseLib v3.x from the local game install)
   INSTALL-beta.md
 
-Does NOT bundle BaseLib. Players must install beta-compatible BaseLib separately.
+Environment:
+  STS2_BETA_GAME_DIR   Preferred beta game root when resolving BaseLib.
+  STS2_GAME_DIR        Fallback game root.
 EOF
+}
+
+resolve_baselib_source() {
+  local candidate
+  for candidate in \
+    "$GAME_MODS_DIR/BaseLib" \
+    "$GAME_ROOT/mods/BaseLib" \
+    "$GAME_ROOT/mods/【001】必装前置"/BaseLib*; do
+    if [[ -f "$candidate/BaseLib.json" && -f "$candidate/BaseLib.dll" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
+require_baselib() {
+  if ! BASELIB_SOURCE="$(resolve_baselib_source)"; then
+    echo "Missing beta-compatible BaseLib (need BaseLib.json + BaseLib.dll)." >&2
+    echo "Install BaseLib v3.x under: $GAME_MODS_DIR/BaseLib" >&2
+    echo "Or set STS2_BETA_GAME_DIR / STS2_GAME_DIR to your beta game install." >&2
+    exit 1
+  fi
+  echo "Using BaseLib: $BASELIB_SOURCE"
 }
 
 read_version_from_json() {
@@ -55,14 +85,29 @@ write_install_doc() {
 ## 安装
 
 1. Steam 中将游戏切换到 beta 分支。
-2. 单独安装与 beta 游戏版本匹配的 **BaseLib**（不要混用稳定版 zip 里的旧 BaseLib）。
-3. 将 `fat_baby_beta/` 复制到游戏 `mods/` 目录。
-4. 重启游戏，在 Mod 列表启用 **Fat Baby (Beta)**。
+2. 解压后会看到 `fat_baby_beta/` 与 `BaseLib/` 两个文件夹。
+3. 将这两个文件夹整体复制到游戏 `mods/` 目录（macOS 常见路径见下）。
+4. 重启游戏，在 Mod 列表启用 **BaseLib** 与 **Fat Baby (Beta)**。
+
+**macOS**
+
+```text
+.../Slay the Spire 2/SlayTheSpire2.app/Contents/MacOS/mods/BaseLib/
+.../Slay the Spire 2/SlayTheSpire2.app/Contents/MacOS/mods/fat_baby_beta/
+```
+
+**Windows**
+
+```text
+.../Steam/steamapps/common/Slay the Spire 2/mods/BaseLib/
+.../Steam/steamapps/common/Slay the Spire 2/mods/fat_baby_beta/
+```
 
 ## 注意
 
-- 不要与稳定版 `fat_baby` 同时用于生产测试；beta 与稳定应使用各自 BaseLib 与 DLL。
-- 若日志出现 `HarmonyException` / `Undefined target method`，先更新 BaseLib 并重新编译本 mod。
+- 本包内的 `BaseLib/` 为 beta 分支配套版本；不要与稳定版 zip 里的 `【001】必装前置` 混用。
+- 不要同时启用稳定版 `fat_baby` 与本包 `fat_baby_beta`。
+- 若日志出现 `HarmonyException` / `Undefined target method`，先更新游戏 beta 分支与 BaseLib，再重新安装本包。
 EOF
 }
 
@@ -97,13 +142,15 @@ main() {
   fi
 
   require_built_artifacts
+  require_baselib
 
   rm -rf "$STAGING_DIR"
-  mkdir -p "$STAGING_DIR/$MOD_ID" "$DIST_DIR"
+  mkdir -p "$STAGING_DIR/$MOD_ID" "$STAGING_DIR/BaseLib" "$DIST_DIR"
 
   cp "$MOD_DIR/mod.json" "$STAGING_DIR/$MOD_ID/mod.json"
   cp "$BUILD_DLL" "$STAGING_DIR/$MOD_ID/$MOD_ID.dll"
   cp "$BUILD_PCK" "$STAGING_DIR/$MOD_ID/$MOD_ID.pck"
+  rsync -a --exclude='.DS_Store' "$BASELIB_SOURCE/" "$STAGING_DIR/BaseLib/"
   write_install_doc
 
   local zip_name="fat-baby-mod-beta-${version}.zip"

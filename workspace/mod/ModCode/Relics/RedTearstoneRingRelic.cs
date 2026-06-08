@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Relics;
 
@@ -73,14 +74,14 @@ public sealed class RedTearstoneRingRelic : RelicModel
 
         if (shouldHaveBonus)
         {
-            await PowerCmd.Apply<StrengthPower>(creature, StrengthBonus, creature, null);
-            await PowerCmd.Apply<MagicPower>(creature, MagicBonus, creature, null);
+            await ModPowerCmd.Apply<StrengthPower>(creature, StrengthBonus, creature, null);
+            await ModPowerCmd.Apply<MagicPower>(creature, MagicBonus, creature, null);
             Flash();
         }
         else
         {
-            await PowerCmd.Apply<StrengthPower>(creature, -StrengthBonus, creature, null);
-            await PowerCmd.Apply<MagicPower>(creature, -MagicBonus, creature, null);
+            await ModPowerCmd.Apply<StrengthPower>(creature, -StrengthBonus, creature, null);
+            await ModPowerCmd.Apply<MagicPower>(creature, -MagicBonus, creature, null);
         }
 
         _bonusActive = shouldHaveBonus;

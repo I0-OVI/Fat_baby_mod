@@ -6,7 +6,7 @@ namespace Mod.ModCode.Powers;
 
 /// <summary>
 /// Marker base for mod powers that supply textures via <see cref="CustomPowerModel.CustomPackedIconPath"/>.
-/// Combat icons are applied in <see cref="Patches.NPowerModIconPatch"/>.
+/// Custom textures are applied by the power icon patches.
 /// </summary>
 public abstract class ModCustomPowerModel : CustomPowerModel;
 

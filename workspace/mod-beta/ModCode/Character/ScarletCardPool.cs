@@ -45,6 +45,8 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<StampUppercut>(),
         ModelDb.Card<RockBall>(),
         ModelDb.Card<GlintstoneChunk>(),
+        ModelDb.Card<HoarfrostStomp>(),
+        ModelDb.Card<BloodSlash>(),
         ModelDb.Card<ReadyStance>(),
         ModelDb.Card<CarianPiercer>(),
         ModelDb.Card<HoulouGroundSlam>(),
@@ -57,6 +59,9 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<PunishingThorns>(),
         ModelDb.Card<CarianRetribution>(),
         ModelDb.Card<LionClaw>(),
+        ModelDb.Card<ZamorIceStorm>(),
+        ModelDb.Card<AdulasMoonblade>(),
+        ModelDb.Card<RennalasFullMoon>(),
         ModelDb.Card<TotemTablet>(),
         ModelDb.Card<RockBlade>(),
         ModelDb.Card<GlintbladePhalanx>(),
@@ -70,6 +75,7 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<BattleCry>(),
         ModelDb.Card<EasyHandling>(),
         ModelDb.Card<Endure>(),
+        ModelDb.Card<RaptorOfMists>(),
         ModelDb.Card<Unburden>(),
         ModelDb.Card<Seppuku>(),
         ModelDb.Card<AllIn>(),
@@ -79,6 +85,8 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<WaitForMeToStart>(),
         ModelDb.Card<CometAzur>(),
         ModelDb.Card<MagicRealm>(),
-        ModelDb.Card<TravelLight>()
+        ModelDb.Card<TravelLight>(),
+        ModelDb.Card<SealOfPromise>(),
+        ModelDb.Card<WhyAreTheyFighting>()
     ];
 }

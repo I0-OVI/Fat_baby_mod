@@ -35,15 +35,27 @@
   "MOD-RED_TEARSTONE_RING_RELIC.description": "当你的生命值不高于最大生命值的 {HpThreshold:diff()}% 时，获得 {Strength:diff()} 点力量和 {Magic:diff()} 点魔力。",
   "MOD-RED_TEARSTONE_RING_RELIC.flavor": "以泪石为名的珍贵大宝石戒指。传说那是女神夸特所流下的哀悼眼泪，而正是因为与死亡相连，眼泪才显得美丽。",
 
-  "MAGIC_SCORPION_CHARM_RELIC.title": "魔力怪手戒指",
+  "MAGIC_SCORPION_CHARM_RELIC.title": "魔力对蝎",
   "MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
-  "MAGIC_SCORPION_CHARM_RELIC.flavor": "握着蓝石的怪异手掌戒指，虽然可以提升魔力属性攻击力，但会降低减伤率。根据隆道尔自古流传的传说，怪异手掌只会在屈服绝望者面前现身。",
+  "MAGIC_SCORPION_CHARM_RELIC.flavor": "采取奇特手段偷袭的刺客们拥有的护符。参考刚蜕皮的蝎子制成，蝎螯夹着魔力色的心脏。",
 
-  "mod-MAGIC_SCORPION_CHARM_RELIC.title": "魔力怪手戒指",
+  "mod-MAGIC_SCORPION_CHARM_RELIC.title": "魔力对蝎",
   "mod-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
-  "mod-MAGIC_SCORPION_CHARM_RELIC.flavor": "握着蓝石的怪异手掌戒指，虽然可以提升魔力属性攻击力，但会降低减伤率。根据隆道尔自古流传的传说，怪异手掌只会在屈服绝望者面前现身。",
+  "mod-MAGIC_SCORPION_CHARM_RELIC.flavor": "采取奇特手段偷袭的刺客们拥有的护符。参考刚蜕皮的蝎子制成，蝎螯夹着魔力色的心脏。",
 
-  "MOD-MAGIC_SCORPION_CHARM_RELIC.title": "魔力怪手戒指",
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.title": "魔力对蝎",
   "MOD-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
-  "MOD-MAGIC_SCORPION_CHARM_RELIC.flavor": "握着蓝石的怪异手掌戒指，虽然可以提升魔力属性攻击力，但会降低减伤率。根据隆道尔自古流传的传说，怪异手掌只会在屈服绝望者面前现身。"
+  "MOD-MAGIC_SCORPION_CHARM_RELIC.flavor": "采取奇特手段偷袭的刺客们拥有的护符。参考刚蜕皮的蝎子制成，蝎螯夹着魔力色的心脏。",
+
+  "fat_baby_beta-MAGIC_SCORPION_CHARM_RELIC.title": "魔力对蝎",
+  "fat_baby_beta-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
+  "fat_baby_beta-MAGIC_SCORPION_CHARM_RELIC.flavor": "采取奇特手段偷袭的刺客们拥有的护符。参考刚蜕皮的蝎子制成，蝎螯夹着魔力色的心脏。",
+
+  "fat_baby_beta-mod-MAGIC_SCORPION_CHARM_RELIC.title": "魔力对蝎",
+  "fat_baby_beta-mod-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
+  "fat_baby_beta-mod-MAGIC_SCORPION_CHARM_RELIC.flavor": "采取奇特手段偷袭的刺客们拥有的护符。参考刚蜕皮的蝎子制成，蝎螯夹着魔力色的心脏。",
+
+  "fat_baby_beta-MOD-MAGIC_SCORPION_CHARM_RELIC.title": "魔力对蝎",
+  "fat_baby_beta-MOD-MAGIC_SCORPION_CHARM_RELIC.description": "战斗开始时，获得 {Magic:diff()} 点魔力。\n敌人对你造成的伤害增加 {DamageTaken:diff()}%。",
+  "fat_baby_beta-MOD-MAGIC_SCORPION_CHARM_RELIC.flavor": "采取奇特手段偷袭的刺客们拥有的护符。参考刚蜕皮的蝎子制成，蝎螯夹着魔力色的心脏。"
 }

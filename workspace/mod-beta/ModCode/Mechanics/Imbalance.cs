@@ -83,8 +83,7 @@ public static class Imbalance
             NextPoiseBonusPower? poiseBonus = applier?.GetPower<NextPoiseBonusPower>();
             if (poiseBonus != null)
             {
-                amount += (int)poiseBonus.Amount;
-                await PowerCmd.Remove(poiseBonus);
+                amount += poiseBonus.GetNextBonus();
             }
         }
 

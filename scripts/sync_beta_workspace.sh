@@ -85,6 +85,7 @@ fi
 
 python3 - <<'PY' "$BETA_DIR/ModCode"
 from pathlib import Path
+import re
 import sys
 
 mod_code_dir = Path(sys.argv[1])
@@ -103,10 +104,11 @@ for path in sorted(mod_code_dir.rglob("*.cs")):
         continue
 
     text = path.read_text(encoding="utf-8")
-    patched = text.replace("PowerCmd.Apply<", "ModPowerCmd.Apply<")
-    patched = patched.replace("PowerCmd.ModifyAmount(", "ModPowerCmd.ModifyAmount(")
-    patched = patched.replace("CombatState? combatState = creature.CombatState;", "ICombatState? combatState = creature.CombatState;")
-    patched = patched.replace("private static bool IsGroupElite(CombatState? combatState)", "private static bool IsGroupElite(ICombatState? combatState)")
+    patched = text.replace("ModModPowerCmd.", "ModPowerCmd.")
+    patched = re.sub(r"(?<!Mod)PowerCmd\.Apply<", "ModPowerCmd.Apply<", patched)
+    patched = re.sub(r"(?<!Mod)PowerCmd\.ModifyAmount\(", "ModPowerCmd.ModifyAmount(", patched)
+    patched = re.sub(r"(?<!I)CombatState\\? combatState = creature\\.CombatState;", "ICombatState? combatState = creature.CombatState;", patched)
+    patched = re.sub(r"private static bool IsGroupElite\\((?<!I)CombatState\\? combatState\\)", "private static bool IsGroupElite(ICombatState? combatState)", patched)
     if patched == text:
         continue
 

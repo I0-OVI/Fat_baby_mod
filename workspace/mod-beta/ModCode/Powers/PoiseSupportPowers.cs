@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
@@ -71,10 +72,36 @@ public sealed class NextDamageReductionPower : CustomPowerModel
 
 public sealed class NextPoiseBonusPower : CustomPowerModel
 {
+    private readonly Queue<int> _bonuses = new();
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
     public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/vulnerable_power.tres";
     public override string CustomBigIconPath => "res://images/powers/vulnerable_power.png";
+
+    public void AddBonus(int amount)
+    {
+        _bonuses.Enqueue(amount);
+    }
+
+    public int GetNextBonus()
+    {
+        return _bonuses.TryPeek(out int bonus) ? bonus : 0;
+    }
+
+    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner == null || cardPlay.Card.Owner?.Creature != Owner || cardPlay.Card.Type != CardType.Attack)
+        {
+            return;
+        }
+
+        if (_bonuses.Count > 0)
+        {
+            _bonuses.Dequeue();
+        }
+        await PowerCmd.Decrement(this);
+    }
 }
 
 public sealed class NextAttackDoublePower : CustomPowerModel
@@ -93,7 +120,7 @@ public sealed class NextAttackDoublePower : CustomPowerModel
     {
         if (Owner != null && cardPlay.Card.Owner?.Creature == Owner && cardPlay.Card.Type == CardType.Attack)
         {
-            await PowerCmd.Remove(this);
+            await PowerCmd.Decrement(this);
         }
     }
 }

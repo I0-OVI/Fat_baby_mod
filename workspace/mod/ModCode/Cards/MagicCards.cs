@@ -15,6 +15,7 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -164,7 +165,7 @@ public sealed class HoulouGroundSlam() : ModCard(2, CardType.Attack, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         await PoiseCardActions.AttackAllAndPoise(this, choiceContext, DynamicVars["Hits"].IntValue);
-        HoulouGroundSlamPower? power = await PowerCmd.Apply<HoulouGroundSlamPower>(Owner.Creature, DynamicVars["NextDamage"].BaseValue, Owner.Creature, this);
+        HoulouGroundSlamPower? power = await ModPowerCmd.Apply<HoulouGroundSlamPower>(Owner.Creature, DynamicVars["NextDamage"].BaseValue, Owner.Creature, this);
         power?.SetPoise(DynamicVars["NextImbalance"].IntValue);
     }
 
@@ -186,7 +187,7 @@ public sealed class CometShard() : ModCard(2, CardType.Attack, CardRarity.Uncomm
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await MagicCardActions.MagicAttack(this, choiceContext, cardPlay.Target);
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
         EnergyCost.AddThisCombat(-DynamicVars["CostReduction"].IntValue, reduceOnly: true);
     }
 
@@ -296,7 +297,7 @@ public sealed class AncientDeathsRancor() : ModCard(2, CardType.Attack, CardRari
             await MagicCardActions.MagicAttack(this, choiceContext, target, playAnim: i == 0);
         }
 
-        AncientDeathsRancorPower? power = await PowerCmd.Apply<AncientDeathsRancorPower>(Owner.Creature, DynamicVars.Damage.BaseValue, Owner.Creature, this);
+        AncientDeathsRancorPower? power = await ModPowerCmd.Apply<AncientDeathsRancorPower>(Owner.Creature, DynamicVars.Damage.BaseValue, Owner.Creature, this);
         power?.SetHits(DynamicVars["Hits"].IntValue);
     }
 
@@ -323,7 +324,7 @@ public sealed class PunishingThorns() : ModCard(1, CardType.Attack, CardRarity.U
             .TargetingAllOpponents(CombatState)
             .WithHitFx("vfx/vfx_attack_slash")
             .Execute(choiceContext);
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade()
@@ -342,7 +343,7 @@ public sealed class CarianRetribution() : ModCard(1, CardType.Attack, CardRarity
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<CarianRetributionPower>(Owner.Creature, DynamicVars["Blocks"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<CarianRetributionPower>(Owner.Creature, DynamicVars["Blocks"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars["Blocks"].UpgradeValueBy(1m);
@@ -357,15 +358,56 @@ public sealed class ProfoundWisdom() : ModCard(1, CardType.Skill, CardRarity.Unc
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, DynamicVars["Magic"].BaseValue, Owner.Creature, this);
         await CardPileCmd.Draw(choiceContext, DynamicVars.Cards.BaseValue, Owner);
     }
 
     protected override void OnUpgrade() => DynamicVars["Magic"].UpgradeValueBy(2m);
 }
 
+public sealed class AdulasMoonblade() : ModCard(2, CardType.Attack, CardRarity.Rare, TargetType.AnyEnemy), IMagicDamageCard
+{
+    public override string PortraitPath => "res://mod/images/card_portraits/adulas_moonblade.png";
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<MagicPower>(),
+        HoverTipFactory.FromPower<FrostbitePower>(),
+        HoverTipFactory.FromPower<AdulasMoonbladePower>()
+    ];
+
+    protected override IEnumerable<DynamicVar> CanonicalVars =>
+    [
+        new DamageVar(20m, ValueProp.Move),
+        new DynamicVar("Repeats", 1m)
+    ];
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        await ExecuteEffect(this, choiceContext, cardPlay.Target);
+        AdulasMoonbladePower? power = await ModPowerCmd.Apply<AdulasMoonbladePower>(
+            Owner.Creature,
+            DynamicVars["Repeats"].BaseValue,
+            Owner.Creature,
+            this);
+        power?.SetSourceCard(this);
+    }
+
+    internal static async Task ExecuteEffect(AdulasMoonblade card, PlayerChoiceContext choiceContext, Creature target)
+    {
+        await MagicCardActions.MagicAttack(card, choiceContext, target);
+        await MagicCardActions.Splash(card, choiceContext, target);
+        await FrostbiteMechanic.Apply(choiceContext, [target], card.Owner.Creature, card);
+    }
+
+    protected override void OnUpgrade() => DynamicVars["Repeats"].UpgradeValueBy(1m);
+}
+
 public sealed class SpiralGlintstone() : ModCard(1, CardType.Attack, CardRarity.Uncommon, TargetType.AnyEnemy), IMagicAttributeCard
 {
+    public override string PortraitPath => "res://mod/images/card_portraits/spiral_glintstone.png";
+
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("HpPercent", 10m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -400,8 +442,8 @@ public sealed class CometAzur() : ModCard(3, CardType.Attack, CardRarity.Rare, T
             }
         }
 
-        await PowerCmd.Apply<StrengthPower>(Owner.Creature, -DynamicVars["Strength"].BaseValue, Owner.Creature, this);
-        await PowerCmd.Apply<MagicPower>(Owner.Creature, -DynamicVars["Magic"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<StrengthPower>(Owner.Creature, -DynamicVars["Strength"].BaseValue, Owner.Creature, this);
+        await ModPowerCmd.Apply<MagicPower>(Owner.Creature, -DynamicVars["Magic"].BaseValue, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);

@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Models;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -71,7 +72,7 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
             int delta = _remainingCharge - _chargePower.Amount;
             if (delta != 0)
             {
-                await PowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this, silent: !showInSidebar);
+                await ModPowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this, silent: !showInSidebar);
             }
             else if (showInSidebar)
             {
@@ -88,7 +89,7 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
             int delta = _remainingCharge - _chargePower.Amount;
             if (delta != 0)
             {
-                await PowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this, silent: !showInSidebar);
+                await ModPowerCmd.ModifyAmount(_chargePower, delta, Owner.Creature, this, silent: !showInSidebar);
             }
             else if (showInSidebar)
             {
@@ -99,7 +100,7 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
         }
 
         await RemoveTrackedChargePower();
-        _chargePower = await PowerCmd.Apply<TPower>(Owner.Creature, _remainingCharge, Owner.Creature, this, silent: !showInSidebar);
+        _chargePower = await ModPowerCmd.Apply<TPower>(Owner.Creature, _remainingCharge, Owner.Creature, this, silent: !showInSidebar);
     }
 
     protected async Task StartChargeCycle(bool showInSidebar = false)
@@ -165,7 +166,7 @@ public abstract class ChargedModCard<TPower>(int cost, CardType type, CardRarity
         _remainingCharge--;
         if (_chargePower != null)
         {
-            int newAmount = await PowerCmd.ModifyAmount(_chargePower, -1m, Owner.Creature, this);
+            int newAmount = await ModPowerCmd.ModifyAmount(_chargePower, -1m, Owner.Creature, this);
             if (newAmount <= 0)
             {
                 _chargePower = null;

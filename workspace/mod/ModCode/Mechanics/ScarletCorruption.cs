@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Mechanics;
 
@@ -27,7 +28,7 @@ public static class ScarletCorruption
         }
 
         decimal previousAmount = owner.GetPower<ScarletCorruptionPower>()?.Amount ?? 0m;
-        await PowerCmd.Apply<ScarletCorruptionPower>(owner, stacks, applier, cardSource);
+        await ModPowerCmd.Apply<ScarletCorruptionPower>(owner, stacks, applier, cardSource);
         decimal currentAmount = owner.GetPower<ScarletCorruptionPower>()?.Amount ?? 0m;
 
         if (currentAmount <= previousAmount)
@@ -62,7 +63,7 @@ public static class ScarletCorruption
             return;
         }
 
-        await PowerCmd.ModifyAmount(power, -stacks, applier, cardSource);
+        await ModPowerCmd.ModifyAmount(power, -stacks, applier, cardSource);
     }
 
     private static Player? FindOwnerPlayer(Creature owner)

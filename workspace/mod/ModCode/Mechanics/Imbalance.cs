@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
 using Mod.ModCode.Powers;
+using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Mechanics;
 
@@ -23,7 +24,7 @@ public static class Imbalance
             return MinionImbalance;
         }
 
-        CombatState? combatState = creature.CombatState;
+        ICombatState? combatState = creature.CombatState;
         RoomType roomType = combatState?.Encounter?.RoomType ?? RoomType.Monster;
 
         return roomType switch
@@ -58,7 +59,7 @@ public static class Imbalance
         {
             if (!enemy.HasPower<ImbalancePower>())
             {
-                await PowerCmd.Apply<ImbalancePower>(enemy, GetInitialValue(enemy), applier, cardSource, silent: true);
+                await ModPowerCmd.Apply<ImbalancePower>(enemy, GetInitialValue(enemy), applier, cardSource, silent: true);
             }
         }
     }
@@ -82,8 +83,7 @@ public static class Imbalance
             NextPoiseBonusPower? poiseBonus = applier?.GetPower<NextPoiseBonusPower>();
             if (poiseBonus != null)
             {
-                amount += (int)poiseBonus.Amount;
-                await PowerCmd.Remove(poiseBonus);
+                amount += poiseBonus.GetNextBonus();
             }
         }
 
@@ -95,7 +95,7 @@ public static class Imbalance
         ImbalancePower? power = target.GetPower<ImbalancePower>();
         if (power == null)
         {
-            await PowerCmd.Apply<ImbalancePower>(target, GetInitialValue(target), applier, cardSource, silent: true);
+            await ModPowerCmd.Apply<ImbalancePower>(target, GetInitialValue(target), applier, cardSource, silent: true);
             power = target.GetPower<ImbalancePower>();
         }
 
@@ -106,11 +106,11 @@ public static class Imbalance
 
         if (amount < power.Amount)
         {
-            await PowerCmd.ModifyAmount(power, -amount, applier, cardSource);
+            await ModPowerCmd.ModifyAmount(power, -amount, applier, cardSource);
             return;
         }
 
-        await PowerCmd.ModifyAmount(power, 1 - power.Amount, applier, cardSource);
+        await ModPowerCmd.ModifyAmount(power, 1 - power.Amount, applier, cardSource);
         await Break(choiceContext, target, applier, cardSource);
     }
 
@@ -136,7 +136,7 @@ public static class Imbalance
         power.SetAmount(GetInitialValue(target), silent: true);
     }
 
-    private static bool IsGroupElite(CombatState? combatState)
+    private static bool IsGroupElite(ICombatState? combatState)
     {
         return combatState?.Enemies.Count(enemy => enemy.IsAlive && enemy.IsMonster) > 1;
     }

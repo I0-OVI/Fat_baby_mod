@@ -10,9 +10,9 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using Mod.ModCode.Commands;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Cards;
 
@@ -426,7 +426,8 @@ public sealed class RockBlade() : ModCard(1, CardType.Skill, CardRarity.Common, 
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await ModPowerCmd.Apply<NextPoiseBonusPower>(Owner.Creature, DynamicVars["Imbalance"].BaseValue, Owner.Creature, this);
+        NextPoiseBonusPower? power = await ModPowerCmd.Apply<NextPoiseBonusPower>(Owner.Creature, 1m, Owner.Creature, this);
+        power?.AddBonus(DynamicVars["Imbalance"].IntValue);
     }
 
     protected override void OnUpgrade()

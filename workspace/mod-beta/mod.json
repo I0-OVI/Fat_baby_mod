@@ -3,7 +3,7 @@
   "name": "Fat Baby (Beta)",
   "author": "carambola",
   "description": "Fat Baby mod build for Slay the Spire 2 beta branch. Install matching BaseLib separately.",
-  "version": "0.1.0-beta.1",
+  "version": "0.0.8--beta",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [
