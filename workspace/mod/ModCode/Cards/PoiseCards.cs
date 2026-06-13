@@ -264,7 +264,11 @@ public sealed class GiantHunt() : ModCard(1, CardType.Attack, CardRarity.Common,
         await ModPowerCmd.Apply<WeakPower>(cardPlay.Target, DynamicVars.Weak.BaseValue, Owner.Creature, this);
     }
 
-    protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(3m);
+    protected override void OnUpgrade()
+    {
+        DynamicVars.Damage.UpgradeValueBy(3m);
+        DynamicVars["Imbalance"].UpgradeValueBy(1m);
+    }
 }
 
 public sealed class CarianSlicer() : ModCard(1, CardType.Attack, CardRarity.Common, TargetType.AnyEnemy), IMagicDamageCard
@@ -300,7 +304,7 @@ public sealed class StampUppercut() : ModCard(2, CardType.Attack, CardRarity.Com
 
     public override bool GainsBlock => true;
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ImbalancePower>()];
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move), new BlockVar(4m, ValueProp.Move), new DynamicVar("Imbalance", 6m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(6m, ValueProp.Move), new BlockVar(4m, ValueProp.Move), new DynamicVar("Imbalance", 7m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {

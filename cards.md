@@ -14,21 +14,25 @@
 | 打击 | `BASIC_ATTACK` | `BasicAttack` | 其他 | 攻击 |
 | 防御 | `BASIC_DEFENSE` | `BasicDefense` | 其他 | 技能 |
 | 夸耀咆哮 | `BATTLE_CRY` | `BattleCry` | 普通 | 技能 |
+| 黑焰仪式 | `BLACK_FLAME_RITUAL` | `BlackFlameRitual` | 罕见 | 技能 |
 | 鲜血斩击 | `BLOOD_SLASH` | `BloodSlash` | 普通 | 攻击 |
 | 鲜血征收 | `BLOOD_LEVY` | `BloodLevy` | 罕见 | 攻击 |
 | 破势如潮 | `BREAKING_MOMENTUM` | `BreakingMomentum` | 稀有 | 能力 |
 | 拳套打击 | `CAESTUS_STRIKE` | `CaestusStrike` | 普通 | 攻击 |
 | 卡利亚贯刺 | `CARIAN_PIERCER` | `CarianPiercer` | 罕见 | 攻击 |
-| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | `CarianRetribution` | 稀有 | 攻击 |
+| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | `CarianRetribution` | 稀有 | 技能 |
 | 卡利亚迅剑 | `CARIAN_SLICER` | `CarianSlicer` | 普通 | 攻击 |
 | 蓄力攻击 | `CHARGED_ATTACK` | `ChargedAttack` | 其他 | 攻击 |
 | 蓄力重击 | `CHARGED_HEAVY_ATTACK` | `ChargedHeavyAttack` | 先古 | 攻击 |
 | 彗星亚兹勒 | `COMET_AZUR` | `CometAzur` | 稀有 | 攻击 |
+| 创星雨 | `STAR_SHOWER` | `StarShower` | 稀有 | 技能 |
 | 旋飞魔砾 | `SPIRAL_GLINTSTONE` | `SpiralGlintstone` | 罕见 | 攻击 |
 | 帚星 | `COMET_SHARD` | `CometShard` | 罕见 | 攻击 |
+| 腐败共鸣 | `CORRUPTION_RESONANCE` | `CorruptionResonance` | 罕见 | 能力 |
 | 腐败感知 | `CORRUPTION_SENSE` | `CorruptionSense` | 罕见 | 能力 |
 | 腐败力量 | `CORRUPTION_STRENGTH` | `CorruptionStrength` | 罕见 | 能力 |
 | 爆散结晶 | `CRYSTAL_BURST` | `CrystalBurst` | 罕见 | 攻击 |
+| 暗月光剑 | `DARK_MOON_GREAT_SWORD` | `DarkMoonGreatSword` | 稀有 | 技能 |
 | 决心 | `DETERMINATION` | `Determination` | 普通 | 技能 |
 | 游刃有余 | `EASY_HANDLING` | `EasyHandling` | 罕见 | 技能 |
 | 元素瓶 | `ELEMENT_FLASK` | `ElementFlask` | 衍生 | 技能 |
@@ -42,15 +46,18 @@
 | 巨剑阵 | `GLINTBLADE_PHALANX` | `GlintbladePhalanx` | 罕见 | 技能 |
 | 大块崩裂辉石 | `GLINTSTONE_CHUNK` | `GlintstoneChunk` | 普通 | 攻击 |
 | 好运 | `GOOD_LUCK` | `GoodLuck` | 稀有 | 技能 |
+| 豪赌 | `GAMBLE` | `Gamble` | 罕见 | 技能 |
 | 反击 | `GUARD_COUNTER` | `GuardCounter` | 其他 | 攻击 |
 | 荷莱露的撼地 | `HOULOU_GROUND_SLAM` | `HoulouGroundSlam` | 罕见 | 攻击 |
 | 冻霜踏地 | `HOARFROST_STOMP` | `HoarfrostStomp` | 普通 | 攻击 |
 | 恫吓 | `INTIMIDATION` | `Intimidation` | 普通 | 技能 |
+| 内在潜力 | `INNER_POTENTIAL` | `InnerPotential` | 稀有 | 技能 |
 | 杰克的酒 | `JACK_WINE` | `JackWine` | 罕见 | 技能 |
 | 狮子斩 | `LION_CLAW` | `LionClaw` | 罕见 | 攻击 |
 | 罗蕾塔的大弓 | `LORETTAS_GREATBOW` | `LorettasGreatbow` | 罕见 | 攻击 |
 | 魔法之境 | `MAGIC_REALM` | `MagicRealm` | 稀有 | 能力 |
 | 黑夜彗星 | `NIGHT_COMET` | `NightComet` | 罕见 | 攻击 |
+| 突刺反击 | `PIERCING_COUNTER` | `PiercingCounter` | 罕见 | 技能 |
 | 掠夺之火 | `PLUNDERING_FIRE` | `PlunderingFire` | 稀有 | 技能 |
 | 祈祷一击 | `PRAYER_STRIKE` | `PrayerStrike` | 罕见 | 攻击 |
 | 深具睿智 | `PROFOUND_WISDOM` | `ProfoundWisdom` | 罕见 | 技能 |
@@ -75,6 +82,7 @@
 | 轻装上阵 | `TRAVEL_LIGHT` | `TravelLight` | 普通 | 技能 |
 | 休战 | `TRUCE` | `Truce` | 普通 | 技能 |
 | 双刺毒花 | `TWIN_STING_POISON_FLOWER` | `TwinStingPoisonFlower` | 罕见 | 攻击 |
+| 此路不通 | `THIS_ROAD_IS_BLOCKED` | `ThisRoadIsBlocked` | 罕见 | 技能 |
 | 卸力 | `UNBURDEN` | `Unburden` | 罕见 | 技能 |
 | 乘胜追击 | `VICTORY_RUSH` | `VictoryRush` | 罕见 | 能力 |
 | 别急，等我启动 | `WAIT_FOR_ME_TO_START` | `WaitForMeToStart` | 稀有 | 技能 |
@@ -84,7 +92,7 @@
 
 ## 实现状态（代码）
 
-共 **72** 张奖池牌 + **1** 张衍生牌（`ELEMENT_FLASK`），与 `tests/card_expectations.json`（73 条）及 `ScarletCardPool` 一致。下表与索引一一对应。
+共 **80** 张奖池牌 + **1** 张衍生牌（`ELEMENT_FLASK`），与 `tests/card_expectations.json`（81 条）及 `ScarletCardPool` 一致。下表与索引一一对应。
 
 | 显示名 | ModelId | 状态 |
 |--------|---------|------|
@@ -94,21 +102,25 @@
 | 打击 | `BASIC_ATTACK` | 已实现（含削韧；显示名「打击」） |
 | 防御 | `BASIC_DEFENSE` | 已实现 |
 | 夸耀咆哮 | `BATTLE_CRY` | 已实现 |
+| 黑焰仪式 | `BLACK_FLAME_RITUAL` | 已实现（抽牌堆选牌回手；随后选手牌消耗） |
 | 鲜血斩击 | `BLOOD_SLASH` | 已实现（失血、攻击、选手牌消耗） |
 | 鲜血征收 | `BLOOD_LEVY` | 已实现 |
 | 破势如潮 | `BREAKING_MOMENTUM` | 已实现 |
 | 拳套打击 | `CAESTUS_STRIKE` | 已实现 |
 | 卡利亚贯刺 | `CARIAN_PIERCER` | 已实现 |
-| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | 已实现（阻止伤害并反击） |
+| 卡利亚式奉还 | `CARIAN_RETRIBUTION` | 已实现（阻止伤害、击晕伤害来源并反击） |
 | 卡利亚迅剑 | `CARIAN_SLICER` | 已实现（纯法术；无削韧） |
 | 蓄力攻击 | `CHARGED_ATTACK` | 已实现（升级 19 伤 / 6 削韧） |
 | 蓄力重击 | `CHARGED_HEAVY_ATTACK` | 已实现（先古；由蓄力攻击变化；下次受伤减免 75%） |
 | 彗星亚兹勒 | `COMET_AZUR` | 已实现（选抽牌堆消耗） |
+| 创星雨 | `STAR_SHOWER` | 已实现（消耗；弃牌堆选 1 回手；升级 0 费无消耗） |
 | 旋飞魔砾 | `SPIRAL_GLINTSTONE` | 已实现（按目标最大生命百分比造成伤害） |
 | 帚星 | `COMET_SHARD` | 已实现 |
+| 腐败共鸣 | `CORRUPTION_RESONANCE` | 已实现（有猩红腐败时回合开始回能） |
 | 腐败感知 | `CORRUPTION_SENSE` | 已实现 |
 | 腐败力量 | `CORRUPTION_STRENGTH` | 已实现 |
 | 爆散结晶 | `CRYSTAL_BURST` | 已实现（溅射；侧栏规则） |
+| 暗月光剑 | `DARK_MOON_GREAT_SWORD` | 已实现（两回合额外魔法属性伤害；可独立到期） |
 | 决心 | `DETERMINATION` | 已实现 |
 | 游刃有余 | `EASY_HANDLING` | 已实现 |
 | 元素瓶 | `ELEMENT_FLASK` | 已实现（衍生；不进牌库/录制清单） |
@@ -122,15 +134,18 @@
 | 巨剑阵 | `GLINTBLADE_PHALANX` | 已实现 |
 | 大块崩裂辉石 | `GLINTSTONE_CHUNK` | 已实现（0 费随机多段；消耗） |
 | 好运 | `GOOD_LUCK` | 已实现 |
+| 豪赌 | `GAMBLE` | 已实现（下回合获得能量） |
 | 反击 | `GUARD_COUNTER` | 已实现（含充能） |
 | 荷莱露的撼地 | `HOULOU_GROUND_SLAM` | 已实现（含下回合追击） |
 | 冻霜踏地 | `HOARFROST_STOMP` | 已实现（群体魔法伤害；冻伤） |
 | 恫吓 | `INTIMIDATION` | 已实现 |
+| 内在潜力 | `INNER_POTENTIAL` | 已实现（本回合与下回合增伤；每回合失去生命） |
 | 杰克的酒 | `JACK_WINE` | 已实现 |
 | 狮子斩 | `LION_CLAW` | 已实现 |
 | 罗蕾塔的大弓 | `LORETTAS_GREATBOW` | 已实现（溅射；侧栏规则） |
 | 魔法之境 | `MAGIC_REALM` | 已实现 |
 | 黑夜彗星 | `NIGHT_COMET` | 已实现 |
+| 突刺反击 | `PIERCING_COUNTER` | 已实现（敌人意图攻击时，本回合增伤） |
 | 掠夺之火 | `PLUNDERING_FIRE` | 已实现（消耗） |
 | 祈祷一击 | `PRAYER_STRIKE` | 已实现 |
 | 深具睿智 | `PROFOUND_WISDOM` | 已实现 |
@@ -155,8 +170,9 @@
 | 轻装上阵 | `TRAVEL_LIGHT` | 已实现 |
 | 休战 | `TRUCE` | 已实现 |
 | 双刺毒花 | `TWIN_STING_POISON_FLOWER` | 已实现 |
+| 此路不通 | `THIS_ROAD_IS_BLOCKED` | 已实现（冻伤条件；本回合减伤） |
 | 卸力 | `UNBURDEN` | 已实现 |
-| 乘胜追击 | `VICTORY_RUSH` | 已实现（击晕后下一张攻击双倍伤害） |
+| 乘胜追击 | `VICTORY_RUSH` | 已实现（击晕后获得能量，下一张攻击双倍伤害） |
 | 别急，等我启动 | `WAIT_FOR_ME_TO_START` | 已实现 |
 | 他们为什么打架 | `WHY_ARE_THEY_FIGHTING` | 已实现（选手牌耗能随机 0–2；升级作用于全部手牌） |
 | 好胜心 | `WILL_TO_WIN` | 已实现 |
@@ -177,25 +193,40 @@
 
 ## 目标卡池规模
 
-奖池按 **86 张**（`+` 不单独计）规划。**当前实装 72 张奖池牌**（普通 21 / 罕见 28 / 稀有 17 / 其他 4 / 先古 2）+ 衍生 1 张；距目标还差 **14** 张奖池牌。
+奖池按 **86 张**（`+` 不单独计）规划。
+
+- **当前实装：80 张奖池牌**（普通 21 / 罕见 33 / 稀有 20 / 其他 4 / 先古 2）+ 衍生 1 张；距目标还差 **6** 张实装。
+- **当前已设计：80 张奖池牌**（普通 21 / 罕见 33 / 稀有 20 / 其他 4 / 先古 2）；距目标还需设计 **6** 张。
+- 已设计卡牌均已实装。
+
+### 剩余设计建议
+
+攻击牌已有 35 张、技能已有 35 张，不建议继续增加攻击或技能。剩余 6 张优先设计为能力牌。
+
+| 方向 | 建议张数 | 主要用途 |
+|---|---:|---|
+| 防御与生存能力 | 2 | 将削韧、冻伤或猩红腐败转化为稳定防御 |
+| 冻伤核心能力 | 2 | 提供冻伤收益与流派成长 |
+| 削韧核心能力 | 1 | 为眩晕流提供中长期收益 |
+| 魔力或混合流能力 | 1 | 连接魔力、力量、削韧等机制 |
 
 ### 稀有度分布
 
 | 稀有度 | 目标张数 |
 |---|---:|
-| 普通 | 20 |
+| 普通 | 21 |
 | 罕见 | 35 |
-| 稀有 | 25 |
-| 其他 | 6 |
+| 稀有 | 24 |
+| 其他 | 4 |
 | 先古 | 2 |
 
 ### 费用分布
 
 | 费用 | 目标张数 |
 |---|---:|
-| 0 费 | 12 |
-| 1 费 | 50 |
-| 2 费 | 15 |
+| 0 费 | 9 |
+| 1 费 | 48 |
+| 2 费 | 20 |
 | 3 费 | 7 |
 | X 费 | 2 |
 
@@ -203,9 +234,9 @@
 
 | 类型 | 目标张数 |
 |---|---:|
-| 攻击 | 34 |
-| 技能 | 34 |
-| 能力 | 18 |
+| 攻击 | 35 |
+| 技能 | 35 |
+| 能力 | 16 |
 
 ## 卡牌模板
 
@@ -966,6 +997,7 @@ boss 失衡值 25
 - 稀有度: 罕见
 
 ### 黑焰仪式
+- ModelId: `BLACK_FLAME_RITUAL`
 
 - 费用: 1
 - 类型: 技能
@@ -977,6 +1009,21 @@ boss 失衡值 25
 - 费用: 1
 - 类型: 技能
 - 效果: 从牌堆挑选2张加入手中 消耗2张牌
+- 稀有度: 罕见
+
+### 此路不通
+- ModelId: `THIS_ROAD_IS_BLOCKED`
+
+- 费用: 1
+- 类型: 技能
+- 效果: 如果敌人身上有冻伤异常 本回合受到伤害降低25%
+- 稀有度: 罕见
+
+### 此路不通+
+
+- 费用: 1
+- 类型: 技能
+- 效果: 如果敌人身上有冻伤异常 本回合受到伤害降低50%
 - 稀有度: 罕见
 
 ### 潜雾猛禽
@@ -1085,6 +1132,37 @@ boss 失衡值 25
 - 效果: 失去2点生命 消耗手中所有的牌 每消耗一张牌 获得1点力量和1点魔力 消耗
 - 稀有度: 罕见
 
+### 突刺反击
+- ModelId: `PIERCING_COUNTER`
+
+- 费用: 0
+- 类型: 技能
+- 效果: 如果任意敌人意图攻击，本回合造成的伤害提高20%（每次伤害至少额外提高1点；括号内的内容不写入卡面）
+- 稀有度: 罕见
+
+### 突刺反击+
+
+- 费用: 0
+- 类型: 技能
+- 效果: 如果任意敌人意图攻击，本回合造成的伤害提高25%（每次伤害至少额外提高1点；括号内的内容不写入卡面）
+- 稀有度: 罕见
+
+### 豪赌
+- ModelId: `GAMBLE`
+
+- 费用: 2
+- 类型: 技能
+- 效果: 下回合获得5点能量
+- 稀有度: 罕见
+
+### 豪赌+
+
+- 费用: 1
+- 类型: 技能
+- 效果: 下回合获得6点能量
+- 稀有度: 罕见
+
+
 ### 孤注一掷
 - ModelId: `ALL_IN`
 
@@ -1143,6 +1221,21 @@ boss 失衡值 25
 - 费用: 3
 - 类型: 技能
 - 效果: 固有 消耗 三回合内不会受到任何伤害 获得三层虚弱 手牌保留三轮
+- 稀有度: 稀有
+
+### 内在潜力
+- ModelId: `INNER_POTENTIAL`
+
+- 费用: 1
+- 类型: 技能
+- 效果: 消耗 本回合与下回合，你造成的伤害提高30%；每回合失去5点生命
+- 稀有度: 稀有
+
+### 内在潜力+
+
+- 费用: 1
+- 类型: 技能
+- 效果: 保留 消耗 本回合与下回合，你造成的伤害提高30%；每回合失去5点生命
 - 稀有度: 稀有
 
 ### 卡利亚式奉还
@@ -1207,6 +1300,7 @@ boss 失衡值 25
 - 稀有度: 稀有
 
 ### 创星雨
+- ModelId: `STAR_SHOWER`
 
 - 费用: 1
 - 类型: 技能
@@ -1218,6 +1312,21 @@ boss 失衡值 25
 - 费用: 0
 - 类型: 技能
 - 效果: 从弃牌堆中挑选一张牌加入手中
+- 稀有度: 稀有
+
+### 暗月光剑
+- ModelId: `DARK_MOON_GREAT_SWORD`
+
+- 费用: 1
+- 类型: 技能
+- 效果: 消耗 两回合内 造成的伤害额外增加4点魔法属性伤害
+- 稀有度: 稀有
+
+### 暗月光剑+
+
+- 费用: 0
+- 类型: 技能
+- 效果: 消耗 两回合内 造成的伤害额外增加5点魔法属性伤害
 - 稀有度: 稀有
 
 ## 能力
@@ -1272,14 +1381,14 @@ boss 失衡值 25
 
 - 费用: 2
 - 类型: 能力
-- 效果: 击晕敌人时 获得1费 打出的下一张攻击牌会被额外打出一次
+- 效果: 击晕敌人时 获得1费 下一张攻击牌造成双倍伤害
 - 稀有度: 罕见
 
 ### 乘胜追击+
 
 - 费用: 1
 - 类型: 能力
-- 效果: 击晕敌人时 获得1费 打出的下一张攻击牌会被额外打出一次
+- 效果: 击晕敌人时 获得1费 下一张攻击牌造成双倍伤害
 - 稀有度: 罕见
 
 ### 猩红诱惑
@@ -1311,6 +1420,22 @@ boss 失衡值 25
 - 类型: 能力
 - 效果: 每回合开始阶段 获得4点魔力并获得10点格挡
 - 稀有度: 稀有
+
+
+### 腐败共鸣
+- ModelId: `CORRUPTION_RESONANCE`
+
+- 费用: 2
+- 类型: 能力
+- 效果: 回合开始如果有猩红腐败异常 获得1点能量
+- 稀有度: 罕见
+
+### 腐败共鸣+
+
+- 费用: 1
+- 类型: 能力
+- 效果: 回合开始如果有猩红腐败异常 获得1点能量
+- 稀有度: 罕见
 
 ### 垃圾王的庇佑
 - ModelId: `GARBAGE_KING_BLESSING`

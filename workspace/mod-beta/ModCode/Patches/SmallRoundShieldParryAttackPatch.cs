@@ -8,8 +8,8 @@ using Mod.ModCode.Powers;
 namespace Mod.ModCode.Patches;
 
 /// <summary>
-/// Lets Small Round Shield Parry interrupt the rest of the current multi-hit attack
-/// after the first parried hit stuns the attacker.
+/// Lets parry powers interrupt the rest of the current multi-hit attack
+/// after the first prevented hit stuns the attacker.
 /// </summary>
 [HarmonyPatch(typeof(AttackCommand), nameof(AttackCommand.Execute))]
 internal static class SmallRoundShieldParryAttackPatch
@@ -30,6 +30,13 @@ internal static class SmallRoundShieldParryAttackPatch
 
         foreach (SmallRoundShieldParryPower power in attacker.CombatState.Creatures
             .SelectMany(creature => creature.GetPowerInstances<SmallRoundShieldParryPower>())
+            .ToList())
+        {
+            await power.CompleteInterruptedAttackAsync(attacker);
+        }
+
+        foreach (CarianRetributionPower power in attacker.CombatState.Creatures
+            .SelectMany(creature => creature.GetPowerInstances<CarianRetributionPower>())
             .ToList())
         {
             await power.CompleteInterruptedAttackAsync(attacker);

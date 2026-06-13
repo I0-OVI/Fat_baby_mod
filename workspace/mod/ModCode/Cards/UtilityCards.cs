@@ -350,9 +350,11 @@ public sealed class AllIn() : ModCard(0, CardType.Skill, CardRarity.Uncommon, Ta
 
     private PlayerChoiceContext? _pendingChoiceContext;
     private int _pendingPlayCount;
+    private bool _resolvedLateHook;
 
     protected override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        _resolvedLateHook = false;
         _pendingChoiceContext = choiceContext;
         int xValue = cardPlay.Resources.EnergySpent;
         if (xValue <= 0 && HasEnergyCostX)
@@ -371,11 +373,12 @@ public sealed class AllIn() : ModCard(0, CardType.Skill, CardRarity.Uncommon, Ta
             return;
         }
 
-        if (oldPileType != PileType.Play || Pile?.Type != PileType.Discard)
+        if (oldPileType != PileType.Play || Pile?.Type != PileType.Discard || _resolvedLateHook)
         {
             return;
         }
 
+        _resolvedLateHook = true;
         PlayerChoiceContext? choiceContext = _pendingChoiceContext;
         int playCount = _pendingPlayCount;
         if (playCount <= 0)
@@ -407,11 +410,14 @@ public sealed class AllIn() : ModCard(0, CardType.Skill, CardRarity.Uncommon, Ta
             return;
         }
 
+        AllInReplayTracker.BeginRepeatBatch(Owner, choiceContext, selectedCard);
         for (int i = 0; i < playCount; i++)
         {
             CardModel copy = CombatState.CloneCard(selectedCard);
             AllInReplayTracker.EnqueueCopy(Owner, choiceContext, copy);
         }
+
+        AllInReplayTracker.RequestDrain(Owner);
     }
 
     protected override void OnUpgrade() => DynamicVars["BonusPlays"].UpgradeValueBy(1m);
@@ -448,6 +454,7 @@ public sealed class Ember() : ModCard(1, CardType.Power, CardRarity.Uncommon, Ta
     protected override void OnUpgrade()
     {
         DynamicVars["Strength"].UpgradeValueBy(1m);
+        DynamicVars["Magic"].UpgradeValueBy(1m);
         DynamicVars["MaxHp"].UpgradeValueBy(1m);
     }
 }

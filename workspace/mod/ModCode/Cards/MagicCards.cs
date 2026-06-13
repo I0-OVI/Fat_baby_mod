@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using Mod.ModCode.Mechanics;
@@ -297,8 +298,11 @@ public sealed class AncientDeathsRancor() : ModCard(2, CardType.Attack, CardRari
             await MagicCardActions.MagicAttack(this, choiceContext, target, playAnim: i == 0);
         }
 
-        AncientDeathsRancorPower? power = await ModPowerCmd.Apply<AncientDeathsRancorPower>(Owner.Creature, DynamicVars.Damage.BaseValue, Owner.Creature, this);
-        power?.SetHits(DynamicVars["Hits"].IntValue);
+        if (!AllInReplayTracker.IsReplayCopy(this))
+        {
+            AncientDeathsRancorPower? power = await ModPowerCmd.Apply<AncientDeathsRancorPower>(Owner.Creature, 1m, Owner.Creature, this);
+            power?.Configure(DynamicVars["Hits"].IntValue, DynamicVars.Damage.BaseValue);
+        }
     }
 
     protected override void OnUpgrade() => DynamicVars["Hits"].UpgradeValueBy(1m);
@@ -334,16 +338,25 @@ public sealed class PunishingThorns() : ModCard(1, CardType.Attack, CardRarity.U
     }
 }
 
-public sealed class CarianRetribution() : ModCard(1, CardType.Attack, CardRarity.Rare, TargetType.Self)
+public sealed class CarianRetribution() : ModCard(1, CardType.Skill, CardRarity.Rare, TargetType.Self), IMagicAttributeCard
 {
     public override string PortraitPath => "res://mod/images/card_portraits/carian_retribution.png";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<CarianRetributionPower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    [
+        HoverTipFactory.FromPower<CarianRetributionPower>(),
+        StunIntent.GetStaticHoverTip()
+    ];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Blocks", 1m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await ModPowerCmd.Apply<CarianRetributionPower>(Owner.Creature, DynamicVars["Blocks"].BaseValue, Owner.Creature, this);
+        CarianRetributionPower? power = await ModPowerCmd.Apply<CarianRetributionPower>(
+            Owner.Creature,
+            DynamicVars["Blocks"].BaseValue,
+            Owner.Creature,
+            this);
+        power?.SetSourceCard(this);
     }
 
     protected override void OnUpgrade() => DynamicVars["Blocks"].UpgradeValueBy(1m);
@@ -386,12 +399,15 @@ public sealed class AdulasMoonblade() : ModCard(2, CardType.Attack, CardRarity.R
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
         await ExecuteEffect(this, choiceContext, cardPlay.Target);
-        AdulasMoonbladePower? power = await ModPowerCmd.Apply<AdulasMoonbladePower>(
-            Owner.Creature,
-            DynamicVars["Repeats"].BaseValue,
-            Owner.Creature,
-            this);
-        power?.SetSourceCard(this);
+        if (!AllInReplayTracker.IsReplayCopy(this))
+        {
+            AdulasMoonbladePower? power = await ModPowerCmd.Apply<AdulasMoonbladePower>(
+                Owner.Creature,
+                DynamicVars["Repeats"].BaseValue,
+                Owner.Creature,
+                this);
+            power?.SetSourceCard(this);
+        }
     }
 
     internal static async Task ExecuteEffect(AdulasMoonblade card, PlayerChoiceContext choiceContext, Creature target)

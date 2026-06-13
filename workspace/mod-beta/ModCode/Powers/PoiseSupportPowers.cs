@@ -113,15 +113,22 @@ public sealed class NextAttackDoublePower : CustomPowerModel
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        return Owner != null && dealer == Owner && cardSource?.Type == CardType.Attack ? 2m : 1m;
+        if (Owner == null || dealer != Owner || amount <= 0m || Amount <= 0m || cardSource?.Type != CardType.Attack)
+        {
+            return 1m;
+        }
+
+        return 2m;
     }
 
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        if (Owner != null && cardPlay.Card.Owner?.Creature == Owner && cardPlay.Card.Type == CardType.Attack)
+        if (Owner == null || cardPlay.Card.Owner?.Creature != Owner || cardPlay.Card.Type != CardType.Attack)
         {
-            await PowerCmd.Decrement(this);
+            return;
         }
+
+        await PowerCmd.Decrement(this);
     }
 }
 

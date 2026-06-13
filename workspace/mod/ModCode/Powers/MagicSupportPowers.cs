@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BaseLib.Abstracts;
@@ -87,6 +88,7 @@ public sealed class AdulasMoonbladePower : CustomPowerModel
 public sealed class AncientDeathsRancorPower : CustomPowerModel
 {
     private int _hits = 6;
+    private decimal _damagePerHit = 2m;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -94,9 +96,10 @@ public sealed class AncientDeathsRancorPower : CustomPowerModel
     public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/focus_power.tres";
     public override string CustomBigIconPath => "res://images/powers/focus_power.png";
 
-    public void SetHits(int hits)
+    public void Configure(int hits, decimal damagePerHit)
     {
         _hits = hits;
+        _damagePerHit = damagePerHit;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
@@ -106,15 +109,19 @@ public sealed class AncientDeathsRancorPower : CustomPowerModel
             return;
         }
 
-        for (int i = 0; i < _hits; i++)
+        int repeats = Math.Max(0, (int)Amount);
+        for (int repeat = 0; repeat < repeats; repeat++)
         {
-            Creature? target = MagicCardActions.RandomEnemy(Owner);
-            if (target == null)
+            for (int i = 0; i < _hits; i++)
             {
-                break;
-            }
+                Creature? target = MagicCardActions.RandomEnemy(Owner);
+                if (target == null)
+                {
+                    break;
+                }
 
-            await CreatureCmd.Damage(choiceContext, target, Amount, ValueProp.Move, Owner, null);
+                await CreatureCmd.Damage(choiceContext, target, _damagePerHit, ValueProp.Move, Owner, null);
+            }
         }
 
         await PowerCmd.Remove(this);
@@ -123,8 +130,11 @@ public sealed class AncientDeathsRancorPower : CustomPowerModel
 
 public sealed class CarianRetributionPower : CustomPowerModel
 {
+    private CardModel? _sourceCard;
     private Creature? _counterTarget;
     private decimal _counterDamage;
+    private Creature? _interruptedAttackTarget;
+    private bool _removeAfterInterruptedAttack;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -132,8 +142,18 @@ public sealed class CarianRetributionPower : CustomPowerModel
     public override string CustomPackedIconPath => "res://mod/images/powers/buckler_shield_power.png";
     public override string CustomBigIconPath => "res://mod/images/powers/big/buckler_shield_power.png";
 
+    public void SetSourceCard(CardModel sourceCard)
+    {
+        _sourceCard = sourceCard;
+    }
+
     public override decimal ModifyHpLostAfterOstyLate(Creature target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
+        if (Owner != null && target == Owner && amount > 0m && dealer != null && dealer == _interruptedAttackTarget && dealer.IsStunned)
+        {
+            return 0m;
+        }
+
         if (Owner == null || target != Owner || amount <= 0m || dealer == null || dealer == Owner)
         {
             return amount;
@@ -156,11 +176,41 @@ public sealed class CarianRetributionPower : CustomPowerModel
         _counterTarget = null;
         _counterDamage = 0m;
 
+        bool interruptedAttack = false;
         if (counterTarget.IsAlive)
         {
-            await CreatureCmd.Damage(choiceContext, counterTarget, counterDamage, ValueProp.Move | ValueProp.Unpowered, Owner, null);
+            await CreatureCmd.Stun(counterTarget);
+            await BreakingMomentumPower.Trigger(choiceContext, Owner, _sourceCard);
+            interruptedAttack = counterTarget.IsStunned;
+            if (interruptedAttack)
+            {
+                _interruptedAttackTarget = counterTarget;
+            }
+
+            await CreatureCmd.Damage(choiceContext, counterTarget, counterDamage, ValueProp.Move | ValueProp.Unpowered, Owner, _sourceCard);
+        }
+
+        if (interruptedAttack && Amount <= 1)
+        {
+            _removeAfterInterruptedAttack = true;
+            return;
         }
 
         await PowerCmd.Decrement(this);
+    }
+
+    internal async Task CompleteInterruptedAttackAsync(Creature attacker)
+    {
+        if (_interruptedAttackTarget == null || attacker != _interruptedAttackTarget)
+        {
+            return;
+        }
+
+        _interruptedAttackTarget = null;
+        if (_removeAfterInterruptedAttack)
+        {
+            _removeAfterInterruptedAttack = false;
+            await PowerCmd.Remove(this);
+        }
     }
 }

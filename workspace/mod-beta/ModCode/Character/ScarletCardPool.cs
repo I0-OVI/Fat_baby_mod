@@ -87,6 +87,14 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<MagicRealm>(),
         ModelDb.Card<TravelLight>(),
         ModelDb.Card<SealOfPromise>(),
-        ModelDb.Card<WhyAreTheyFighting>()
+        ModelDb.Card<WhyAreTheyFighting>(),
+        ModelDb.Card<StarShower>(),
+        ModelDb.Card<BlackFlameRitual>(),
+        ModelDb.Card<ThisRoadIsBlocked>(),
+        ModelDb.Card<DarkMoonGreatSword>(),
+        ModelDb.Card<CorruptionResonance>(),
+        ModelDb.Card<PiercingCounter>(),
+        ModelDb.Card<Gamble>(),
+        ModelDb.Card<InnerPotential>()
     ];
 }

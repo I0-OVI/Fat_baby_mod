@@ -111,6 +111,10 @@ git push origin v0.0.1
 
 不包含：`extract/`（反编译参考）、根目录 `assets/`（原始视频/参考素材），体积过大。实际随 Mod 发布的图片资源在 `workspace/mod/mod/images/`。
 
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
 ## 平台说明
 
 - **游玩**：Windows / macOS 均可（使用 Releases 中的 zip）。

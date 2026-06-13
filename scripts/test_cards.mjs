@@ -203,7 +203,8 @@ function parseCards() {
       }
       canonicalKeywords.sort();
       const upgradeKeywords = sorted([...body.matchAll(/AddKeyword\s*\(\s*CardKeyword\.(\w+)\s*\)/g)].map((keyword) => keyword[1]));
-      const upgradedKeywords = sorted(new Set([...canonicalKeywords, ...upgradeKeywords]));
+      const removeKeywords = new Set([...body.matchAll(/RemoveKeyword\s*\(\s*CardKeyword\.(\w+)\s*\)/g)].map((keyword) => keyword[1]));
+      const upgradedKeywords = sorted(new Set([...canonicalKeywords, ...upgradeKeywords].filter((keyword) => !removeKeywords.has(keyword))));
 
       cards.set(className, {
         className,
@@ -270,7 +271,11 @@ function checkCards() {
     const expectedKeywords = sorted(expected.keywords ?? []);
     const expectedUpgrade = expected.upgrade ?? {};
     const expectedUpgradeVars = { ...(expected.vars ?? {}), ...(expectedUpgrade.vars ?? {}) };
-    const expectedUpgradedKeywords = sorted(new Set([...expectedKeywords, ...(expectedUpgrade.keywords ?? [])]));
+    const expectedUpgradedKeywords = sorted(new Set(
+      [...expectedKeywords, ...(expectedUpgrade.keywords ?? [])].filter(
+        (keyword) => !(expectedUpgrade.removeKeywords ?? []).includes(keyword)
+      )
+    ));
 
     compareValue(expected.class, "id", actual.id, expected.id);
     compareValue(expected.class, "cost", actual.cost, expected.cost);
@@ -411,6 +416,7 @@ function checkMagicDamageFormula() {
 
 function checkSmallRoundShieldParry() {
   const powerSource = readModCodeText("Powers/PoiseSupportPowers.cs");
+  const magicPowerSource = readModCodeText("Powers/MagicSupportPowers.cs");
   const patchSource = readModCodeText("Patches/SmallRoundShieldParryAttackPatch.cs");
 
   if (!/SmallRoundShieldParryPower[\s\S]*_interruptedAttackTarget[\s\S]*dealer\s*==\s*_interruptedAttackTarget[\s\S]*dealer\.IsStunned[\s\S]*return\s+0m/.test(powerSource)) {
@@ -419,6 +425,14 @@ function checkSmallRoundShieldParry() {
 
   if (!/AttackCommand[\s\S]*Execute[\s\S]*CompleteInterruptedAttackAsync/.test(patchSource)) {
     fail("SmallRoundShieldParryAttackPatch: parry interrupt state must clean up after AttackCommand.Execute");
+  }
+
+  if (!/CarianRetributionPower[\s\S]*CreatureCmd\.Stun[\s\S]*_interruptedAttackTarget[\s\S]*CompleteInterruptedAttackAsync/.test(magicPowerSource)) {
+    fail("CarianRetributionPower: prevented damage must Stun its source and interrupt the rest of that Attack");
+  }
+
+  if (!/GetPowerInstances<CarianRetributionPower>/.test(patchSource)) {
+    fail("SmallRoundShieldParryAttackPatch: Carian Retribution interrupt state must clean up after AttackCommand.Execute");
   }
 }
 
@@ -434,8 +448,8 @@ function checkStackedNextAttackPowers() {
   }
 
   const doublePower = powerBlock("NextAttackDoublePower");
-  if (!/AfterCardPlayed[\s\S]*CardType\.Attack[\s\S]*PowerCmd\.Decrement\s*\(\s*this\s*\)/.test(doublePower) || /PowerCmd\.Remove\s*\(\s*this\s*\)/.test(doublePower)) {
-    fail("NextAttackDoublePower: each Attack must consume exactly one stacked use");
+  if (!/ModifyDamageMultiplicative[\s\S]*CardType\.Attack[\s\S]*return\s+2m[\s\S]*AfterCardPlayed[\s\S]*PowerCmd\.Decrement\s*\(\s*this\s*\)/.test(doublePower) || /PowerCmd\.Remove\s*\(\s*this\s*\)/.test(doublePower)) {
+    fail("NextAttackDoublePower: the next Attack must deal double damage and consume exactly one stacked use");
   }
 
   const poisePower = powerBlock("NextPoiseBonusPower");

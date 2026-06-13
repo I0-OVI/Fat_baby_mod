@@ -25,7 +25,10 @@ internal static class AllInReplayPatch
 
         foreach (Player player in runState.Players)
         {
-            await AllInReplayTracker.DrainPendingAsync(player);
+            if (AllInReplayTracker.TryConsumeDrainRequest(player))
+            {
+                await AllInReplayTracker.DrainPendingAsync(player);
+            }
         }
     }
 }

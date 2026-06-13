@@ -84,7 +84,7 @@ public sealed class RaptorOfMistsPower : ModCustomPowerModel
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        return target == Owner && amount > 0m ? 0.75m : 1m;
+        return target == Owner && amount > 0m ? System.Math.Max(0m, 1m - Amount / 100m) : 1m;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, MegaCrit.Sts2.Core.Entities.Players.Player player)

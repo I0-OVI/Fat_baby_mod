@@ -447,7 +447,8 @@
       },
       "upgrade": {
         "vars": {
-          "Damage": 8
+          "Damage": 8,
+          "Imbalance": 4
         }
       }
     },
@@ -480,7 +481,7 @@
       "vars": {
         "Damage": 6,
         "Block": 4,
-        "Imbalance": 6
+        "Imbalance": 7
       },
       "upgrade": {
         "vars": {
@@ -800,6 +801,7 @@
       "upgrade": {
         "vars": {
           "Strength": 2,
+          "Magic": 2,
           "MaxHp": 3
         }
       }
@@ -1010,7 +1012,7 @@
       "class": "CarianRetribution",
       "id": "CARIAN_RETRIBUTION",
       "cost": 1,
-      "type": "Attack",
+      "type": "Skill",
       "rarity": "Rare",
       "target": "Self",
       "vars": {
@@ -1246,7 +1248,14 @@
       "type": "Skill",
       "rarity": "Uncommon",
       "target": "Self",
-      "vars": {}
+      "vars": {
+        "Reduction": 25
+      },
+      "upgrade": {
+        "vars": {
+          "Reduction": 50
+        }
+      }
     },
     {
       "class": "SealOfPromise",
@@ -1272,6 +1281,147 @@
       "rarity": "Rare",
       "target": "Self",
       "vars": {}
+    },
+    {
+      "class": "StarShower",
+      "id": "STAR_SHOWER",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {},
+      "upgrade": {
+        "cost": 0,
+        "removeKeywords": [
+          "Exhaust"
+        ]
+      }
+    },
+    {
+      "class": "BlackFlameRitual",
+      "id": "BLACK_FLAME_RITUAL",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Cards": 1,
+        "Exhaust": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 2,
+          "Exhaust": 2
+        }
+      }
+    },
+    {
+      "class": "ThisRoadIsBlocked",
+      "id": "THIS_ROAD_IS_BLOCKED",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Reduction": 25
+      },
+      "upgrade": {
+        "vars": {
+          "Reduction": 50
+        }
+      }
+    },
+    {
+      "class": "DarkMoonGreatSword",
+      "id": "DARK_MOON_GREAT_SWORD",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "Turns": 2,
+        "BonusDamage": 4
+      },
+      "upgrade": {
+        "cost": 0,
+        "vars": {
+          "BonusDamage": 5
+        }
+      }
+    },
+    {
+      "class": "CorruptionResonance",
+      "id": "CORRUPTION_RESONANCE",
+      "cost": 2,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Energy": 1
+      },
+      "upgrade": {
+        "cost": 1
+      }
+    },
+    {
+      "class": "PiercingCounter",
+      "id": "PIERCING_COUNTER",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "DamageIncrease": 20
+      },
+      "upgrade": {
+        "vars": {
+          "DamageIncrease": 25
+        }
+      }
+    },
+    {
+      "class": "Gamble",
+      "id": "GAMBLE",
+      "cost": 2,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Energy": 5
+      },
+      "upgrade": {
+        "cost": 1,
+        "vars": {
+          "Energy": 6
+        }
+      }
+    },
+    {
+      "class": "InnerPotential",
+      "id": "INNER_POTENTIAL",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "DamageIncrease": 30,
+        "HpLoss": 5,
+        "Turns": 2
+      },
+      "upgrade": {
+        "keywords": [
+          "Retain"
+        ]
+      }
     },
     {
       "class": "ElementFlask",

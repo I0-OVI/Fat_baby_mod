@@ -148,10 +148,15 @@ public sealed class RaptorOfMists() : ModCard(1, CardType.Skill, CardRarity.Unco
     public override string PortraitPath => "res://mod/images/card_portraits/raptor_of_mists.png";
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<RaptorOfMistsPower>()];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Reduction", 25m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await ModPowerCmd.Apply<RaptorOfMistsPower>(Owner.Creature, 1m, Owner.Creature, this);
+        await ModPowerCmd.Apply<RaptorOfMistsPower>(
+            Owner.Creature,
+            DynamicVars["Reduction"].BaseValue,
+            Owner.Creature,
+            this);
 
         CardModel? selectedCard = (await CardSelectCmd.FromSimpleGrid(
             choiceContext,
@@ -164,9 +169,7 @@ public sealed class RaptorOfMists() : ModCard(1, CardType.Skill, CardRarity.Unco
         }
     }
 
-    protected override void OnUpgrade()
-    {
-    }
+    protected override void OnUpgrade() => DynamicVars["Reduction"].UpgradeValueBy(25m);
 }
 
 public sealed class SealOfPromise() : ModCard(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
@@ -232,5 +235,33 @@ public sealed class WhyAreTheyFighting() : ModCard(1, CardType.Skill, CardRarity
 
     protected override void OnUpgrade()
     {
+    }
+}
+
+public sealed class StarShower() : ModCard(1, CardType.Skill, CardRarity.Rare, TargetType.Self)
+{
+    public override string PortraitPath => "res://mod/images/card_portraits/star_shower.png";
+
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [CardKeyword.Exhaust];
+
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromKeyword(CardKeyword.Exhaust)];
+
+    protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        CardModel? selectedCard = (await CardSelectCmd.FromSimpleGrid(
+            choiceContext,
+            PileType.Discard.GetPile(Owner).Cards,
+            Owner,
+            new CardSelectorPrefs(SelectionScreenPrompt, 1))).FirstOrDefault();
+        if (selectedCard != null)
+        {
+            await CardPileCmd.Add(selectedCard, PileType.Hand);
+        }
+    }
+
+    protected override void OnUpgrade()
+    {
+        EnergyCost.UpgradeBy(-1);
+        RemoveKeyword(CardKeyword.Exhaust);
     }
 }
