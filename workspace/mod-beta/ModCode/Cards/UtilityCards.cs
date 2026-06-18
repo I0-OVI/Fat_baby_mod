@@ -142,11 +142,11 @@ public sealed class Determination() : ModCard(1, CardType.Skill, CardRarity.Comm
 {
     public override string PortraitPath => "res://mod/images/card_portraits/determination.png";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<NextAttackDoublePower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<DeterminationPower>()];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await ModPowerCmd.Apply<NextAttackDoublePower>(Owner.Creature, 1m, Owner.Creature, this);
+        await ModPowerCmd.Apply<DeterminationPower>(Owner.Creature, 1m, Owner.Creature, this);
     }
 
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);

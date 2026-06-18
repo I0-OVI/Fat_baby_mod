@@ -20,13 +20,19 @@ internal static class PoiseCardActions
 {
     public static async Task AttackAndPoise(ModCard card, PlayerChoiceContext choiceContext, Creature target, int hits = 1)
     {
+        var attack = DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
+            .FromCard(card)
+            .Targeting(target)
+            .WithHitFx("vfx/vfx_attack_slash");
+
+        if (hits > 1)
+        {
+            attack.WithHitCount(hits);
+        }
+
+        await attack.Execute(choiceContext);
         for (int i = 0; i < hits; i++)
         {
-            await DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
-                .FromCard(card)
-                .Targeting(target)
-                .WithHitFx("vfx/vfx_attack_slash")
-                .Execute(choiceContext);
             await Imbalance.Reduce(choiceContext, target, card.DynamicVars["Imbalance"].IntValue, card.Owner.Creature, card);
         }
     }
@@ -38,15 +44,21 @@ internal static class PoiseCardActions
             return;
         }
 
+        IReadOnlyList<Creature> targets = card.CombatState.HittableEnemies.ToList();
+        var attack = DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
+            .FromCard(card)
+            .TargetingAllOpponents(card.CombatState)
+            .WithHitFx("vfx/vfx_attack_slash");
+
+        if (hits > 1)
+        {
+            attack.WithHitCount(hits);
+        }
+
+        await attack.Execute(choiceContext);
+
         for (int i = 0; i < hits; i++)
         {
-            IReadOnlyList<Creature> targets = card.CombatState.HittableEnemies.ToList();
-            await DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
-                .FromCard(card)
-                .TargetingAllOpponents(card.CombatState)
-                .WithHitFx("vfx/vfx_attack_slash")
-                .Execute(choiceContext);
-
             foreach (Creature target in targets)
             {
                 await Imbalance.Reduce(choiceContext, target, card.DynamicVars["Imbalance"].IntValue, card.Owner.Creature, card);

@@ -70,14 +70,14 @@ public sealed class NextDamageReductionPower : CustomPowerModel
     }
 }
 
-public sealed class NextPoiseBonusPower : CustomPowerModel
+public sealed class NextPoiseBonusPower : ModCustomPowerModel
 {
     private readonly Queue<int> _bonuses = new();
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/vulnerable_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/vulnerable_power.png";
+    public override string CustomPackedIconPath => "res://mod/images/powers/atlases/rock_blade_power.tres";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/rock_blade_power.png";
 
     public void AddBonus(int amount)
     {
@@ -110,6 +110,34 @@ public sealed class NextAttackDoublePower : CustomPowerModel
     public override PowerStackType StackType => PowerStackType.Counter;
     public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/double_damage_power.tres";
     public override string CustomBigIconPath => "res://images/powers/double_damage_power.png";
+
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        if (Owner == null || dealer != Owner || amount <= 0m || Amount <= 0m || cardSource?.Type != CardType.Attack)
+        {
+            return 1m;
+        }
+
+        return 2m;
+    }
+
+    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner == null || cardPlay.Card.Owner?.Creature != Owner || cardPlay.Card.Type != CardType.Attack)
+        {
+            return;
+        }
+
+        await PowerCmd.Decrement(this);
+    }
+}
+
+public sealed class DeterminationPower : ModCustomPowerModel
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+    public override string CustomPackedIconPath => "res://mod/images/powers/atlases/determination_power.tres";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/determination_power.png";
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {

@@ -56,6 +56,8 @@ public sealed class FrostbitePower : ModCustomPowerModel
 
 public sealed class MagicVulnerabilityPower : ModCustomPowerModel
 {
+    public const decimal MagicDamageMultiplier = 1.2m;
+
     public override PowerType Type => PowerType.Debuff;
     public override PowerStackType StackType => PowerStackType.Counter;
     public override string CustomPackedIconPath => "res://mod/images/powers/magic_vulnerability_power.png";
@@ -63,7 +65,9 @@ public sealed class MagicVulnerabilityPower : ModCustomPowerModel
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        return target == Owner && amount > 0m && cardSource is IMagicAttributeCard && props.IsPoweredAttack() ? 1.2m : 1m;
+        return target == Owner && amount > 0m && cardSource is IMagicAttributeCard && props.IsPoweredAttack()
+            ? MagicDamageMultiplier
+            : 1m;
     }
 
     public override async Task AfterSideTurnEnd(PlayerChoiceContext choiceContext, CombatSide side, IEnumerable<Creature> participants)

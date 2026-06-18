@@ -34,13 +34,20 @@ public sealed class ElementFlask() : ModCard(0, CardType.Skill, CardRarity.Token
     {
         await CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.BaseValue, false);
         int remaining = DynamicVars[RemainingKey].IntValue - 1;
-        SetRemaining(remaining);
         ElementFlaskRelic.SetCharges(Owner, remaining);
+        if (remaining <= 0)
+        {
+            SetRemaining(0);
+            await CardPileCmd.Add(this, PileType.Exhaust);
+            return;
+        }
+
+        SetRemaining(remaining);
     }
 
     public override async Task AfterCardChangedPilesLate(CardModel card, PileType oldPileType, AbstractModel? source)
     {
-        if (card != this || Owner == null)
+        if (card != this || Owner == null || DynamicVars[RemainingKey].IntValue <= 0)
         {
             return;
         }

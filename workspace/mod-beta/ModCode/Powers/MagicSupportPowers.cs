@@ -89,6 +89,7 @@ public sealed class AncientDeathsRancorPower : CustomPowerModel
 {
     private int _hits = 6;
     private decimal _damagePerHit = 2m;
+    private CardModel? _sourceCard;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
@@ -96,15 +97,16 @@ public sealed class AncientDeathsRancorPower : CustomPowerModel
     public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/focus_power.tres";
     public override string CustomBigIconPath => "res://images/powers/focus_power.png";
 
-    public void Configure(int hits, decimal damagePerHit)
+    public void Configure(int hits, decimal damagePerHit, CardModel sourceCard)
     {
         _hits = hits;
         _damagePerHit = damagePerHit;
+        _sourceCard = sourceCard;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
-        if (Owner == null || player.Creature != Owner)
+        if (Owner == null || player.Creature != Owner || Owner.CombatState == null || _sourceCard == null || _hits <= 0)
         {
             return;
         }
@@ -112,16 +114,12 @@ public sealed class AncientDeathsRancorPower : CustomPowerModel
         int repeats = Math.Max(0, (int)Amount);
         for (int repeat = 0; repeat < repeats; repeat++)
         {
-            for (int i = 0; i < _hits; i++)
-            {
-                Creature? target = MagicCardActions.RandomEnemy(Owner);
-                if (target == null)
-                {
-                    break;
-                }
-
-                await CreatureCmd.Damage(choiceContext, target, _damagePerHit, ValueProp.Move, Owner, null);
-            }
+            await DamageCmd.Attack(_damagePerHit)
+                .WithHitCount(_hits)
+                .FromCard(_sourceCard)
+                .TargetingRandomOpponents(Owner.CombatState)
+                .WithHitFx("vfx/vfx_attack_slash")
+                .Execute(choiceContext);
         }
 
         await PowerCmd.Remove(this);

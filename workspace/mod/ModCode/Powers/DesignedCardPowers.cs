@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using Mod.ModCode.Cards;
 using Mod.ModCode.Commands;
 
 namespace Mod.ModCode.Powers;
@@ -58,9 +59,20 @@ public sealed class DarkMoonGreatSwordPower : ModCustomPowerModel
 
     public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        return Owner != null && dealer == Owner && target != null && target.Side != Owner.Side && amount > 0m
-            ? Amount
-            : 0m;
+        if (Owner == null || dealer != Owner || target == null || target.Side == Owner.Side || amount <= 0m)
+        {
+            return 0m;
+        }
+
+        decimal bonus = Amount;
+        if (cardSource is not IMagicAttributeCard
+            && props.IsPoweredAttack()
+            && target.GetPower<MagicVulnerabilityPower>() is { Amount: > 0 })
+        {
+            bonus *= MagicVulnerabilityPower.MagicDamageMultiplier;
+        }
+
+        return bonus;
     }
 
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)

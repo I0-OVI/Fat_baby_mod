@@ -30,13 +30,19 @@ public sealed class BloodLevy() : ModCard(1, CardType.Attack, CardRarity.Uncommo
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
 
+        var attack = DamageCmd.Attack(DynamicVars.Damage.BaseValue)
+            .FromCard(this)
+            .Targeting(cardPlay.Target)
+            .WithHitFx("vfx/vfx_attack_slash");
+
+        if (DynamicVars["Hits"].IntValue > 1)
+        {
+            attack.WithHitCount(DynamicVars["Hits"].IntValue);
+        }
+
+        await attack.Execute(choiceContext);
         for (int i = 0; i < DynamicVars["Hits"].IntValue; i++)
         {
-            await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
-                .Targeting(cardPlay.Target)
-                .WithHitFx("vfx/vfx_attack_slash")
-                .Execute(choiceContext);
             await Imbalance.Reduce(choiceContext, cardPlay.Target, DynamicVars["Imbalance"].IntValue, Owner.Creature, this);
         }
 

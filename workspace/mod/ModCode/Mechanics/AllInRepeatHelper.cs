@@ -36,7 +36,7 @@ internal static class AllInRepeatHelper
                     1m,
                     player.Creature,
                     sourceCard);
-                power?.Configure(rancor.DynamicVars["Hits"].IntValue, rancor.DynamicVars.Damage.BaseValue);
+                power?.Configure(rancor.DynamicVars["Hits"].IntValue, rancor.DynamicVars.Damage.BaseValue, sourceCard);
                 break;
             }
 

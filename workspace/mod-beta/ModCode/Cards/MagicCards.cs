@@ -24,27 +24,50 @@ internal static class MagicCardActions
 {
     public static async Task MagicAttack(ModCard card, PlayerChoiceContext choiceContext, Creature target, int hits = 1, bool playAnim = true)
     {
-        for (int i = 0; i < hits; i++)
+        var attack = DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
+            .FromCard(card)
+            .Targeting(target)
+            .WithHitFx("vfx/vfx_attack_slash");
+
+        if (hits > 1)
         {
-            var attack = DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
-                .FromCard(card)
-                .Targeting(target)
-                .WithHitFx("vfx/vfx_attack_slash");
-
-            if (!playAnim)
-            {
-                attack.WithNoAttackerAnim();
-            }
-
-            await attack.Execute(choiceContext);
+            attack.WithHitCount(hits);
         }
+
+        if (!playAnim)
+        {
+            attack.WithNoAttackerAnim();
+        }
+
+        await attack.Execute(choiceContext);
+    }
+
+    public static async Task MagicRandomMultiHit(ModCard card, PlayerChoiceContext choiceContext, int hits, bool playAnim = true)
+    {
+        if (card.CombatState == null || hits <= 0)
+        {
+            return;
+        }
+
+        var attack = DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
+            .WithHitCount(hits)
+            .FromCard(card)
+            .TargetingRandomOpponents(card.CombatState)
+            .WithHitFx("vfx/vfx_attack_slash");
+
+        if (!playAnim)
+        {
+            attack.WithNoAttackerAnim();
+        }
+
+        await attack.Execute(choiceContext);
     }
 
     public static async Task MagicAttackAndPoise(ModCard card, PlayerChoiceContext choiceContext, Creature target, int hits = 1)
     {
+        await MagicAttack(card, choiceContext, target, hits);
         for (int i = 0; i < hits; i++)
         {
-            await MagicAttack(card, choiceContext, target);
             await Imbalance.Reduce(choiceContext, target, card.DynamicVars["Imbalance"].IntValue, card.Owner.Creature, card);
         }
     }
@@ -133,16 +156,7 @@ public sealed class GlintstoneChunk() : ModCard(0, CardType.Attack, CardRarity.C
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        for (int i = 0; i < DynamicVars["Hits"].IntValue; i++)
-        {
-            Creature? target = MagicCardActions.RandomEnemy(Owner.Creature);
-            if (target == null)
-            {
-                return;
-            }
-
-            await MagicCardActions.MagicAttack(this, choiceContext, target, playAnim: i == 0);
-        }
+        await MagicCardActions.MagicRandomMultiHit(this, choiceContext, DynamicVars["Hits"].IntValue);
     }
 
     protected override void OnUpgrade() => DynamicVars["Hits"].UpgradeValueBy(2m);
@@ -152,7 +166,7 @@ public sealed class HoulouGroundSlam() : ModCard(2, CardType.Attack, CardRarity.
 {
     public override string PortraitPath => "res://mod/images/card_portraits/houlou_ground_slam.png";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ImbalancePower>(), HoverTipFactory.FromPower<HoulouGroundSlamPower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<ImbalancePower>()];
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -245,15 +259,15 @@ public sealed class CrystalBurst() : ModCard(1, CardType.Attack, CardRarity.Unco
 {
     public override string PortraitPath => "res://mod/images/card_portraits/crystal_burst.png";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<MagicPower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<MagicPower>(), SplashHoverTip.Get()];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(4m, ValueProp.Move), new DynamicVar("Hits", 2m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
+        await MagicCardActions.MagicAttack(this, choiceContext, cardPlay.Target, DynamicVars["Hits"].IntValue);
         for (int i = 0; i < DynamicVars["Hits"].IntValue; i++)
         {
-            await MagicCardActions.MagicAttack(this, choiceContext, cardPlay.Target);
             await MagicCardActions.Splash(this, choiceContext, cardPlay.Target);
         }
     }
@@ -265,7 +279,7 @@ public sealed class LorettasGreatbow() : ModCard(3, CardType.Attack, CardRarity.
 {
     public override string PortraitPath => "res://mod/images/card_portraits/lorettas_greatbow.png";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<MagicPower>()];
+    protected override IEnumerable<IHoverTip> ExtraHoverTips => [HoverTipFactory.FromPower<MagicPower>(), SplashHoverTip.Get()];
     protected override IEnumerable<DynamicVar> CanonicalVars => [new DamageVar(24m, ValueProp.Move)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
@@ -287,21 +301,12 @@ public sealed class AncientDeathsRancor() : ModCard(2, CardType.Attack, CardRari
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        for (int i = 0; i < DynamicVars["Hits"].IntValue; i++)
-        {
-            Creature? target = MagicCardActions.RandomEnemy(Owner.Creature);
-            if (target == null)
-            {
-                return;
-            }
-
-            await MagicCardActions.MagicAttack(this, choiceContext, target, playAnim: i == 0);
-        }
+        await MagicCardActions.MagicRandomMultiHit(this, choiceContext, DynamicVars["Hits"].IntValue);
 
         if (!AllInReplayTracker.IsReplayCopy(this))
         {
             AncientDeathsRancorPower? power = await ModPowerCmd.Apply<AncientDeathsRancorPower>(Owner.Creature, 1m, Owner.Creature, this);
-            power?.Configure(DynamicVars["Hits"].IntValue, DynamicVars.Damage.BaseValue);
+            power?.Configure(DynamicVars["Hits"].IntValue, DynamicVars.Damage.BaseValue, this);
         }
     }
 
@@ -385,6 +390,7 @@ public sealed class AdulasMoonblade() : ModCard(2, CardType.Attack, CardRarity.R
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
         HoverTipFactory.FromPower<MagicPower>(),
+        SplashHoverTip.Get(),
         HoverTipFactory.FromPower<FrostbitePower>(),
         HoverTipFactory.FromPower<AdulasMoonbladePower>()
     ];

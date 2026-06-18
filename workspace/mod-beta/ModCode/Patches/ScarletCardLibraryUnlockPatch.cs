@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
+using MegaCrit.Sts2.Core.Nodes.Cards;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Unlocks;
@@ -16,6 +19,8 @@ namespace Mod.ModCode.Patches;
 
 internal static class ScarletCardLibraryUnlocks
 {
+    private static readonly List<Texture2D> LoadedPortraits = [];
+
     private static bool IsScarletOtherCard(CardModel card)
     {
         return card is { Pool: ScarletCardPool, Rarity: CardRarity.Basic or CardRarity.Ancient };
@@ -88,6 +93,36 @@ internal static class ScarletCardLibraryUnlocks
         {
             MainFile.Logger.Info($"Unable to mark Scarlet cards as discovered: {ex}");
         }
+    }
+
+    public static void LoadPortraits()
+    {
+        LoadedPortraits.Clear();
+
+        foreach (string path in GetCards().SelectMany(card => card.AllPortraitPaths).Distinct())
+        {
+            try
+            {
+                Texture2D? portrait = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
+                if (portrait != null)
+                {
+                    LoadedPortraits.Add(portrait);
+                }
+                else
+                {
+                    MainFile.Logger.Info($"Unable to load Scarlet card library portrait: {path}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MainFile.Logger.Info($"Unable to load Scarlet card library portrait {path}: {ex}");
+            }
+        }
+    }
+
+    public static void ReleasePortraits()
+    {
+        LoadedPortraits.Clear();
     }
 
     public static void ConfigureOtherCardFilters(NCardLibrary library)
@@ -163,6 +198,7 @@ internal static class ScarletCardLibraryGridReadyPatch
 {
     private static void Prefix()
     {
+        ScarletCardLibraryUnlocks.LoadPortraits();
         ScarletCardLibraryUnlocks.MarkProgressDiscovered();
     }
 }
@@ -176,6 +212,15 @@ internal static class ScarletCardLibraryScreenReadyPatch
     }
 }
 
+[HarmonyPatch(typeof(NCardLibrary), nameof(NCardLibrary.OnSubmenuClosed))]
+internal static class ScarletCardLibraryScreenClosedPatch
+{
+    private static void Postfix()
+    {
+        ScarletCardLibraryUnlocks.ReleasePortraits();
+    }
+}
+
 [HarmonyPatch(typeof(NCardLibraryGrid), "GetCardVisibility")]
 internal static class ScarletCardLibraryVisibilityPatch
 {
@@ -184,6 +229,22 @@ internal static class ScarletCardLibraryVisibilityPatch
         if (ScarletCardLibraryUnlocks.IsScarletCard(card))
         {
             __result = ModelVisibility.Visible;
+        }
+    }
+}
+
+/// <summary>
+/// Virtualized card rows call UpdateStats without EnsureCardLibraryStatsExists, which breaks scroll-back.
+/// </summary>
+[HarmonyPatch(typeof(NCardLibraryGrid), "AssignCardsToRow")]
+internal static class ScarletCardLibraryAssignCardsToRowPatch
+{
+    [HarmonyPrefix]
+    private static void Prefix(List<NGridCardHolder> row)
+    {
+        foreach (NGridCardHolder item in row)
+        {
+            item.EnsureCardLibraryStatsExists();
         }
     }
 }

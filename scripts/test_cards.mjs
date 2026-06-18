@@ -356,6 +356,14 @@ function checkChargeLifecycle() {
     fail("ChargedCardExhaustPatch: CardCmd.Exhaust must restart charge on the exhausted card instance");
   }
 
+  if (!/BeforeCombatStart[\s\S]*ChargesRemaining\s*<=\s*0[\s\S]*return/.test(relicSource)) {
+    fail("ElementFlaskRelic: must not add Element Flask to hand when no charges remain");
+  }
+
+  if (!/AfterCardChangedPilesLate[\s\S]*RemainingKey\]\.IntValue\s*<=\s*0/.test(readModCodeText("Cards/ElementFlask.cs"))) {
+    fail("ElementFlask: must not return to hand when no uses remain");
+  }
+
   if (!/BeforeCombatStart[\s\S]*PlayerCombatState\.AllCards\.OfType<IChargedCard>\(\)[\s\S]*InitializeChargeAtCombatStart\s*\(/.test(relicSource)) {
     fail("ElementFlaskRelic: combat start must initialize charged cards from actual combat piles before the first draw");
   }
@@ -392,6 +400,8 @@ function checkMagicDamageFormula() {
   const utilityPowersSource = readModCodeText("Powers/UtilityPowers.cs");
   const magicMarkerSource = readModCodeText("Cards/IMagicDamageCard.cs");
   const strengthPatchSource = readModCodeText("Patches/StrengthPowerMagicDamagePatch.cs");
+  const designedCardPowersSource = readModCodeText("Powers/DesignedCardPowers.cs");
+  const frostPowersSource = readModCodeText("Powers/FrostPowers.cs");
 
   if (!/interface IMagicAttributeCard[\s\S]*interface IMagicDamageCard\s*:\s*IMagicAttributeCard/.test(magicMarkerSource)) {
     fail("IMagicDamageCard: magic scaling cards must extend IMagicAttributeCard");
@@ -411,6 +421,49 @@ function checkMagicDamageFormula() {
 
   if (!/Splash[\s\S]*DamageCmd\.Attack\s*\(\s*splashDamage\s*\)[\s\S]*\.Unpowered\(\)/.test(magicCardsSource)) {
     fail("MagicCardActions.Splash: splash hit must stay Unpowered so Magic is not added a second time");
+  }
+
+  if (!/MagicVulnerabilityPower[\s\S]*MagicDamageMultiplier\s*=\s*1\.2m/.test(frostPowersSource)) {
+    fail("MagicVulnerabilityPower: shared magic damage multiplier must stay in one place");
+  }
+
+  if (!/DarkMoonGreatSwordPower[\s\S]*ModifyDamageAdditive[\s\S]*cardSource is not IMagicAttributeCard[\s\S]*MagicVulnerabilityPower[\s\S]*MagicDamageMultiplier/.test(designedCardPowersSource)) {
+    fail("DarkMoonGreatSwordPower: non-magic attack bonus must scale with Magic Vulnerability");
+  }
+}
+
+function checkMultiHitAttackCommands() {
+  const magicCardsSource = readModCodeText("Cards/MagicCards.cs");
+  const poiseCardsSource = readModCodeText("Cards/PoiseCards.cs");
+  const bloodLevySource = readModCodeText("Cards/BloodLevy.cs");
+
+  if (!/MagicAttack[\s\S]*WithHitCount\(hits\)/.test(magicCardsSource)) {
+    fail("MagicCardActions.MagicAttack: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/AttackAndPoise[\s\S]*WithHitCount\(hits\)/.test(poiseCardsSource)) {
+    fail("PoiseCardActions.AttackAndPoise: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/AttackAllAndPoise[\s\S]*WithHitCount\(hits\)/.test(poiseCardsSource)) {
+    fail("PoiseCardActions.AttackAllAndPoise: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/BloodLevy[\s\S]*WithHitCount\(DynamicVars\["Hits"\]\.IntValue\)/.test(bloodLevySource)) {
+    fail("BloodLevy: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/GlintstoneChunk[\s\S]*MagicRandomMultiHit\(this, choiceContext, DynamicVars\["Hits"\]\.IntValue\)/.test(magicCardsSource)) {
+    fail("GlintstoneChunk: random multi-hit attacks must use MagicRandomMultiHit with WithHitCount");
+  }
+
+  if (!/MagicRandomMultiHit[\s\S]*WithHitCount\(hits\)[\s\S]*TargetingRandomOpponents/.test(magicCardsSource)) {
+    fail("MagicCardActions.MagicRandomMultiHit: must use WithHitCount and TargetingRandomOpponents");
+  }
+
+  const vigorPatchSource = readModCodeText("Patches/VigorMultiHitPatch.cs");
+  if (!/VigorMultiHitModifyPatch[\s\S]*StoredAmountField/.test(vigorPatchSource)) {
+    fail("VigorMultiHitPatch: must apply stored vigor amount to every hit in a bound attack");
   }
 }
 
@@ -466,6 +519,37 @@ function checkStackedNextAttackPowers() {
   }
 }
 
+function checkCardPortraitLoading() {
+  const modCardSource = readModCodeText("Cards/ModCard.cs");
+  const libraryPatchSource = readModCodeText("Patches/ScarletCardLibraryUnlockPatch.cs");
+
+  if (!/ExtraRunAssetPaths\s*=>\s*AllPortraitPaths/.test(modCardSource)) {
+    fail("ModCard: every portrait must be included in run assets so asset-set transitions cannot unload it");
+  }
+
+  if (!/LoadPortraits[\s\S]*GetCards\(\)\.SelectMany\(card\s*=>\s*card\.AllPortraitPaths\)[\s\S]*ResourceLoader\.Load<Texture2D>[\s\S]*LoadedPortraits\.Add/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: card library must load and retain Scarlet portraits before building its grid");
+  }
+
+  if (!/ScarletCardLibraryGridReadyPatch[\s\S]*LoadPortraits\(\)/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryGridReadyPatch: portraits must load before the card-library grid initializes");
+  }
+
+  if (!/ScarletCardLibraryScreenClosedPatch[\s\S]*ReleasePortraits\(\)/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryScreenClosedPatch: retained card-library portraits must be released when the screen closes");
+  }
+
+  for (const file of listFiles(cardsDir, ".cs")) {
+    const source = fs.readFileSync(file, "utf8");
+    for (const match of source.matchAll(/PortraitPath\s*=>\s*"(res:\/\/mod\/images\/card_portraits\/[^"]+)"/g)) {
+      const portraitFile = path.join(modDir, match[1].replace(/^res:\/\/mod\//, "mod/"));
+      if (!fs.existsSync(portraitFile)) {
+        fail(`${path.relative(rootDir, file)}: missing portrait file ${match[1]}`);
+      }
+    }
+  }
+}
+
 function readLocalization(locale) {
   const file = path.join(localizationDir, locale, "cards.json");
   return JSON.parse(fs.readFileSync(file, "utf8"));
@@ -478,6 +562,32 @@ function readLocalizationFile(locale, name) {
 
 function placeholders(text) {
   return [...String(text).matchAll(/\{([A-Za-z][A-Za-z0-9_]*):diff\(\)\}/g)].map((match) => match[1]);
+}
+
+const KEYWORD_DESCRIPTION_PREFIXES = {
+  eng: {
+    Exhaust: "Exhaust.\n",
+    Retain: "Retain.\n",
+    Innate: "Innate.\n",
+    Ethereal: "Ethereal.\n",
+  },
+  zhs: {
+    Exhaust: "消耗，\n",
+    Retain: "保留，\n",
+    Innate: "固有，\n",
+    Ethereal: "虚无，\n",
+  },
+};
+
+function startsWithCardKeywordPrefix(text, keywords, locale) {
+  let value = String(text ?? "");
+  for (const keyword of keywords) {
+    const prefix = KEYWORD_DESCRIPTION_PREFIXES[locale][keyword];
+    if (prefix && value.startsWith(prefix)) {
+      return keyword;
+    }
+  }
+  return null;
 }
 
 function checkZhsCardStyle(cardId, suffix, text) {
@@ -499,6 +609,7 @@ function checkZhsCardStyle(cardId, suffix, text) {
 }
 
 function checkLocalization() {
+  const cards = parseCards();
   const expectedById = new Map(expectation.cards.map((card) => [card.id, card]));
   const expectedIds = [...expectedById.keys()];
 
@@ -535,6 +646,27 @@ function checkLocalization() {
         checkZhsCardStyle(expected.id, "description", cardsJson[`${expected.id}.description`]);
         checkZhsCardStyle(expected.id, "upgradeDescription", cardsJson[`${expected.id}.upgradeDescription`]);
       }
+
+      const actualCard = [...cards.values()].find((card) => card.id === expected.id);
+      if (actualCard) {
+        const duplicateBase = startsWithCardKeywordPrefix(
+          cardsJson[`${expected.id}.description`],
+          actualCard.keywords,
+          locale
+        );
+        if (duplicateBase) {
+          fail(`${locale}: ${expected.id}.description repeats keyword ${duplicateBase}; card keywords already show it`);
+        }
+
+        const duplicateUpgrade = startsWithCardKeywordPrefix(
+          cardsJson[`${expected.id}.upgradeDescription`],
+          actualCard.upgradedKeywords,
+          locale
+        );
+        if (duplicateUpgrade) {
+          fail(`${locale}: ${expected.id}.upgradeDescription repeats keyword ${duplicateUpgrade}; card keywords already show it`);
+        }
+      }
     }
   }
 
@@ -563,8 +695,10 @@ checkJsonFiles();
 checkCards();
 checkChargeLifecycle();
 checkMagicDamageFormula();
+checkMultiHitAttackCommands();
 checkSmallRoundShieldParry();
 checkStackedNextAttackPowers();
+checkCardPortraitLoading();
 checkLocalization();
 
 if (errors.length > 0) {

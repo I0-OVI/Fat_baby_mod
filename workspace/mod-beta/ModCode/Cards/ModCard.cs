@@ -11,4 +11,6 @@ public abstract class ModCard(int cost, CardType type, CardRarity rarity, Target
     public override string BetaPortraitPath => CardModel.MissingPortraitPath;
 
     public override IEnumerable<string> AllPortraitPaths => [PortraitPath];
+
+    protected override IEnumerable<string> ExtraRunAssetPaths => AllPortraitPaths;
 }
