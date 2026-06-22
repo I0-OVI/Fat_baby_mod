@@ -6,6 +6,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -18,13 +19,16 @@ namespace Mod.ModCode.Powers;
 
 public sealed class HoulouGroundSlamPower : CustomPowerModel
 {
+    private const string PowerIconPath = "res://mod/images/powers/houlou_ground_slam_power.png";
+    private const string PowerBigIconPath = "res://mod/images/powers/big/houlou_ground_slam_power.png";
+
     private int _poiseDamage;
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
 
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/barricade_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/barricade_power.png";
+    public override string CustomPackedIconPath => PowerIconPath;
+    public override string CustomBigIconPath => PowerBigIconPath;
 
     public void SetPoise(int poiseDamage)
     {
@@ -152,7 +156,7 @@ public sealed class CarianRetributionPower : CustomPowerModel
             return 0m;
         }
 
-        if (Owner == null || target != Owner || amount <= 0m || dealer == null || dealer == Owner)
+        if (Owner == null || target != Owner || amount <= 0m || Amount <= 0m || dealer == null || dealer == Owner)
         {
             return amount;
         }
@@ -162,13 +166,14 @@ public sealed class CarianRetributionPower : CustomPowerModel
         return 0m;
     }
 
-    public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override async Task AfterModifyingHpLostAfterOsty()
     {
-        if (Owner == null || target != Owner || _counterTarget == null || _counterDamage <= 0m)
+        if (Owner == null || _counterTarget == null || _counterDamage <= 0m)
         {
             return;
         }
 
+        PlayerChoiceContext choiceContext = new HookPlayerChoiceContext(Owner.Player!, 0UL, GameActionType.Combat);
         Creature counterTarget = _counterTarget;
         decimal counterDamage = _counterDamage;
         _counterTarget = null;

@@ -11,8 +11,8 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.ValueProps;
 using Mod.ModCode.Mechanics;
 using Mod.ModCode.Powers;
@@ -96,14 +96,11 @@ internal static class MagicCardActions
             .Execute(choiceContext);
     }
 
-    public static async Task Splash(ModCard card, PlayerChoiceContext choiceContext, Creature primaryTarget)
+    public static decimal GetModifiedPrimaryDamage(ModCard card, Creature primaryTarget)
     {
-        if (card.CombatState == null)
-        {
-            return;
-        }
+        ArgumentNullException.ThrowIfNull(card.CombatState);
 
-        decimal primaryDamage = Hook.ModifyDamage(
+        decimal damage = Hook.ModifyDamage(
             card.Owner.RunState,
             card.CombatState,
             primaryTarget,
@@ -113,8 +110,71 @@ internal static class MagicCardActions
             card,
             ModifyDamageHookType.All,
             CardPreviewMode.None,
-            out _);
-        decimal splashDamage = Math.Max(1m, Math.Floor(primaryDamage / 2m));
+            out IEnumerable<AbstractModel> modifiers);
+
+        VigorPower? vigor = card.Owner?.Creature.GetPower<VigorPower>();
+        if (vigor != null && vigor.Amount > 0 && !modifiers.Any(modifier => modifier is VigorPower))
+        {
+            damage += vigor.Amount;
+        }
+
+        return damage;
+    }
+
+    public static decimal SplashDamageFromPrimary(decimal primaryDamage) =>
+        Math.Max(1m, Math.Floor(primaryDamage / 2m));
+
+    public static async Task MagicAttackThenSplash(
+        ModCard card,
+        PlayerChoiceContext choiceContext,
+        Creature primaryTarget,
+        int hits = 1,
+        int splashCount = 1)
+    {
+        decimal primaryDamage = 0m;
+        var captureDone = false;
+
+        var attack = DamageCmd.Attack(card.DynamicVars.Damage.BaseValue)
+            .FromCard(card)
+            .Targeting(primaryTarget)
+            .WithHitFx("vfx/vfx_attack_slash")
+            .BeforeDamage(() =>
+            {
+                if (!captureDone)
+                {
+                    primaryDamage = GetModifiedPrimaryDamage(card, primaryTarget);
+                    captureDone = true;
+                }
+
+                return Task.CompletedTask;
+            });
+
+        if (hits > 1)
+        {
+            attack.WithHitCount(hits);
+        }
+
+        await attack.Execute(choiceContext);
+
+        if (!captureDone)
+        {
+            primaryDamage = GetModifiedPrimaryDamage(card, primaryTarget);
+        }
+
+        for (int i = 0; i < splashCount; i++)
+        {
+            await Splash(card, choiceContext, primaryTarget, primaryDamage);
+        }
+    }
+
+    public static async Task Splash(ModCard card, PlayerChoiceContext choiceContext, Creature primaryTarget, decimal primaryDamage)
+    {
+        if (card.CombatState == null)
+        {
+            return;
+        }
+
+        decimal splashDamage = SplashDamageFromPrimary(primaryDamage);
         IEnumerable<Creature> splashTargets = card.CombatState.HittableEnemies.Where(enemy => enemy != primaryTarget && enemy.IsAlive);
         foreach (Creature target in splashTargets)
         {
@@ -265,11 +325,12 @@ public sealed class CrystalBurst() : ModCard(1, CardType.Attack, CardRarity.Unco
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await MagicCardActions.MagicAttack(this, choiceContext, cardPlay.Target, DynamicVars["Hits"].IntValue);
-        for (int i = 0; i < DynamicVars["Hits"].IntValue; i++)
-        {
-            await MagicCardActions.Splash(this, choiceContext, cardPlay.Target);
-        }
+        await MagicCardActions.MagicAttackThenSplash(
+            this,
+            choiceContext,
+            cardPlay.Target,
+            DynamicVars["Hits"].IntValue,
+            DynamicVars["Hits"].IntValue);
     }
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(2m);
@@ -285,8 +346,7 @@ public sealed class LorettasGreatbow() : ModCard(3, CardType.Attack, CardRarity.
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         ArgumentNullException.ThrowIfNull(cardPlay.Target);
-        await MagicCardActions.MagicAttack(this, choiceContext, cardPlay.Target);
-        await MagicCardActions.Splash(this, choiceContext, cardPlay.Target);
+        await MagicCardActions.MagicAttackThenSplash(this, choiceContext, cardPlay.Target);
     }
 
     protected override void OnUpgrade() => DynamicVars.Damage.UpgradeValueBy(8m);
@@ -418,8 +478,7 @@ public sealed class AdulasMoonblade() : ModCard(2, CardType.Attack, CardRarity.R
 
     internal static async Task ExecuteEffect(AdulasMoonblade card, PlayerChoiceContext choiceContext, Creature target)
     {
-        await MagicCardActions.MagicAttack(card, choiceContext, target);
-        await MagicCardActions.Splash(card, choiceContext, target);
+        await MagicCardActions.MagicAttackThenSplash(card, choiceContext, target);
         await FrostbiteMechanic.Apply(choiceContext, [target], card.Owner.Creature, card);
     }
 

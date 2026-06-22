@@ -10,7 +10,9 @@ GAME_ROOT="${STS2_BETA_GAME_DIR:-${STS2_GAME_DIR:-$HOME/Library/Application Supp
 GAME_APP="$GAME_ROOT/SlayTheSpire2.app"
 GAME_MACOS_DIR="$GAME_APP/Contents/MacOS"
 GAME_MODS_DIR="$GAME_MACOS_DIR/mods"
+GAME_DISABLED_MODS_DIR="$GAME_MACOS_DIR/mods-disabled"
 INSTALLED_MOD_DIR="$GAME_MODS_DIR/$MOD_ID"
+CONFLICTING_MOD_ID="fat_baby"
 
 BASELIB_DEST="$GAME_MODS_DIR/BaseLib"
 
@@ -114,8 +116,23 @@ export_pck() {
 }
 
 install_json() {
+  deactivate_conflicting_mod
   mkdir -p "$INSTALLED_MOD_DIR"
   install -m 0644 "$MOD_DIR/mod.json" "$INSTALLED_MOD_DIR/mod.json"
+}
+
+deactivate_conflicting_mod() {
+  local conflicting_dir="$GAME_MODS_DIR/$CONFLICTING_MOD_ID"
+  local disabled_dir="$GAME_DISABLED_MODS_DIR/$CONFLICTING_MOD_ID"
+
+  if [[ ! -d "$conflicting_dir" ]]; then
+    return
+  fi
+
+  mkdir -p "$GAME_DISABLED_MODS_DIR"
+  rm -rf "$disabled_dir"
+  mv "$conflicting_dir" "$disabled_dir"
+  echo "Disabled conflicting stable mod -> $disabled_dir"
 }
 
 install_dll() {

@@ -95,6 +95,12 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<CorruptionResonance>(),
         ModelDb.Card<PiercingCounter>(),
         ModelDb.Card<Gamble>(),
-        ModelDb.Card<InnerPotential>()
+        ModelDb.Card<InnerPotential>(),
+        ModelDb.Card<FrostbiteGrease>(),
+        ModelDb.Card<JobChange>(),
+        ModelDb.Card<MaraisExecutionersGreatsword>(),
+        ModelDb.Card<FlameStrike>(),
+        ModelDb.Card<NightAndFlameStanceNight>(),
+        ModelDb.Card<NightAndFlameStanceFire>()
     ];
 }

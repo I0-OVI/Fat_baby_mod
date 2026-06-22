@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
@@ -28,6 +29,8 @@ public class ElementFlaskRelic : RelicModel
     protected virtual int ChargeCap => DefaultChargeCap;
 
     private int _chargesRemaining = DefaultChargeCap;
+    private int _maraisPermanentDamageBonusPercent;
+    private int _jobChangePermanentMagic;
 
     public override RelicRarity Rarity => RelicRarity.Starter;
 
@@ -54,8 +57,65 @@ public class ElementFlaskRelic : RelicModel
         }
     }
 
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int MaraisPermanentDamageBonusPercent
+    {
+        get => _maraisPermanentDamageBonusPercent;
+        set
+        {
+            AssertMutable();
+            _maraisPermanentDamageBonusPercent = Math.Max(0, value);
+        }
+    }
+
+    [SavedProperty(SerializationCondition.SaveIfNotTypeDefault)]
+    public int JobChangePermanentMagic
+    {
+        get => _jobChangePermanentMagic;
+        set
+        {
+            AssertMutable();
+            _jobChangePermanentMagic = Math.Max(0, value);
+        }
+    }
+
     public static ElementFlaskRelic? GetForPlayer(Player player) =>
         player.Relics.OfType<ElementFlaskRelic>().FirstOrDefault();
+
+    internal static int GetMaraisPermanentDamageBonus(Player player) =>
+        GetForPlayer(player)?.MaraisPermanentDamageBonusPercent ?? 0;
+
+    internal static void AddMaraisPermanentDamageBonus(Player player, int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        ElementFlaskRelic? relic = GetForPlayer(player);
+        if (relic == null)
+        {
+            return;
+        }
+
+        relic.MaraisPermanentDamageBonusPercent += amount;
+    }
+
+    internal static void AddJobChangePermanentMagic(Player player, int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        ElementFlaskRelic? relic = GetForPlayer(player);
+        if (relic == null)
+        {
+            return;
+        }
+
+        relic.JobChangePermanentMagic += amount;
+    }
 
     public static void RestoreChargesForPlayer(Player player)
     {
@@ -98,6 +158,11 @@ public class ElementFlaskRelic : RelicModel
         foreach (IChargedCard chargedCard in Owner.PlayerCombatState.AllCards.OfType<IChargedCard>().ToList())
         {
             await chargedCard.InitializeChargeAtCombatStart();
+        }
+
+        if (JobChangePermanentMagic > 0)
+        {
+            await ModPowerCmd.Apply<MagicPower>(Owner.Creature, JobChangePermanentMagic, Owner.Creature, null);
         }
 
         if (ChargesRemaining <= 0)

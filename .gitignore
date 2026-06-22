@@ -31,9 +31,18 @@ deps/game-beta/*.pdb
 # Decompiled game / huge reference trees (not for GitHub)
 extract/
 reference_mods/
+.tmp/
 
 # Raw / reference art pipeline (videos/frames/reference boards; shipped assets live under workspace/mod/mod/images)
 assets/
+
+# Local third-party tools. Fetch/download when needed instead of vendoring.
+sdk/
+tools/sts2-mod-uploader/
+
+# Locally prepared Workshop upload payloads; config/scripts are tracked separately.
+workshop/fat_baby_uploader_workspace/content/
+workshop/fat_baby_uploader_workspace/image.png
 
 # Local handoff drafts (optional)
 handoff/conversation_raw.md

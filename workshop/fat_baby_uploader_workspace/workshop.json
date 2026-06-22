@@ -1,0 +1,12 @@
+{
+  "title": "Fat Baby",
+  "description": "A custom Slay the Spire 2 character mod.",
+  "visibility": "private",
+  "changeNote": "Initial workshop upload.",
+  "tags": [
+    "Characters"
+  ],
+  "dependencies": [
+    3737335127
+  ]
+}

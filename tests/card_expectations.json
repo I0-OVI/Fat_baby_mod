@@ -70,7 +70,13 @@
         "Exhaust"
       ],
       "vars": {
-        "Blocks": 1
+        "Blocks": 1,
+        "Ripostes": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Ripostes": 2
+        }
       }
     },
     {
@@ -1156,7 +1162,7 @@
     {
       "class": "BreakingMomentum",
       "id": "BREAKING_MOMENTUM",
-      "cost": 3,
+      "cost": 2,
       "type": "Power",
       "rarity": "Rare",
       "target": "Self",
@@ -1424,13 +1430,114 @@
       }
     },
     {
+      "class": "FrostbiteGrease",
+      "id": "FROSTBITE_GREASE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "upgrade": {
+        "cost": 0
+      }
+    },
+    {
+      "class": "JobChange",
+      "id": "JOB_CHANGE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Magic": 1,
+        "MaxHpLoss": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Magic": 2,
+          "MaxHpLoss": 4
+        }
+      }
+    },
+    {
+      "class": "MaraisExecutionersGreatsword",
+      "id": "MARAIS_EXECUTIONERS_GREATSWORD",
+      "cost": 3,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Ethereal"
+      ],
+      "vars": {
+        "DamageIncrease": 5
+      },
+      "upgrade": {
+        "removeKeywords": [
+          "Ethereal"
+        ]
+      }
+    },
+    {
+      "class": "FlameStrike",
+      "id": "FLAME_STRIKE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 7,
+        "Imbalance": 2
+      }
+    },
+    {
+      "class": "NightAndFlameStanceNight",
+      "id": "NIGHT_AND_FLAME_STANCE_NIGHT",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 10,
+        "Imbalance": 5
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12,
+          "Imbalance": 7
+        }
+      }
+    },
+    {
+      "class": "NightAndFlameStanceFire",
+      "id": "NIGHT_AND_FLAME_STANCE_FIRE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 8,
+        "Imbalance": 3
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 10,
+          "Imbalance": 4
+        }
+      }
+    },
+    {
       "class": "ElementFlask",
       "id": "ELEMENT_FLASK",
       "cost": 0,
       "type": "Skill",
       "rarity": "Token",
       "target": "Self",
-      "keywords": ["Retain"],
+      "keywords": [
+        "Retain"
+      ],
       "vars": {
         "Heal": 8,
         "Remaining": 0

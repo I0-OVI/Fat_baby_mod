@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Models;
+using Mod.ModCode.Patches;
 
 namespace Mod.ModCode.Patches;
 
@@ -16,6 +17,11 @@ internal static class ModRunAssetsPatchLogic
 
         HashSet<string> expanded = new(AssetSets.RunSet);
         foreach (string path in ModRunAssets.PersistentTexturePaths)
+        {
+            expanded.Add(path);
+        }
+
+        foreach (string path in ScarletCardLibraryUnlocks.GetPortraitPaths())
         {
             expanded.Add(path);
         }
@@ -37,6 +43,34 @@ internal static class ModRunAssetsLoadRunPatch
 /// </summary>
 [HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRoomCombatAssets))]
 internal static class ModRunAssetsLoadRoomCombatPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
+}
+
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRoomEventAssets))]
+internal static class ModRunAssetsLoadRoomEventPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
+}
+
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRoomMerchantAssets))]
+internal static class ModRunAssetsLoadRoomMerchantPatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
+}
+
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRoomTreasureAssets))]
+internal static class ModRunAssetsLoadRoomTreasurePatch
+{
+    [HarmonyPostfix]
+    private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();
+}
+
+[HarmonyPatch(typeof(PreloadManager), nameof(PreloadManager.LoadRoomRestSite))]
+internal static class ModRunAssetsLoadRoomRestSitePatch
 {
     [HarmonyPostfix]
     private static void Postfix() => ModRunAssetsPatchLogic.EnsurePersistentAssetsInRunSet();

@@ -483,7 +483,7 @@ public sealed class VictoryRush() : ModCard(2, CardType.Power, CardRarity.Uncomm
     protected override void OnUpgrade() => EnergyCost.UpgradeBy(-1);
 }
 
-public sealed class BreakingMomentum() : ModCard(3, CardType.Power, CardRarity.Rare, TargetType.Self)
+public sealed class BreakingMomentum() : ModCard(2, CardType.Power, CardRarity.Rare, TargetType.Self)
 {
     public override string PortraitPath => "res://mod/images/card_portraits/breaking_momentum.png";
 

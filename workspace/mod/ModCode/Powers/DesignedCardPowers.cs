@@ -11,8 +11,11 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
+using System.Linq;
+using MegaCrit.Sts2.Core.Combat;
 using Mod.ModCode.Cards;
 using Mod.ModCode.Commands;
+using Mod.ModCode.Mechanics;
 
 namespace Mod.ModCode.Powers;
 
@@ -130,10 +133,13 @@ public sealed class CorruptionResonancePower : CustomPowerModel
 
 public sealed class PiercingCounterPower : CustomPowerModel
 {
+    private const string PowerIconPath = "res://mod/images/powers/spear_talisman_power.png";
+    private const string PowerBigIconPath = "res://mod/images/powers/big/spear_talisman_power.png";
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/double_damage_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/double_damage_power.png";
+    public override string CustomPackedIconPath => PowerIconPath;
+    public override string CustomBigIconPath => PowerBigIconPath;
 
     public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
@@ -164,8 +170,8 @@ public sealed class InnerPotentialPower : CustomPowerModel
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/double_damage_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/double_damage_power.png";
+    public override string CustomPackedIconPath => "res://mod/images/powers/inner_potential_power.png";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/inner_potential_power.png";
 
     public void AddEffect(decimal damageIncrease, decimal hpLoss)
     {
@@ -220,5 +226,48 @@ public sealed class InnerPotentialPower : CustomPowerModel
         {
             await ModPowerCmd.ModifyAmount(this, -expiredDamageIncrease, Owner, null);
         }
+    }
+}
+
+public sealed class FrostbiteGreasePower : ModCustomPowerModel
+{
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+    public override string CustomPackedIconPath => "res://mod/images/powers/frostbite_power.png";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/frostbite_power.png";
+
+    public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
+    {
+        if (Owner == null || Amount <= 0m || cardPlay.Card.Owner?.Creature != Owner || cardPlay.Card.Type != CardType.Attack)
+        {
+            return;
+        }
+
+        IEnumerable<Creature> targets = cardPlay.Target != null
+            ? [cardPlay.Target]
+            : cardPlay.Card.TargetType == TargetType.AllEnemies
+                ? CombatState?.Enemies.Where(creature => creature.IsAlive) ?? []
+                : [];
+
+        await FrostbiteMechanic.Apply(choiceContext, targets, Owner, cardPlay.Card);
+        await PowerCmd.Remove(this);
+    }
+}
+
+public sealed class MaraisExecutionersGreatswordPower : ModCustomPowerModel
+{
+    private const string PowerIconPath = "res://mod/images/powers/marais_executioners_greatsword_power.png";
+    private const string PowerBigIconPath = "res://mod/images/powers/big/marais_executioners_greatsword_power.png";
+
+    public override PowerType Type => PowerType.Buff;
+    public override PowerStackType StackType => PowerStackType.Counter;
+    public override string CustomPackedIconPath => PowerIconPath;
+    public override string CustomBigIconPath => PowerBigIconPath;
+
+    public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
+    {
+        return Owner != null && dealer == Owner && target != null && target.Side != Owner.Side && amount > 0m
+            ? 1m + Amount / 100m
+            : 1m;
     }
 }

@@ -9,10 +9,12 @@ GAME_ROOT="${STS2_STABLE_GAME_DIR:-${STS2_GAME_DIR:-$HOME/Library/Application Su
 GAME_APP="$GAME_ROOT/SlayTheSpire2.app"
 GAME_MACOS_DIR="$GAME_APP/Contents/MacOS"
 GAME_MODS_DIR="$GAME_MACOS_DIR/mods"
+GAME_DISABLED_MODS_DIR="$GAME_MACOS_DIR/mods-disabled"
 INSTALLED_MOD_DIR="$GAME_MODS_DIR/$MOD_ID"
+CONFLICTING_MOD_ID="fat_baby_beta"
 
-PREREQ_SOURCE="$GAME_ROOT/mods/【001】必装前置"
-PREREQ_DEST="$GAME_MODS_DIR/【001】必装前置"
+BASELIB_SOURCE="$GAME_MODS_DIR/BaseLib"
+BASELIB_DEST="$GAME_MODS_DIR/BaseLib"
 
 GODOT_BIN="${GODOT_BIN:-$HOME/Downloads/Godot_mono.app/Contents/MacOS/Godot}"
 LOG_FILE="$HOME/Library/Application Support/SlayTheSpire2/logs/godot.log"
@@ -48,14 +50,14 @@ require_file() {
 }
 
 sync_deps() {
-  if [[ ! -d "$PREREQ_SOURCE" ]]; then
-    echo "Missing BaseLib source: $PREREQ_SOURCE" >&2
+  if [[ ! -f "$BASELIB_SOURCE/BaseLib.json" || ! -f "$BASELIB_SOURCE/BaseLib.dll" ]]; then
+    echo "Missing BaseLib source: $BASELIB_SOURCE" >&2
     exit 1
   fi
 
-  mkdir -p "$PREREQ_DEST"
-  rsync -a "$PREREQ_SOURCE/" "$PREREQ_DEST/"
-  echo "Synced BaseLib -> $PREREQ_DEST"
+  mkdir -p "$BASELIB_DEST"
+  rsync -a "$BASELIB_SOURCE/" "$BASELIB_DEST/"
+  echo "Synced BaseLib -> $BASELIB_DEST"
 }
 
 build_dll() {
@@ -84,8 +86,23 @@ patch_pck_offsets() {
 }
 
 install_json() {
+  deactivate_conflicting_mod
   mkdir -p "$INSTALLED_MOD_DIR"
   install -m 0644 "$MOD_DIR/mod.json" "$INSTALLED_MOD_DIR/mod.json"
+}
+
+deactivate_conflicting_mod() {
+  local conflicting_dir="$GAME_MODS_DIR/$CONFLICTING_MOD_ID"
+  local disabled_dir="$GAME_DISABLED_MODS_DIR/$CONFLICTING_MOD_ID"
+
+  if [[ ! -d "$conflicting_dir" ]]; then
+    return
+  fi
+
+  mkdir -p "$GAME_DISABLED_MODS_DIR"
+  rm -rf "$disabled_dir"
+  mv "$conflicting_dir" "$disabled_dir"
+  echo "Disabled conflicting beta mod -> $disabled_dir"
 }
 
 install_dll() {

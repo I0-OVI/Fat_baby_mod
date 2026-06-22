@@ -8,9 +8,10 @@ public abstract class ModCard(int cost, CardType type, CardRarity rarity, Target
     : CardModel(cost, type, rarity, target, showInCardLibrary)
 {
     public override string PortraitPath => CardModel.MissingPortraitPath;
-    public override string BetaPortraitPath => CardModel.MissingPortraitPath;
+    public override string BetaPortraitPath => PortraitPath;
 
-    public override IEnumerable<string> AllPortraitPaths => [PortraitPath];
+    public override IEnumerable<string> AllPortraitPaths =>
+        PortraitPath == BetaPortraitPath ? [PortraitPath] : [PortraitPath, BetaPortraitPath];
 
     protected override IEnumerable<string> ExtraRunAssetPaths => AllPortraitPaths;
 }

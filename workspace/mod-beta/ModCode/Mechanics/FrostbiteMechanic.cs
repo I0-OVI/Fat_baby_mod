@@ -42,10 +42,30 @@ internal static class FrostbiteMechanic
                 target,
                 damage,
                 ValueProp.Unblockable | ValueProp.Unpowered,
-                applier,
-                cardSource);
+                dealer: null,
+                cardSource: null);
             await ModPowerCmd.Apply<FrostbitePower>(target, DurationTurns, applier, cardSource);
             RegisterDuration(target);
+        }
+    }
+
+    internal static async Task BurnFrostbittenTargets(
+        PlayerChoiceContext choiceContext,
+        IEnumerable<Creature> targets,
+        Creature applier,
+        CardModel? cardSource)
+    {
+        foreach (Creature target in targets.Where(creature => creature.IsAlive))
+        {
+            FrostbitePower? frostbite = target.GetPower<FrostbitePower>();
+            if (frostbite == null)
+            {
+                continue;
+            }
+
+            await PowerCmd.Remove(frostbite);
+            UnregisterDuration(target);
+            await Imbalance.Reduce(choiceContext, target, 2, applier, cardSource);
         }
     }
 
@@ -58,6 +78,19 @@ internal static class FrostbiteMechanic
 
         CombatTracker tracker = Trackers.GetOrCreateValue(combatState);
         tracker.TurnsRemaining[target] = DurationTurns;
+    }
+
+    private static void UnregisterDuration(Creature target)
+    {
+        if (target.CombatState is not CombatState combatState)
+        {
+            return;
+        }
+
+        if (Trackers.TryGetValue(combatState, out CombatTracker? tracker))
+        {
+            tracker.TurnsRemaining.Remove(target);
+        }
     }
 
     internal static async Task TickAfterPlayerTurnEnd(CombatState combatState)

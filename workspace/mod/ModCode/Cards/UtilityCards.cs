@@ -82,13 +82,15 @@ public sealed class SmallRoundShieldParry() : ModCard(1, CardType.Skill, CardRar
         HoverTipFactory.FromCard(ModelDb.Card<FatalStrike>())
     ];
 
-    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Blocks", 1m)];
+    protected override IEnumerable<DynamicVar> CanonicalVars => [new DynamicVar("Blocks", 1m), new DynamicVar("Ripostes", 1m)];
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         SmallRoundShieldParryPower? power = await ModPowerCmd.Apply<SmallRoundShieldParryPower>(Owner.Creature, DynamicVars["Blocks"].BaseValue, Owner.Creature, this);
-        power?.SetFatalStrikeGrantCount(IsUpgraded ? 2 : 1);
+        power?.SetFatalStrikeGrantCount(DynamicVars["Ripostes"].IntValue);
     }
+
+    protected override void OnUpgrade() => DynamicVars["Ripostes"].UpgradeValueBy(1m);
 }
 
 public sealed class Truce() : ModCard(2, CardType.Skill, CardRarity.Common, TargetType.Self)

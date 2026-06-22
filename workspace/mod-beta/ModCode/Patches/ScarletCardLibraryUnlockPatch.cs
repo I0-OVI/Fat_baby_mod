@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
@@ -19,12 +20,9 @@ namespace Mod.ModCode.Patches;
 
 internal static class ScarletCardLibraryUnlocks
 {
-    private static readonly List<Texture2D> LoadedPortraits = [];
+    private const string LegacyScarletPoolFilterName = "ScarletPool";
 
-    private static bool IsScarletOtherCard(CardModel card)
-    {
-        return card is { Pool: ScarletCardPool, Rarity: CardRarity.Basic or CardRarity.Ancient };
-    }
+    private static readonly List<Texture2D> LoadedPortraits = [];
 
     private static bool IsAncientsPoolCard(CardModel card)
     {
@@ -43,6 +41,8 @@ internal static class ScarletCardLibraryUnlocks
         bool isCommonUncommonRare = (uint)(rarity - 2) <= 2u;
         return !isCommonUncommonRare;
     }
+
+    private static bool IsScarletPoolCard(CardModel card) => card.Pool is ScarletCardPool;
 
     public static bool IsScarletCard(CardModel card)
     {
@@ -66,6 +66,9 @@ internal static class ScarletCardLibraryUnlocks
             return [];
         }
     }
+
+    public static IEnumerable<string> GetPortraitPaths() =>
+        GetCards().SelectMany(card => card.AllPortraitPaths).Distinct();
 
     public static HashSet<ModelId> GetCardIds()
     {
@@ -97,20 +100,20 @@ internal static class ScarletCardLibraryUnlocks
 
     public static void LoadPortraits()
     {
-        LoadedPortraits.Clear();
-
-        foreach (string path in GetCards().SelectMany(card => card.AllPortraitPaths).Distinct())
+        foreach (string path in GetPortraitPaths())
         {
             try
             {
                 Texture2D? portrait = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
-                if (portrait != null)
-                {
-                    LoadedPortraits.Add(portrait);
-                }
-                else
+                if (portrait == null)
                 {
                     MainFile.Logger.Info($"Unable to load Scarlet card library portrait: {path}");
+                    continue;
+                }
+
+                if (!LoadedPortraits.Contains(portrait))
+                {
+                    LoadedPortraits.Add(portrait);
                 }
             }
             catch (Exception ex)
@@ -120,9 +123,16 @@ internal static class ScarletCardLibraryUnlocks
         }
     }
 
-    public static void ReleasePortraits()
+    public static void ResetGridScroll(NCardLibrary library)
     {
-        LoadedPortraits.Clear();
+        if (AccessTools.Field(typeof(NCardLibrary), "_grid")?.GetValue(library) is not NCardLibraryGrid grid)
+        {
+            return;
+        }
+
+        AccessTools.Field(typeof(NCardGrid), "_slidingWindowCardIndex")?.SetValue(grid, 0);
+        AccessTools.Field(typeof(NCardGrid), "_targetDrag")?.SetValue(grid, 0f);
+        grid.SetScrollPosition(0f);
     }
 
     public static void ConfigureOtherCardFilters(NCardLibrary library)
@@ -132,7 +142,7 @@ internal static class ScarletCardLibraryUnlocks
             if (AccessTools.Field(typeof(NCardLibrary), "_poolFilters")?.GetValue(library) is Dictionary<NCardPoolFilter, Func<CardModel, bool>> poolFilters
                 && AccessTools.Field(typeof(NCardLibrary), "_miscPoolFilter")?.GetValue(library) is NCardPoolFilter miscPoolFilter)
             {
-                poolFilters[miscPoolFilter] = card => IsVanillaMiscPoolCard(card) || IsScarletOtherCard(card);
+                poolFilters[miscPoolFilter] = IsVanillaMiscPoolCard;
                 if (AccessTools.Field(typeof(NCardLibrary), "_ancientsFilter")?.GetValue(library) is NCardPoolFilter ancientsFilter)
                 {
                     poolFilters[ancientsFilter] = IsAncientsPoolCard;
@@ -147,17 +157,46 @@ internal static class ScarletCardLibraryUnlocks
                     : IsVanillaOtherRarity(card);
             }
 
-            if (ModelDb.Contains(typeof(ScarletAcolyte))
-                && AccessTools.Field(typeof(NCardLibrary), "_cardPoolFilters")?.GetValue(library) is Dictionary<CharacterModel, NCardPoolFilter> cardPoolFilters
-                && AccessTools.Field(typeof(NCardLibrary), "_miscPoolFilter")?.GetValue(library) is NCardPoolFilter scarletFallbackFilter)
-            {
-                cardPoolFilters[ModelDb.Character<ScarletAcolyte>()] = scarletFallbackFilter;
-            }
+            ConfigureScarletCharacterPoolFilter(library);
         }
         catch (Exception ex)
         {
             MainFile.Logger.Info($"Unable to configure Scarlet other-card library filters: {ex}");
         }
+    }
+
+    private static void ConfigureScarletCharacterPoolFilter(NCardLibrary library)
+    {
+        if (!ModelDb.Contains(typeof(ScarletAcolyte))
+            || AccessTools.Field(typeof(NCardLibrary), "_poolFilters")?.GetValue(library) is not Dictionary<NCardPoolFilter, Func<CardModel, bool>> poolFilters
+            || AccessTools.Field(typeof(NCardLibrary), "_cardPoolFilters")?.GetValue(library) is not Dictionary<CharacterModel, NCardPoolFilter> cardPoolFilters
+            || !cardPoolFilters.TryGetValue(ModelDb.Character<ScarletAcolyte>(), out NCardPoolFilter? scarletFilter))
+        {
+            return;
+        }
+
+        RemoveLegacyScarletPoolDuplicate(library, poolFilters);
+        poolFilters[scarletFilter] = IsScarletPoolCard;
+    }
+
+    private static void RemoveLegacyScarletPoolDuplicate(
+        NCardLibrary library,
+        Dictionary<NCardPoolFilter, Func<CardModel, bool>> poolFilters)
+    {
+        if (AccessTools.Field(typeof(NCardLibrary), "_miscPoolFilter")?.GetValue(library) is not NCardPoolFilter miscPoolFilter)
+        {
+            return;
+        }
+
+        NCardPoolFilter? legacyFilter = miscPoolFilter.GetParent()
+            .GetNodeOrNull<NCardPoolFilter>(LegacyScarletPoolFilterName);
+        if (legacyFilter == null)
+        {
+            return;
+        }
+
+        poolFilters.Remove(legacyFilter);
+        legacyFilter.QueueFree();
     }
 }
 
@@ -212,12 +251,14 @@ internal static class ScarletCardLibraryScreenReadyPatch
     }
 }
 
-[HarmonyPatch(typeof(NCardLibrary), nameof(NCardLibrary.OnSubmenuClosed))]
-internal static class ScarletCardLibraryScreenClosedPatch
+[HarmonyPatch(typeof(NCardLibrary), nameof(NCardLibrary.OnSubmenuOpened))]
+internal static class ScarletCardLibraryOpenedPatch
 {
-    private static void Postfix()
+    private static void Prefix(NCardLibrary __instance)
     {
-        ScarletCardLibraryUnlocks.ReleasePortraits();
+        ScarletCardLibraryUnlocks.ConfigureOtherCardFilters(__instance);
+        ScarletCardLibraryUnlocks.LoadPortraits();
+        ScarletCardLibraryUnlocks.ResetGridScroll(__instance);
     }
 }
 
@@ -246,5 +287,84 @@ internal static class ScarletCardLibraryAssignCardsToRowPatch
         {
             item.EnsureCardLibraryStatsExists();
         }
+    }
+
+    [HarmonyPostfix]
+    private static void Postfix(NCardLibraryGrid __instance, List<NGridCardHolder> row)
+    {
+        HashSet<ModelId>? seenCards = AccessTools.Field(typeof(NCardLibraryGrid), "_seenCards")?.GetValue(__instance) as HashSet<ModelId>;
+        foreach (NGridCardHolder item in row)
+        {
+            if (item.CardNode?.Model is not CardModel model)
+            {
+                continue;
+            }
+
+            item.EnsureCardLibraryStatsExists();
+            item.CardLibraryStats?.UpdateStats(model);
+            if (seenCards != null)
+            {
+                item.Hitbox.MouseDefaultCursorShape = seenCards.Contains(model.Id)
+                    ? Control.CursorShape.PointingHand
+                    : Control.CursorShape.Arrow;
+            }
+        }
+    }
+}
+
+/// <summary>
+/// The card library recycles grid holders while scrolling. When scrolling back up from
+/// the bottom, reused holders can update stats before their stats node exists.
+/// </summary>
+[HarmonyPatch]
+internal static class ScarletCardLibraryHolderUpdateStatsPatch
+{
+    private static MethodBase? TargetMethod() => AccessTools.Method(typeof(NGridCardHolder), "UpdateStats");
+
+    private static bool Prepare() => TargetMethod() != null;
+
+    [HarmonyPrefix]
+    private static void Prefix(NGridCardHolder __instance)
+    {
+        __instance.EnsureCardLibraryStatsExists();
+    }
+}
+
+/// <summary>
+/// Combat overlays can report bogus holder positions and trigger a full-grid reindex that
+/// makes the library scroll jump upward and fail to repaint recycled rows.
+/// </summary>
+[HarmonyPatch(typeof(NCardGrid), "ReallocateAll")]
+internal static class ScarletCardLibraryReallocateAllPatch
+{
+    private const int MaxRowJump = 64;
+
+    [HarmonyPrefix]
+    private static bool Prefix(NCardGrid __instance)
+    {
+        if (__instance is not NCardLibraryGrid)
+        {
+            return true;
+        }
+
+        if (AccessTools.Field(typeof(NCardGrid), "_cardRows")?.GetValue(__instance) is not List<List<NGridCardHolder>> rows
+            || rows.Count == 0
+            || rows[0].Count == 0)
+        {
+            return true;
+        }
+
+        const float cardPadding = 40f;
+        float cardHeight = AccessTools.Field(typeof(NCardGrid), "_cardSize")?.GetValue(__instance) is Vector2 cardSize
+            ? cardSize.Y
+            : 0f;
+        float rowHeight = cardPadding + cardHeight;
+        if (rowHeight <= 0f)
+        {
+            return true;
+        }
+
+        int rowJump = Mathf.RoundToInt(rows[0][0].GlobalPosition.Y / rowHeight);
+        return Math.Abs(rowJump) <= MaxRowJump;
     }
 }

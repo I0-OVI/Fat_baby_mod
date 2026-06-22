@@ -8,6 +8,7 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
+using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -106,14 +107,39 @@ public sealed class NextPoiseBonusPower : ModCustomPowerModel
 
 public sealed class NextAttackDoublePower : CustomPowerModel
 {
+    private CardModel? _deferredSourceCard;
+    private int _deferredUses;
+
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
     public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/double_damage_power.tres";
     public override string CustomBigIconPath => "res://images/powers/double_damage_power.png";
 
+    public void DeferUsesCreatedBy(CardModel cardSource, int uses)
+    {
+        if (uses <= 0)
+        {
+            return;
+        }
+
+        if (_deferredSourceCard == cardSource)
+        {
+            _deferredUses += uses;
+            return;
+        }
+
+        _deferredSourceCard = cardSource;
+        _deferredUses = uses;
+    }
+
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
         if (Owner == null || dealer != Owner || amount <= 0m || Amount <= 0m || cardSource?.Type != CardType.Attack)
+        {
+            return 1m;
+        }
+
+        if (cardSource == _deferredSourceCard && Amount <= _deferredUses)
         {
             return 1m;
         }
@@ -126,6 +152,18 @@ public sealed class NextAttackDoublePower : CustomPowerModel
         if (Owner == null || cardPlay.Card.Owner?.Creature != Owner || cardPlay.Card.Type != CardType.Attack)
         {
             return;
+        }
+
+        if (cardPlay.Card == _deferredSourceCard)
+        {
+            int deferredUses = _deferredUses;
+            _deferredSourceCard = null;
+            _deferredUses = 0;
+
+            if (Amount <= deferredUses)
+            {
+                return;
+            }
         }
 
         await PowerCmd.Decrement(this);
@@ -177,7 +215,11 @@ public sealed class VictoryRushPower : CustomPowerModel
         }
 
         await PlayerCmd.GainEnergy(power.Amount, player);
-        await ModPowerCmd.Apply<NextAttackDoublePower>(owner, 1m, owner, cardSource);
+        NextAttackDoublePower? doublePower = await ModPowerCmd.Apply<NextAttackDoublePower>(owner, 1m, owner, cardSource);
+        if (cardSource?.Type == CardType.Attack)
+        {
+            doublePower?.DeferUsesCreatedBy(cardSource, 1);
+        }
     }
 }
 
@@ -187,8 +229,8 @@ public sealed class BreakingMomentumPower : CustomPowerModel
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
-    public override string CustomPackedIconPath => "res://images/atlases/power_atlas.sprites/vulnerable_power.tres";
-    public override string CustomBigIconPath => "res://images/powers/vulnerable_power.png";
+    public override string CustomPackedIconPath => "res://mod/images/powers/atlases/breaking_momentum_power.tres";
+    public override string CustomBigIconPath => "res://mod/images/powers/big/breaking_momentum_power.png";
 
     public void AddStrengthBonus(decimal amount)
     {
@@ -236,7 +278,7 @@ public sealed class SmallRoundShieldParryPower : CustomPowerModel
             return 0m;
         }
 
-        if (Owner == null || target != Owner || amount <= 0m)
+        if (Owner == null || target != Owner || amount <= 0m || Amount <= 0m)
         {
             return amount;
         }
@@ -246,13 +288,14 @@ public sealed class SmallRoundShieldParryPower : CustomPowerModel
         return 0m;
     }
 
-    public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target, DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
+    public override async Task AfterModifyingHpLostAfterOsty()
     {
-        if (Owner == null || target != Owner || !_parriedDamage)
+        if (Owner == null || !_parriedDamage)
         {
             return;
         }
 
+        PlayerChoiceContext choiceContext = new HookPlayerChoiceContext(Owner.Player!, 0UL, GameActionType.Combat);
         Creature? parryTarget = _parryTarget;
         _parriedDamage = false;
         _parryTarget = null;
@@ -261,7 +304,7 @@ public sealed class SmallRoundShieldParryPower : CustomPowerModel
         if (parryTarget is { IsAlive: true })
         {
             await CreatureCmd.Stun(parryTarget);
-            await BreakingMomentumPower.Trigger(choiceContext, Owner, cardSource);
+            await BreakingMomentumPower.Trigger(choiceContext, Owner, null);
             interruptedAttack = parryTarget.IsStunned;
             if (interruptedAttack)
             {
