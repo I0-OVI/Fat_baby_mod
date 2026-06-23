@@ -36,7 +36,8 @@
       },
       "upgrade": {
         "vars": {
-          "Damage": 18
+          "Damage": 19,
+          "Imbalance": 6
         }
       }
     },
@@ -53,7 +54,8 @@
       },
       "upgrade": {
         "vars": {
-          "Damage": 18
+          "Damage": 19,
+          "Imbalance": 6
         }
       }
     },
@@ -68,7 +70,13 @@
         "Exhaust"
       ],
       "vars": {
-        "Blocks": 1
+        "Blocks": 1,
+        "Ripostes": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Ripostes": 2
+        }
       }
     },
     {
@@ -264,7 +272,8 @@
         "Exhaust"
       ],
       "vars": {
-        "Strength": 2
+        "Strength": 2,
+        "Magic": 2
       },
       "upgrade": {
         "cost": 1
@@ -444,7 +453,8 @@
       },
       "upgrade": {
         "vars": {
-          "Damage": 8
+          "Damage": 8,
+          "Imbalance": 4
         }
       }
     },
@@ -477,7 +487,7 @@
       "vars": {
         "Damage": 6,
         "Block": 4,
-        "Imbalance": 6
+        "Imbalance": 7
       },
       "upgrade": {
         "vars": {
@@ -666,8 +676,8 @@
       }
     },
     {
-      "class": "Determination",
-      "id": "DETERMINATION",
+      "class": "ScarletDetermination",
+      "id": "SCARLET_DETERMINATION",
       "cost": 1,
       "type": "Skill",
       "rarity": "Common",
@@ -797,6 +807,7 @@
       "upgrade": {
         "vars": {
           "Strength": 2,
+          "Magic": 2,
           "MaxHp": 3
         }
       }
@@ -919,6 +930,22 @@
       }
     },
     {
+      "class": "SpiralGlintstone",
+      "id": "SPIRAL_GLINTSTONE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "HpPercent": 10
+      },
+      "upgrade": {
+        "vars": {
+          "HpPercent": 12
+        }
+      }
+    },
+    {
       "class": "NightComet",
       "id": "NIGHT_COMET",
       "cost": 1,
@@ -991,7 +1018,7 @@
       "class": "CarianRetribution",
       "id": "CARIAN_RETRIBUTION",
       "cost": 1,
-      "type": "Attack",
+      "type": "Skill",
       "rarity": "Rare",
       "target": "Self",
       "vars": {
@@ -1099,6 +1126,23 @@
       }
     },
     {
+      "class": "AdulasMoonblade",
+      "id": "ADULAS_MOONBLADE",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 20,
+        "Repeats": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Repeats": 2
+        }
+      }
+    },
+    {
       "class": "AllIn",
       "id": "ALL_IN",
       "cost": 0,
@@ -1118,7 +1162,7 @@
     {
       "class": "BreakingMomentum",
       "id": "BREAKING_MOMENTUM",
-      "cost": 3,
+      "cost": 2,
       "type": "Power",
       "rarity": "Rare",
       "target": "Self",
@@ -1133,15 +1177,369 @@
       }
     },
     {
+      "class": "HoarfrostStomp",
+      "id": "HOARFROST_STOMP",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 3
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 6
+        }
+      }
+    },
+    {
+      "class": "BloodSlash",
+      "id": "BLOOD_SLASH",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Common",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 10,
+        "HpLoss": 1,
+        "Exhaust": 2,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12
+        }
+      }
+    },
+    {
+      "class": "ZamorIceStorm",
+      "id": "ZAMOR_ICE_STORM",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 1,
+        "Hits": 5,
+        "Imbalance": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Hits": 7
+        }
+      }
+    },
+    {
+      "class": "RennalasFullMoon",
+      "id": "RENNALAS_FULL_MOON",
+      "cost": 2,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 15,
+        "VulnerableTurns": 3
+      },
+      "upgrade": {
+        "cost": 1,
+        "vars": {
+          "Damage": 17
+        }
+      }
+    },
+    {
+      "class": "RaptorOfMists",
+      "id": "RAPTOR_OF_MISTS",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Reduction": 25
+      },
+      "upgrade": {
+        "vars": {
+          "Reduction": 50
+        }
+      }
+    },
+    {
+      "class": "SealOfPromise",
+      "id": "SEAL_OF_PROMISE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Gold": 0
+      },
+      "upgrade": {
+        "vars": {
+          "Gold": 50
+        }
+      }
+    },
+    {
+      "class": "WhyAreTheyFighting",
+      "id": "WHY_ARE_THEY_FIGHTING",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {}
+    },
+    {
+      "class": "StarShower",
+      "id": "STAR_SHOWER",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {},
+      "upgrade": {
+        "cost": 0,
+        "removeKeywords": [
+          "Exhaust"
+        ]
+      }
+    },
+    {
+      "class": "BlackFlameRitual",
+      "id": "BLACK_FLAME_RITUAL",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Cards": 1,
+        "Exhaust": 1
+      },
+      "upgrade": {
+        "vars": {
+          "Cards": 2,
+          "Exhaust": 2
+        }
+      }
+    },
+    {
+      "class": "ThisRoadIsBlocked",
+      "id": "THIS_ROAD_IS_BLOCKED",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Reduction": 25
+      },
+      "upgrade": {
+        "vars": {
+          "Reduction": 50
+        }
+      }
+    },
+    {
+      "class": "DarkMoonGreatSword",
+      "id": "DARK_MOON_GREAT_SWORD",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "Turns": 2,
+        "BonusDamage": 4
+      },
+      "upgrade": {
+        "cost": 0,
+        "vars": {
+          "BonusDamage": 5
+        }
+      }
+    },
+    {
+      "class": "CorruptionResonance",
+      "id": "CORRUPTION_RESONANCE",
+      "cost": 2,
+      "type": "Power",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Energy": 1
+      },
+      "upgrade": {
+        "cost": 1
+      }
+    },
+    {
+      "class": "PiercingCounter",
+      "id": "PIERCING_COUNTER",
+      "cost": 0,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "DamageIncrease": 20
+      },
+      "upgrade": {
+        "vars": {
+          "DamageIncrease": 25
+        }
+      }
+    },
+    {
+      "class": "Gamble",
+      "id": "GAMBLE",
+      "cost": 2,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "vars": {
+        "Energy": 5
+      },
+      "upgrade": {
+        "cost": 1,
+        "vars": {
+          "Energy": 6
+        }
+      }
+    },
+    {
+      "class": "InnerPotential",
+      "id": "INNER_POTENTIAL",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "vars": {
+        "DamageIncrease": 30,
+        "HpLoss": 5,
+        "Turns": 2
+      },
+      "upgrade": {
+        "keywords": [
+          "Retain"
+        ]
+      }
+    },
+    {
+      "class": "FrostbiteGrease",
+      "id": "FROSTBITE_GREASE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Uncommon",
+      "target": "Self",
+      "keywords": [
+        "Exhaust"
+      ],
+      "upgrade": {
+        "cost": 0
+      }
+    },
+    {
+      "class": "JobChange",
+      "id": "JOB_CHANGE",
+      "cost": 1,
+      "type": "Skill",
+      "rarity": "Rare",
+      "target": "Self",
+      "vars": {
+        "Magic": 1,
+        "MaxHpLoss": 2
+      },
+      "upgrade": {
+        "vars": {
+          "Magic": 2,
+          "MaxHpLoss": 4
+        }
+      }
+    },
+    {
+      "class": "MaraisExecutionersGreatsword",
+      "id": "MARAIS_EXECUTIONERS_GREATSWORD",
+      "cost": 3,
+      "type": "Power",
+      "rarity": "Rare",
+      "target": "Self",
+      "keywords": [
+        "Ethereal"
+      ],
+      "vars": {
+        "DamageIncrease": 5
+      },
+      "upgrade": {
+        "removeKeywords": [
+          "Ethereal"
+        ]
+      }
+    },
+    {
+      "class": "FlameStrike",
+      "id": "FLAME_STRIKE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Uncommon",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 7,
+        "Imbalance": 2
+      }
+    },
+    {
+      "class": "NightAndFlameStanceNight",
+      "id": "NIGHT_AND_FLAME_STANCE_NIGHT",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AnyEnemy",
+      "vars": {
+        "Damage": 10,
+        "Imbalance": 5
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 12,
+          "Imbalance": 7
+        }
+      }
+    },
+    {
+      "class": "NightAndFlameStanceFire",
+      "id": "NIGHT_AND_FLAME_STANCE_FIRE",
+      "cost": 1,
+      "type": "Attack",
+      "rarity": "Rare",
+      "target": "AllEnemies",
+      "vars": {
+        "Damage": 8,
+        "Imbalance": 3
+      },
+      "upgrade": {
+        "vars": {
+          "Damage": 10,
+          "Imbalance": 4
+        }
+      }
+    },
+    {
       "class": "ElementFlask",
       "id": "ELEMENT_FLASK",
       "cost": 0,
       "type": "Skill",
       "rarity": "Token",
       "target": "Self",
-      "keywords": ["Retain"],
+      "keywords": [
+        "Retain"
+      ],
       "vars": {
-        "Heal": 8,
+        "Heal": 6,
         "Remaining": 0
       }
     }

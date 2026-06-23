@@ -5,9 +5,15 @@ import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
-const cardsDir = path.join(rootDir, "workspace/mod/ModCode/Cards");
-const characterDir = path.join(rootDir, "workspace/mod/ModCode/Character");
-const localizationDir = path.join(rootDir, "workspace/mod/mod/localization");
+const modDir = process.env.MOD_DIR
+  ? path.resolve(process.env.MOD_DIR)
+  : path.join(rootDir, "workspace/mod");
+const modCodeDir = process.env.MOD_CODE_DIR
+  ? path.resolve(process.env.MOD_CODE_DIR)
+  : path.join(modDir, "ModCode");
+const cardsDir = path.join(modCodeDir, "Cards");
+const characterDir = path.join(modCodeDir, "Character");
+const localizationDir = path.join(modDir, "mod/localization");
 const expectationsPath = path.join(rootDir, "tests/card_expectations.json");
 
 const expectation = JSON.parse(fs.readFileSync(expectationsPath, "utf8"));
@@ -17,8 +23,8 @@ function fail(message) {
   errors.push(message);
 }
 
-function readText(relativePath) {
-  return fs.readFileSync(path.join(rootDir, relativePath), "utf8");
+function readModCodeText(relativePath) {
+  return fs.readFileSync(path.join(modCodeDir, relativePath), "utf8");
 }
 
 function listFiles(dir, suffix) {
@@ -159,6 +165,13 @@ function parseCards() {
 
   for (const file of listFiles(cardsDir, ".cs")) {
     const source = fs.readFileSync(file, "utf8");
+    if (source.includes(": ModCard") || source.includes(": ChargedModCard")) {
+      const expectedNamespace = "namespace FatBaby.ModCode.Cards;";
+      if (!source.includes(expectedNamespace)) {
+        fail(`${path.relative(rootDir, file)}: ModCard classes must use ${expectedNamespace}`);
+      }
+    }
+
     for (const match of source.matchAll(classRegex)) {
       const className = match[1];
       const baseType = match[2];
@@ -197,7 +210,8 @@ function parseCards() {
       }
       canonicalKeywords.sort();
       const upgradeKeywords = sorted([...body.matchAll(/AddKeyword\s*\(\s*CardKeyword\.(\w+)\s*\)/g)].map((keyword) => keyword[1]));
-      const upgradedKeywords = sorted(new Set([...canonicalKeywords, ...upgradeKeywords]));
+      const removeKeywords = new Set([...body.matchAll(/RemoveKeyword\s*\(\s*CardKeyword\.(\w+)\s*\)/g)].map((keyword) => keyword[1]));
+      const upgradedKeywords = sorted(new Set([...canonicalKeywords, ...upgradeKeywords].filter((keyword) => !removeKeywords.has(keyword))));
 
       cards.set(className, {
         className,
@@ -264,7 +278,11 @@ function checkCards() {
     const expectedKeywords = sorted(expected.keywords ?? []);
     const expectedUpgrade = expected.upgrade ?? {};
     const expectedUpgradeVars = { ...(expected.vars ?? {}), ...(expectedUpgrade.vars ?? {}) };
-    const expectedUpgradedKeywords = sorted(new Set([...expectedKeywords, ...(expectedUpgrade.keywords ?? [])]));
+    const expectedUpgradedKeywords = sorted(new Set(
+      [...expectedKeywords, ...(expectedUpgrade.keywords ?? [])].filter(
+        (keyword) => !(expectedUpgrade.removeKeywords ?? []).includes(keyword)
+      )
+    ));
 
     compareValue(expected.class, "id", actual.id, expected.id);
     compareValue(expected.class, "cost", actual.cost, expected.cost);
@@ -309,8 +327,8 @@ function checkCards() {
 }
 
 function checkChargeLifecycle() {
-  const source = readText("workspace/mod/ModCode/Cards/ChargedModCard.cs");
-  const relicSource = readText("workspace/mod/ModCode/Relics/ElementFlaskRelic.cs");
+  const source = readModCodeText("Cards/ChargedModCard.cs");
+  const relicSource = readModCodeText("Relics/ElementFlaskRelic.cs");
 
   if (!/InitializeChargeAtCombatStart[\s\S]*!IsInCombat[\s\S]*CardPileCmd\.Add\s*\(\s*this\s*,\s*PileType\.Exhaust/.test(source)) {
     fail("ChargedModCard: combat start must move charged cards into the exhaust pile");
@@ -340,9 +358,17 @@ function checkChargeLifecycle() {
     fail("ChargedModCard: must expose OnEnteredExhaustFromOtherPileAsync for forced exhaust");
   }
 
-  const patchSource = readText("workspace/mod/ModCode/Patches/ChargedCardExhaustPatch.cs");
+  const patchSource = readModCodeText("Patches/ChargedCardExhaustPatch.cs");
   if (!/CardCmd\.Exhaust[\s\S]*IChargedCard[\s\S]*OnEnteredExhaustFromOtherPileAsync/.test(patchSource)) {
     fail("ChargedCardExhaustPatch: CardCmd.Exhaust must restart charge on the exhausted card instance");
+  }
+
+  if (!/BeforeCombatStart[\s\S]*ChargesRemaining\s*<=\s*0[\s\S]*return/.test(relicSource)) {
+    fail("ElementFlaskRelic: must not add Element Flask to hand when no charges remain");
+  }
+
+  if (!/AfterCardChangedPilesLate[\s\S]*RemainingKey\]\.IntValue\s*<=\s*0/.test(readModCodeText("Cards/ElementFlask.cs"))) {
+    fail("ElementFlask: must not return to hand when no uses remain");
   }
 
   if (!/BeforeCombatStart[\s\S]*PlayerCombatState\.AllCards\.OfType<IChargedCard>\(\)[\s\S]*InitializeChargeAtCombatStart\s*\(/.test(relicSource)) {
@@ -353,49 +379,270 @@ function checkChargeLifecycle() {
     fail("ElementFlaskRelic: charges must restore at rest sites and ancient event rooms");
   }
 
-  const refinedSource = readText("workspace/mod/ModCode/Relics/RefinedElementFlaskRelic.cs");
-  const orobasPatchSource = readText("workspace/mod/ModCode/Patches/TouchOfOrobasElementFlaskPatch.cs");
+  const refinedSource = readModCodeText("Relics/RefinedElementFlaskRelic.cs");
+  const orobasPatchSource = readModCodeText("Patches/TouchOfOrobasElementFlaskPatch.cs");
   if (!/RefinedChargeCap\s*=\s*5/.test(refinedSource)) {
     fail("RefinedElementFlaskRelic: Orobas upgrade must raise charge cap to 5");
   }
   if (!/GetUpgradedStarterRelic[\s\S]*is ElementFlaskRelic[\s\S]*RefinedElementFlaskRelic/.test(orobasPatchSource)) {
     fail("TouchOfOrobasElementFlaskPatch: starter Element Flask must map to refined relic at Orobas");
   }
-  const relicPoolSource = readText("workspace/mod/ModCode/Character/ScarletRelicPool.cs");
+  const relicPoolSource = readModCodeText("Character/ScarletRelicPool.cs");
   if (!/GenerateAllRelics[\s\S]*ElementFlaskRelic[\s\S]*RefinedElementFlaskRelic/.test(relicPoolSource)) {
     fail("ScarletRelicPool: refined Element Flask must be registered so Orobas can reference it");
   }
-  const advancePatchSource = readText("workspace/mod/ModCode/Patches/AncientDialogueAdvancePatch.cs");
+  const advancePatchSource = readModCodeText("Patches/AncientDialogueAdvancePatch.cs");
   if (!/NAncientDialogueLine[\s\S]*_Ready[\s\S]*SignalName\.Released/.test(advancePatchSource)) {
     fail("AncientDialogueAdvancePatch: must hook dialogue line Released signal, not missing OnRelease");
   }
 
-  const orobasDialogueSource = readText("workspace/mod/ModCode/Patches/OrobasScarletDialoguePatch.cs");
+  const orobasDialogueSource = readModCodeText("Patches/OrobasScarletDialoguePatch.cs");
   if (!/DefineDialogues[\s\S]*SCARLET_ACOLYTE[\s\S]*VisitIndex\s*=\s*0/.test(orobasDialogueSource)) {
     fail("OrobasScarletDialoguePatch: Scarlet must have multi-visit Orobas dialogues");
   }
 }
 
+function checkWillToWinHpFloor() {
+  const source = readModCodeText("Powers/WillToWinPower.cs");
+  if (!/WillToWinPower[\s\S]*ModifyHpLostAfterOstyLate[\s\S]*Owner\.CurrentHp\s*-\s*1m/.test(source)) {
+    fail("WillToWinPower: HP floor must cap actual HP loss via ModifyHpLostAfterOstyLate");
+  }
+}
+
+function checkBurningMechanic() {
+  const frostbiteMechanicSource = readModCodeText("Mechanics/FrostbiteMechanic.cs");
+  const burnHoverTipSource = readModCodeText("Mechanics/BurnHoverTip.cs");
+  const frostPowersSource = readModCodeText("Powers/FrostPowers.cs");
+  const poolExpansionSource = readModCodeText("Cards/PoolExpansionCards.cs");
+  const zhsStaticHoverTips = readLocalizationFile("zhs", "static_hover_tips.json");
+  const engStaticHoverTips = readLocalizationFile("eng", "static_hover_tips.json");
+
+  if (!/BurnFrostbittenTargets[\s\S]*GetPower<FrostbitePower>[\s\S]*PowerCmd\.Remove\(frostbite\)[\s\S]*Imbalance\.Reduce\(choiceContext,\s*target,\s*2/.test(frostbiteMechanicSource)) {
+    fail("FrostbiteMechanic: Burning must remove Frostbite and immediately deal 2 poise damage");
+  }
+
+  if (!/FrostbiteMechanic[\s\S]*CreatureCmd\.Damage\([\s\S]*ValueProp\.Unblockable\s*\|\s*ValueProp\.Unpowered[\s\S]*dealer:\s*null,[\s\S]*cardSource:\s*null/.test(frostbiteMechanicSource)) {
+    fail("FrostbiteMechanic: Frostbite max-HP damage must be fixed and ignore Attack damage modifiers");
+  }
+
+  if (/class BurningPower/.test(frostPowersSource)) {
+    fail("FrostPowers: Burning is an immediate keyword effect and must not be a lingering Power");
+  }
+
+  if (!/FlameStrike[\s\S]*BurnFrostbittenTargets/.test(poolExpansionSource) || !/NightAndFlameStanceFire[\s\S]*BurnFrostbittenTargets/.test(poolExpansionSource)) {
+    fail("PoolExpansionCards: Flame Strike and Night-and-Flame fire stance must trigger Burning");
+  }
+
+  if (!/BURN\.title/.test(burnHoverTipSource) || !/BURN\.description/.test(burnHoverTipSource)) {
+    fail("BurnHoverTip: Burning must use a static sidebar hover tip");
+  }
+
+  if (!/FlameStrike[\s\S]*BurnHoverTip\.Get\(\)/.test(poolExpansionSource) || !/NightAndFlameStanceFire[\s\S]*BurnHoverTip\.Get\(\)/.test(poolExpansionSource)) {
+    fail("PoolExpansionCards: Burning cards must show the Burning sidebar hover tip");
+  }
+
+  if (!zhsStaticHoverTips["BURN.title"] || !zhsStaticHoverTips["BURN.description"] || !engStaticHoverTips["BURN.title"] || !engStaticHoverTips["BURN.description"]) {
+    fail("static_hover_tips: Burning must have zh/eng sidebar text");
+  }
+}
+
+function checkMaraisExecutionersGreatsword() {
+  const cardSource = readModCodeText("Cards/PoolExpansionCards.cs");
+  const powerSource = readModCodeText("Powers/DesignedCardPowers.cs");
+  const mechanicSource = readModCodeText("Mechanics/MaraisExecutionersGreatswordMechanic.cs");
+  const patchSource = readModCodeText("Patches/MaraisExecutionersGreatswordPatch.cs");
+  const runAssetsSource = readModCodeText("ModRunAssets.cs");
+  const zhsCards = readLocalizationFile("zhs", "cards.json");
+  const zhsPowers = readLocalizationFile("zhs", "powers.json");
+
+  if (!/MaraisExecutionersGreatsword[\s\S]*RegisterVictoryBonus[\s\S]*DynamicVars\["DamageIncrease"\]\.BaseValue/.test(cardSource)) {
+    fail("MaraisExecutionersGreatsword: playing the card must queue its listed victory bonus");
+  }
+
+  if (!/new DynamicVar\("DamageIncrease", 5m\)/.test(cardSource)) {
+    fail("MaraisExecutionersGreatsword: card must grant 5% damage on victory");
+  }
+
+  if (!/PendingVictoryBonus/.test(mechanicSource)) {
+    fail("MaraisExecutionersGreatswordMechanic: bonus must wait until combat victory");
+  }
+
+  if (!/ElementFlaskRelic\.GetMaraisPermanentDamageBonus|ElementFlaskRelic\.AddMaraisPermanentDamageBonus/.test(mechanicSource)) {
+    fail("MaraisExecutionersGreatswordMechanic: permanent bonus must persist via saved element flask state");
+  }
+
+  const elementFlaskSource = readModCodeText("Relics/ElementFlaskRelic.cs");
+  if (!/\[SavedProperty\(SerializationCondition\.SaveIfNotTypeDefault\)\][\s\S]*MaraisPermanentDamageBonusPercent/.test(elementFlaskSource)) {
+    fail("ElementFlaskRelic: Marais permanent damage bonus must be saved with the run");
+  }
+
+  if (!/FinalizeVictoryBonusBeforeCombatCleanup[\s\S]*RefreshCombatPower/.test(mechanicSource)) {
+    fail("MaraisExecutionersGreatswordMechanic: victory bonus must refresh a single buff before combat cleanup");
+  }
+
+  if (!/RefreshCombatPower[\s\S]*existing\s*=\s*instances\.FirstOrDefault\(\)[\s\S]*ModPowerCmd\.ModifyAmount\(existing/.test(mechanicSource)) {
+    fail("MaraisExecutionersGreatswordMechanic: victory refresh must update the existing buff UI instead of removing and re-applying it");
+  }
+
+  if (/AfterCombatVictory[\s\S]*SyncAllCombatPowers|AfterCombatVictory[\s\S]*RefreshCombatPower/.test(`${mechanicSource}\n${patchSource}`)) {
+    fail("MaraisExecutionersGreatsword: must not resync Marais buff after combat powers are cleared");
+  }
+
+  if (!/GetPowerInstances<MaraisExecutionersGreatswordPower>/.test(mechanicSource)) {
+    fail("MaraisExecutionersGreatswordMechanic: duplicate Marais buff instances must be consolidated");
+  }
+
+  if (!/FinalizeVictoryBonusBeforeCombatCleanup|MaraisExecutionersGreatswordAfterCombatEndPatch/.test(`${mechanicSource}\n${patchSource}`)) {
+    fail("MaraisExecutionersGreatsword: queued bonus must apply on combat victory");
+  }
+
+  if (!/BeforeCombatStarted|MaraisExecutionersGreatswordBeforeCombatPatch/.test(`${mechanicSource}\n${patchSource}`)) {
+    fail("MaraisExecutionersGreatsword: accumulated bonus must be re-applied at combat start");
+  }
+
+  if (!/MaraisExecutionersGreatswordPower[\s\S]*marais_executioners_greatsword_power\.png[\s\S]*big\/marais_executioners_greatsword_power\.png/.test(powerSource)) {
+    fail("MaraisExecutionersGreatswordPower: buff UI must use the Marais/Eochaid skill icon");
+  }
+
+  if (!/marais_executioners_greatsword_power\.png[\s\S]*big\/marais_executioners_greatsword_power\.png/.test(runAssetsSource)) {
+    fail("ModRunAssets: Marais power icons must stay loaded during runs");
+  }
+
+  const cardDesc = zhsCards["MARAIS_EXECUTIONERS_GREATSWORD.description"];
+  if (!cardDesc || !/胜利后/.test(cardDesc) || !/\{DamageIncrease:diff\(\)\}/.test(cardDesc)) {
+    fail("MaraisExecutionersGreatsword: card text must describe the victory bonus percentage");
+  }
+
+  const powerDesc = zhsPowers["mod-MARAIS_EXECUTIONERS_GREATSWORD_POWER.smartDescription"];
+  if (!powerDesc || !/\{Amount\}/.test(powerDesc)) {
+    fail("MaraisExecutionersGreatswordPower: buff tooltip must show the current bonus percentage");
+  }
+}
+
+function checkJobChangePermanentMagic() {
+  const cardSource = readModCodeText("Cards/PoolExpansionCards.cs");
+  const elementFlaskSource = readModCodeText("Relics/ElementFlaskRelic.cs");
+
+  if (!/JobChange[\s\S]*AddJobChangePermanentMagic\(Owner,\s*DynamicVars\["Magic"\]\.IntValue\)[\s\S]*Apply<MagicPower>/.test(cardSource)) {
+    fail("JobChange: playing the card must save its Magic as a permanent run bonus and apply it immediately");
+  }
+
+  if (!/\[SavedProperty\(SerializationCondition\.SaveIfNotTypeDefault\)\][\s\S]*JobChangePermanentMagic/.test(elementFlaskSource)) {
+    fail("ElementFlaskRelic: Job Change permanent Magic must be saved with the run");
+  }
+
+  if (!/BeforeCombatStart[\s\S]*JobChangePermanentMagic\s*>\s*0[\s\S]*Apply<MagicPower>\(Owner\.Creature,\s*JobChangePermanentMagic/.test(elementFlaskSource)) {
+    fail("ElementFlaskRelic: Job Change permanent Magic must be re-applied at combat start");
+  }
+}
+
 function checkMagicDamageFormula() {
-  const magicCardsSource = readText("workspace/mod/ModCode/Cards/MagicCards.cs");
-  const utilityPowersSource = readText("workspace/mod/ModCode/Powers/UtilityPowers.cs");
+  const magicCardsSource = readModCodeText("Cards/MagicCards.cs");
+  const utilityPowersSource = readModCodeText("Powers/UtilityPowers.cs");
+  const magicMarkerSource = readModCodeText("Cards/IMagicDamageCard.cs");
+  const strengthPatchSource = readModCodeText("Patches/StrengthPowerMagicDamagePatch.cs");
+  const designedCardPowersSource = readModCodeText("Powers/DesignedCardPowers.cs");
+  const frostPowersSource = readModCodeText("Powers/FrostPowers.cs");
+  const magicSupportPowersSource = readModCodeText("Powers/MagicSupportPowers.cs");
+  const runAssetsSource = readModCodeText("ModRunAssets.cs");
+
+  if (!/interface IMagicAttributeCard[\s\S]*interface IMagicDamageCard\s*:\s*IMagicAttributeCard/.test(magicMarkerSource)) {
+    fail("IMagicDamageCard: magic scaling cards must extend IMagicAttributeCard");
+  }
+
+  if (!/IMagicAttributeCard/.test(strengthPatchSource)) {
+    fail("StrengthPowerMagicDamagePatch: magic attribute cards must ignore Strength");
+  }
 
   if (!/MagicPower[\s\S]*ModifyDamageAdditive[\s\S]*props\.IsPoweredAttack\(\)/.test(utilityPowersSource)) {
     fail("MagicPower: magic damage bonus must only apply to powered attacks");
   }
 
-  if (!/Splash[\s\S]*Hook\.ModifyDamage[\s\S]*ModifyDamageHookType\.All[\s\S]*decimal\s+splashDamage/.test(magicCardsSource)) {
-    fail("MagicCardActions.Splash: splash base damage must use Hook.ModifyDamage so Corrupted magic cards calculate base * 1.5 + Magic");
+  if (!/GetModifiedPrimaryDamage[\s\S]*Hook\.ModifyDamage[\s\S]*ModifyDamageHookType\.All[\s\S]*VigorPower/.test(magicCardsSource)) {
+    fail("MagicCardActions.GetModifiedPrimaryDamage: must include Vigor when Hook.ModifyDamage omits it");
   }
 
-  if (!/Splash[\s\S]*DamageCmd\.Attack\s*\(\s*splashDamage\s*\)[\s\S]*\.Unpowered\(\)/.test(magicCardsSource)) {
+  if (!/MagicAttackThenSplash[\s\S]*BeforeDamage[\s\S]*GetModifiedPrimaryDamage[\s\S]*await attack\.Execute/.test(magicCardsSource)) {
+    fail("MagicCardActions.MagicAttackThenSplash: capture primary damage during the attack so Vigor binding is active");
+  }
+
+  if (!/Splash[\s\S]*SplashDamageFromPrimary[\s\S]*DamageCmd\.Attack\s*\(\s*splashDamage\s*\)[\s\S]*\.Unpowered\(\)/.test(magicCardsSource)) {
     fail("MagicCardActions.Splash: splash hit must stay Unpowered so Magic is not added a second time");
+  }
+
+  if (!/MagicVulnerabilityPower[\s\S]*MagicDamageMultiplier\s*=\s*1\.2m/.test(frostPowersSource)) {
+    fail("MagicVulnerabilityPower: shared magic damage multiplier must stay in one place");
+  }
+
+  if (!/DarkMoonGreatSwordPower[\s\S]*ModifyDamageAdditive[\s\S]*cardSource is not IMagicAttributeCard[\s\S]*MagicVulnerabilityPower[\s\S]*MagicDamageMultiplier/.test(designedCardPowersSource)) {
+    fail("DarkMoonGreatSwordPower: non-magic attack bonus must scale with Magic Vulnerability");
+  }
+
+  if (!/PiercingCounterPower[\s\S]*spear_talisman_power\.png[\s\S]*big\/spear_talisman_power\.png/.test(designedCardPowersSource)) {
+    fail("PiercingCounterPower: buff UI must use the Spear Talisman icon");
+  }
+
+  if (!/spear_talisman_power\.png[\s\S]*big\/spear_talisman_power\.png/.test(runAssetsSource)) {
+    fail("ModRunAssets: Spear Talisman power icons must stay loaded during runs");
+  }
+
+  if (!/HoulouGroundSlamPower[\s\S]*houlou_ground_slam_power\.png[\s\S]*big\/houlou_ground_slam_power\.png/.test(magicSupportPowersSource)) {
+    fail("HoulouGroundSlamPower: buff UI must use Hoarah Loux's Earthshaker skill icon");
+  }
+
+  if (!/houlou_ground_slam_power\.png[\s\S]*big\/houlou_ground_slam_power\.png/.test(runAssetsSource)) {
+    fail("ModRunAssets: Houlou Ground Slam power icons must stay loaded during runs");
+  }
+}
+
+function checkMultiHitAttackCommands() {
+  const magicCardsSource = readModCodeText("Cards/MagicCards.cs");
+  const poiseCardsSource = readModCodeText("Cards/PoiseCards.cs");
+  const bloodLevySource = readModCodeText("Cards/BloodLevy.cs");
+
+  if (!/MagicAttack[\s\S]*WithHitCount\(hits\)/.test(magicCardsSource)) {
+    fail("MagicCardActions.MagicAttack: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/AttackAndPoise[\s\S]*WithHitCount\(hits\)/.test(poiseCardsSource)) {
+    fail("PoiseCardActions.AttackAndPoise: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/AttackAllAndPoise[\s\S]*WithHitCount\(hits\)/.test(poiseCardsSource)) {
+    fail("PoiseCardActions.AttackAllAndPoise: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/BloodLevy[\s\S]*WithHitCount\(DynamicVars\["Hits"\]\.IntValue\)/.test(bloodLevySource)) {
+    fail("BloodLevy: must call WithHitCount for multi-hit attacks");
+  }
+
+  if (!/GlintstoneChunk[\s\S]*MagicRandomMultiHit\(this, choiceContext, DynamicVars\["Hits"\]\.IntValue\)/.test(magicCardsSource)) {
+    fail("GlintstoneChunk: random multi-hit attacks must use MagicRandomMultiHit with WithHitCount");
+  }
+
+  if (!/MagicRandomMultiHit[\s\S]*WithHitCount\(hits\)[\s\S]*TargetingRandomOpponents/.test(magicCardsSource)) {
+    fail("MagicCardActions.MagicRandomMultiHit: must use WithHitCount and TargetingRandomOpponents");
+  }
+
+  const vigorPatchSource = readModCodeText("Patches/VigorMultiHitPatch.cs");
+  if (!/VigorMultiHitModifyPatch[\s\S]*StoredAmountField/.test(vigorPatchSource)) {
+    fail("VigorMultiHitPatch: must apply stored vigor amount to every hit in a bound attack");
   }
 }
 
 function checkSmallRoundShieldParry() {
-  const powerSource = readText("workspace/mod/ModCode/Powers/PoiseSupportPowers.cs");
-  const patchSource = readText("workspace/mod/ModCode/Patches/SmallRoundShieldParryAttackPatch.cs");
+  const powerSource = readModCodeText("Powers/PoiseSupportPowers.cs");
+  const cardSource = readModCodeText("Cards/UtilityCards.cs");
+  const magicPowerSource = readModCodeText("Powers/MagicSupportPowers.cs");
+  const patchSource = readModCodeText("Patches/SmallRoundShieldParryAttackPatch.cs");
+
+  if (!/SmallRoundShieldParry[\s\S]*new DynamicVar\("Ripostes",\s*1m\)[\s\S]*SetFatalStrikeGrantCount\(DynamicVars\["Ripostes"\]\.IntValue\)[\s\S]*OnUpgrade\(\)\s*=>\s*DynamicVars\["Ripostes"\]\.UpgradeValueBy\(1m\)/.test(cardSource)) {
+    fail("SmallRoundShieldParry: upgraded card must display and grant 2 Exhaust Ripostes via a dynamic variable");
+  }
+
+  if (!/SmallRoundShieldParryPower[\s\S]*ModifyHpLostAfterOstyLate[\s\S]*_parriedDamage = true[\s\S]*AfterModifyingHpLostAfterOsty[\s\S]*CreateCard<FatalStrike>[\s\S]*CardPileCmd\.Add\(fatalStrike, PileType\.Hand\)/.test(powerSource)) {
+    fail("SmallRoundShieldParryPower: parry resolution must grant Fatal Strike after HP loss is prevented");
+  }
 
   if (!/SmallRoundShieldParryPower[\s\S]*_interruptedAttackTarget[\s\S]*dealer\s*==\s*_interruptedAttackTarget[\s\S]*dealer\.IsStunned[\s\S]*return\s+0m/.test(powerSource)) {
     fail("SmallRoundShieldParryPower: stunned parry target must have remaining multi-hit damage canceled");
@@ -403,6 +650,161 @@ function checkSmallRoundShieldParry() {
 
   if (!/AttackCommand[\s\S]*Execute[\s\S]*CompleteInterruptedAttackAsync/.test(patchSource)) {
     fail("SmallRoundShieldParryAttackPatch: parry interrupt state must clean up after AttackCommand.Execute");
+  }
+
+  if (!/CarianRetributionPower[\s\S]*ModifyHpLostAfterOstyLate[\s\S]*_counterTarget = dealer[\s\S]*AfterModifyingHpLostAfterOsty[\s\S]*CreatureCmd\.Stun[\s\S]*_interruptedAttackTarget[\s\S]*CompleteInterruptedAttackAsync/.test(magicPowerSource)) {
+    fail("CarianRetributionPower: prevented damage must Stun its source and interrupt the rest of that Attack");
+  }
+
+  if (!/GetPowerInstances<CarianRetributionPower>/.test(patchSource)) {
+    fail("SmallRoundShieldParryAttackPatch: Carian Retribution interrupt state must clean up after AttackCommand.Execute");
+  }
+}
+
+function checkCardLibraryScrollPatch() {
+  const patchSource = readModCodeText("Patches/ScarletCardLibraryUnlockPatch.cs");
+
+  if (!/ScarletCardLibraryHolderUpdateStatsPatch[\s\S]*TargetMethod\(\)[\s\S]*AccessTools\.Method\(typeof\(NGridCardHolder\),\s*"UpdateStats"\)[\s\S]*Prepare\(\)[\s\S]*EnsureCardLibraryStatsExists/.test(patchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: optional recycled-holder patch must skip safely when UpdateStats is absent");
+  }
+
+  if (!/ScarletCardLibraryReallocateRowsPatch[\s\S]*TargetMethods\(\)[\s\S]*ReallocateAll[\s\S]*ReallocateAbove[\s\S]*ReallocateBelow[\s\S]*ReconcileRows[\s\S]*_scrollContainer[\s\S]*Position[\s\S]*RowsMatch/.test(patchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: card library must reconcile virtual rows from scroll position while scrolling");
+  }
+
+  if (!/ScarletCardLibraryOpenedPatch[\s\S]*LoadPortraits\(\)[\s\S]*ResetGridScroll/.test(patchSource)) {
+    fail("ScarletCardLibraryOpenedPatch: portraits and scroll state must refresh every time the library opens");
+  }
+
+  if (!/ConfigureScarletCharacterPoolFilter[\s\S]*poolFilters\[scarletFilter\] = IsScarletPoolCard/.test(patchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: Scarlet must use BaseLib's character pool filter for all Scarlet cards");
+  }
+
+  if (/templateFilter\.Duplicate\(\)|AddChild\(scarletFilter\)/.test(patchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: must not add a duplicate Scarlet pool filter button");
+  }
+}
+
+function checkStackedNextAttackPowers() {
+  const powerSource = readModCodeText("Powers/PoiseSupportPowers.cs");
+  const poiseCardsSource = readModCodeText("Cards/PoiseCards.cs");
+  const imbalanceSource = readModCodeText("Mechanics/Imbalance.cs");
+
+  function powerBlock(className) {
+    const classIndex = powerSource.indexOf(`class ${className}`);
+    const openBrace = powerSource.indexOf("{", classIndex);
+    return classIndex >= 0 && openBrace >= 0 ? extractBlock(powerSource, openBrace) : "";
+  }
+
+  const doublePower = powerBlock("NextAttackDoublePower");
+  if (!/ModifyDamageMultiplicative[\s\S]*CardType\.Attack[\s\S]*return\s+2m[\s\S]*AfterCardPlayed[\s\S]*PowerCmd\.Decrement\s*\(\s*this\s*\)/.test(doublePower) || /PowerCmd\.Remove\s*\(\s*this\s*\)/.test(doublePower)) {
+    fail("NextAttackDoublePower: the next Attack must deal double damage and consume exactly one stacked use");
+  }
+
+  if (!/DeferUsesCreatedBy[\s\S]*_deferredSourceCard[\s\S]*Amount\s*<=\s*_deferredUses[\s\S]*return\s+1m/.test(doublePower)) {
+    fail("NextAttackDoublePower: stacks created during an Attack must not multiply that same Attack");
+  }
+
+  const poisePower = powerBlock("NextPoiseBonusPower");
+  if (!/Queue<int>[\s\S]*AddBonus[\s\S]*GetNextBonus[\s\S]*AfterCardPlayed[\s\S]*PowerCmd\.Decrement\s*\(\s*this\s*\)/.test(poisePower)) {
+    fail("NextPoiseBonusPower: stacked Rock Blades must queue bonuses and consume one use per Attack");
+  }
+
+  if (!/RockBlade[\s\S]*Apply<NextPoiseBonusPower>\s*\(\s*Owner\.Creature\s*,\s*1m[\s\S]*AddBonus/.test(poiseCardsSource)) {
+    fail("RockBlade: each play must add one queued poise-bonus use");
+  }
+
+  if (!/NextPoiseBonusPower[\s\S]*GetNextBonus\s*\(\s*\)/.test(imbalanceSource) || /NextPoiseBonusPower[\s\S]*PowerCmd\.Remove\s*\(\s*poiseBonus\s*\)/.test(imbalanceSource)) {
+    fail("Imbalance: Rock Blade bonus must remain active for the full Attack card");
+  }
+
+  if (!/VictoryRushPower[\s\S]*Apply<NextAttackDoublePower>[\s\S]*cardSource\?\.Type\s*==\s*CardType\.Attack[\s\S]*DeferUsesCreatedBy\(cardSource,\s*1\)/.test(powerSource)) {
+    fail("VictoryRushPower: double-damage stacks created by an Attack stun must be deferred until the next Attack");
+  }
+}
+
+function checkImbalanceResetScaling() {
+  const imbalanceSource = readModCodeText("Mechanics/Imbalance.cs");
+  const imbalancePowerSource = readModCodeText("Powers/ImbalancePower.cs");
+
+  if (!/InitialResetValue[\s\S]*CurrentResetValue[\s\S]*InitializeResetValue[\s\S]*IncreaseResetValue/.test(imbalancePowerSource)) {
+    fail("ImbalancePower: must track initial and current reset values for repeated stuns");
+  }
+
+  if (!/IncreaseResetValue\(int amount\)[\s\S]*Math\.Min\(CurrentResetValue \+ amount,\s*InitialResetValue \+ 10\)/.test(imbalancePowerSource)) {
+    fail("ImbalancePower: reset value must grow by the requested amount and cap at initial + 10");
+  }
+
+  if (!/ApplyInitialPower[\s\S]*GetInitialValue\(target\)[\s\S]*Apply<ImbalancePower>[\s\S]*InitializeResetValue\(initialValue\)/.test(imbalanceSource)) {
+    fail("Imbalance: initial reset value must be captured when applying Imbalance");
+  }
+
+  if (!/Break[\s\S]*CreatureCmd\.Stun\(target\)[\s\S]*IncreaseResetValue\(2\)[\s\S]*SetAmount\(nextResetValue,\s*silent:\s*true\)/.test(imbalanceSource)) {
+    fail("Imbalance: after a stun, reset value must increase by 2 and use that value");
+  }
+
+  if (/Break[\s\S]*SetAmount\(GetInitialValue\(target\)/.test(imbalanceSource)) {
+    fail("Imbalance: repeated stuns must not reset back to the original initial value");
+  }
+}
+
+function checkCardPortraitLoading() {
+  const modCardSource = readModCodeText("Cards/ModCard.cs");
+  const libraryPatchSource = readModCodeText("Patches/ScarletCardLibraryUnlockPatch.cs");
+
+  if (!/ExtraRunAssetPaths\s*=>\s*AllPortraitPaths/.test(modCardSource)) {
+    fail("ModCard: every portrait must be included in run assets so asset-set transitions cannot unload it");
+  }
+
+  if (!/LoadPortraits[\s\S]*GetPortraitPaths\(\)[\s\S]*ResourceLoader\.Load<Texture2D>[\s\S]*LoadedPortraits\.Add/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: card library must load and retain Scarlet portraits before building its grid");
+  }
+
+  if (!/ScarletCardLibraryGridReadyPatch[\s\S]*LoadPortraits\(\)/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryGridReadyPatch: portraits must load before the card-library grid initializes");
+  }
+
+  if (!/ScarletCardLibraryOpenedPatch[\s\S]*LoadPortraits\(\)/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryOpenedPatch: portraits must reload whenever the card library is reopened");
+  }
+
+  if (!/GetPortraitPaths\(\)/.test(libraryPatchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: portrait preload paths must be derived from Scarlet cards");
+  }
+
+  for (const file of listFiles(cardsDir, ".cs")) {
+    const source = fs.readFileSync(file, "utf8");
+    for (const match of source.matchAll(/PortraitPath\s*=>\s*"(res:\/\/mod\/images\/card_portraits\/[^"]+)"/g)) {
+      const portraitFile = path.join(modDir, match[1].replace(/^res:\/\/mod\//, "mod/"));
+      if (!fs.existsSync(portraitFile)) {
+        fail(`${path.relative(rootDir, file)}: missing portrait file ${match[1]}`);
+      }
+    }
+  }
+}
+
+function checkAncientCardVisualFallback() {
+  const ancientVisualSource = readModCodeText("ModAncientCardVisuals.cs");
+  const ancientPatchSource = readModCodeText("Patches/ModAncientCardVisualPatch.cs");
+
+  if (!/Texture2D\?\s+GetFrameTexture\(CardModel model\)[\s\S]*Texture2D\?\s+GetPortraitBorderTexture\(CardModel model\)[\s\S]*Texture2D\?\s+GetBannerTexture\(\)/.test(ancientVisualSource)) {
+    fail("ModAncientCardVisuals: standard Ancient frame texture lookups must be nullable");
+  }
+
+  if (!/GetPortraitTexture\(CardModel model\)[\s\S]*model\.AllPortraitPaths[\s\S]*ResourceLoader\.Load<Texture2D>[\s\S]*return model\.Portrait/.test(ancientVisualSource)) {
+    fail("ModAncientCardVisuals: mod Ancient cards must reload portraits from AllPortraitPaths in combat compendium views");
+  }
+
+  if (!/portraitBorderTexture\s*==\s*null[\s\S]*frameTexture\s*==\s*null[\s\S]*bannerTexture\s*==\s*null[\s\S]*portraitTexture\s*==\s*null[\s\S]*standard frame resources are not loaded[\s\S]*return;[\s\S]*portraitBorder\.Visible\s*=\s*true[\s\S]*ancientPortrait\.Visible\s*=\s*false/.test(ancientPatchSource)) {
+    fail("ModAncientCardVisualPatch: must keep vanilla Ancient visuals when standard frame resources are missing");
+  }
+
+  if (!/portrait\.Texture\s*=\s*portraitTexture/.test(ancientPatchSource) || /portrait\.Texture\s*=\s*model\.Portrait/.test(ancientPatchSource)) {
+    fail("ModAncientCardVisualPatch: must use the resolved portrait texture instead of model.Portrait");
+  }
+
+  if (!/ModCardPortraitReloadPatch[\s\S]*ReloadPortraitFromModelPaths[\s\S]*GetPortraitTexture\(model\)[\s\S]*%Portrait[\s\S]*portrait\.Texture\s*=\s*portraitTexture[\s\S]*%AncientPortrait[\s\S]*ancientPortrait\.Texture\s*=\s*portraitTexture/.test(ancientPatchSource)) {
+    fail("ModAncientCardVisualPatch: combat compendium cards must refresh both standard and Ancient portrait nodes from model paths");
   }
 }
 
@@ -418,6 +820,32 @@ function readLocalizationFile(locale, name) {
 
 function placeholders(text) {
   return [...String(text).matchAll(/\{([A-Za-z][A-Za-z0-9_]*):diff\(\)\}/g)].map((match) => match[1]);
+}
+
+const KEYWORD_DESCRIPTION_PREFIXES = {
+  eng: {
+    Exhaust: "Exhaust.\n",
+    Retain: "Retain.\n",
+    Innate: "Innate.\n",
+    Ethereal: "Ethereal.\n",
+  },
+  zhs: {
+    Exhaust: "消耗，\n",
+    Retain: "保留，\n",
+    Innate: "固有，\n",
+    Ethereal: "虚无，\n",
+  },
+};
+
+function startsWithCardKeywordPrefix(text, keywords, locale) {
+  let value = String(text ?? "");
+  for (const keyword of keywords) {
+    const prefix = KEYWORD_DESCRIPTION_PREFIXES[locale][keyword];
+    if (prefix && value.startsWith(prefix)) {
+      return keyword;
+    }
+  }
+  return null;
 }
 
 function checkZhsCardStyle(cardId, suffix, text) {
@@ -438,12 +866,68 @@ function checkZhsCardStyle(cardId, suffix, text) {
   }
 }
 
+const CUSTOM_MECHANIC_COLOR_TERMS = {
+  eng: [
+    "Scarlet Corruption",
+    "Magic Vulnerability",
+    "magic damage",
+    "Poise damage",
+    "poise damage",
+    "Poise",
+    "Splash",
+    "Repeat",
+    "Frostbite",
+    "Burn",
+  ],
+  zhs: [
+    "猩红腐败",
+    "魔法易伤",
+    "魔法伤害",
+    "削韧",
+    "溅射",
+    "重复",
+    "冻伤",
+    "燃烧",
+  ],
+};
+
+function textOutsideGoldAndPlaceholders(text) {
+  return String(text ?? "")
+    .replace(/\[gold\][\s\S]*?\[\/gold\]/g, "")
+    .replace(/\{[^}]*\}/g, "");
+}
+
+function checkCustomMechanicColors(locale, cardsJson) {
+  for (const [key, value] of Object.entries(cardsJson)) {
+    if (typeof value !== "string" || !/(description|upgradeDescription)$/.test(key)) {
+      continue;
+    }
+
+    if (/\{[^}]*\[gold\]/.test(value)) {
+      fail(`${locale}: ${key} must not color text inside dynamic var placeholders`);
+    }
+
+    if (/\[gold\][^\[]*\[gold\]/.test(value) || /\[gold\]\[gold\]/.test(value)) {
+      fail(`${locale}: ${key} has nested gold tags`);
+    }
+
+    const plainText = textOutsideGoldAndPlaceholders(value);
+    for (const term of CUSTOM_MECHANIC_COLOR_TERMS[locale]) {
+      if (plainText.includes(term)) {
+        fail(`${locale}: ${key} must color custom mechanic term ${term}`);
+      }
+    }
+  }
+}
+
 function checkLocalization() {
+  const cards = parseCards();
   const expectedById = new Map(expectation.cards.map((card) => [card.id, card]));
   const expectedIds = [...expectedById.keys()];
 
   for (const locale of ["eng", "zhs"]) {
     const cardsJson = readLocalization(locale);
+    checkCustomMechanicColors(locale, cardsJson);
     const localizedTitleIds = Object.keys(cardsJson)
       .filter((key) => key.endsWith(".title"))
       .map((key) => key.replace(/\.title$/, ""))
@@ -475,6 +959,27 @@ function checkLocalization() {
         checkZhsCardStyle(expected.id, "description", cardsJson[`${expected.id}.description`]);
         checkZhsCardStyle(expected.id, "upgradeDescription", cardsJson[`${expected.id}.upgradeDescription`]);
       }
+
+      const actualCard = [...cards.values()].find((card) => card.id === expected.id);
+      if (actualCard) {
+        const duplicateBase = startsWithCardKeywordPrefix(
+          cardsJson[`${expected.id}.description`],
+          actualCard.keywords,
+          locale
+        );
+        if (duplicateBase) {
+          fail(`${locale}: ${expected.id}.description repeats keyword ${duplicateBase}; card keywords already show it`);
+        }
+
+        const duplicateUpgrade = startsWithCardKeywordPrefix(
+          cardsJson[`${expected.id}.upgradeDescription`],
+          actualCard.upgradedKeywords,
+          locale
+        );
+        if (duplicateUpgrade) {
+          fail(`${locale}: ${expected.id}.upgradeDescription repeats keyword ${duplicateUpgrade}; card keywords already show it`);
+        }
+      }
     }
   }
 
@@ -502,8 +1007,18 @@ function checkJsonFiles() {
 checkJsonFiles();
 checkCards();
 checkChargeLifecycle();
+checkWillToWinHpFloor();
+checkBurningMechanic();
+checkMaraisExecutionersGreatsword();
+checkJobChangePermanentMagic();
 checkMagicDamageFormula();
+checkMultiHitAttackCommands();
 checkSmallRoundShieldParry();
+checkCardLibraryScrollPatch();
+checkStackedNextAttackPowers();
+checkImbalanceResetScaling();
+checkCardPortraitLoading();
+checkAncientCardVisualFallback();
 checkLocalization();
 
 if (errors.length > 0) {

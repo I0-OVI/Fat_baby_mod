@@ -5,14 +5,16 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MOD_DIR="$ROOT_DIR/workspace/mod"
 MOD_ID="fat_baby"
 
-GAME_ROOT="${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}"
+GAME_ROOT="${STS2_STABLE_GAME_DIR:-${STS2_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/Slay the Spire 2}}"
 GAME_APP="$GAME_ROOT/SlayTheSpire2.app"
 GAME_MACOS_DIR="$GAME_APP/Contents/MacOS"
 GAME_MODS_DIR="$GAME_MACOS_DIR/mods"
+GAME_DISABLED_MODS_DIR="$GAME_MACOS_DIR/mods-disabled"
 INSTALLED_MOD_DIR="$GAME_MODS_DIR/$MOD_ID"
+CONFLICTING_MOD_ID="fat_baby_beta"
 
-PREREQ_SOURCE="$GAME_ROOT/mods/【001】必装前置"
-PREREQ_DEST="$GAME_MODS_DIR/【001】必装前置"
+BASELIB_SOURCE="$GAME_MODS_DIR/BaseLib"
+BASELIB_DEST="$GAME_MODS_DIR/BaseLib"
 
 GODOT_BIN="${GODOT_BIN:-$HOME/Downloads/Godot_mono.app/Contents/MacOS/Godot}"
 LOG_FILE="$HOME/Library/Application Support/SlayTheSpire2/logs/godot.log"
@@ -31,6 +33,11 @@ Commands:
   install   Install existing mod.json + fat_baby.dll + fat_baby.pck without rebuilding.
   log       Show recent mod-loading lines from godot.log.
   launch    Open Slay the Spire 2.
+
+Environment:
+  STS2_STABLE_GAME_DIR Preferred stable-channel game root.
+  STS2_GAME_DIR        Fallback game root.
+  GODOT_BIN            Godot mono binary for PCK export.
 EOF
 }
 
@@ -43,14 +50,14 @@ require_file() {
 }
 
 sync_deps() {
-  if [[ ! -d "$PREREQ_SOURCE" ]]; then
-    echo "Missing BaseLib source: $PREREQ_SOURCE" >&2
+  if [[ ! -f "$BASELIB_SOURCE/BaseLib.json" || ! -f "$BASELIB_SOURCE/BaseLib.dll" ]]; then
+    echo "Missing BaseLib source: $BASELIB_SOURCE" >&2
     exit 1
   fi
 
-  mkdir -p "$PREREQ_DEST"
-  rsync -a "$PREREQ_SOURCE/" "$PREREQ_DEST/"
-  echo "Synced BaseLib -> $PREREQ_DEST"
+  mkdir -p "$BASELIB_DEST"
+  rsync -a "$BASELIB_SOURCE/" "$BASELIB_DEST/"
+  echo "Synced BaseLib -> $BASELIB_DEST"
 }
 
 build_dll() {
@@ -75,44 +82,27 @@ export_pck() {
 }
 
 patch_pck_offsets() {
-  local pck="$1"
-  python3 - "$pck" <<'PY'
-import struct
-import sys
-from pathlib import Path
-
-pck = Path(sys.argv[1])
-data = bytearray(pck.read_bytes())
-
-if data[:4] != b"GDPC":
-    raise SystemExit(f"Not a Godot PCK: {pck}")
-
-file_base = struct.unpack_from("<Q", data, 24)[0]
-if file_base == 0:
-    print(f"PCK offsets already absolute: {pck}")
-    raise SystemExit(0)
-
-dir_offset = struct.unpack_from("<Q", data, 32)[0]
-file_count = struct.unpack_from("<I", data, dir_offset)[0]
-pos = dir_offset + 4
-
-for _ in range(file_count):
-    path_len = struct.unpack_from("<I", data, pos)[0]
-    pos += 4 + path_len
-    offset_pos = pos
-    offset = struct.unpack_from("<Q", data, offset_pos)[0]
-    struct.pack_into("<Q", data, offset_pos, offset + file_base)
-    pos += 8 + 8 + 16 + 4
-
-struct.pack_into("<Q", data, 24, 0)
-pck.write_bytes(data)
-print(f"Patched PCK offsets to absolute paths: {pck}")
-PY
+  "$ROOT_DIR/scripts/patch_pck_offsets.sh" "$1"
 }
 
 install_json() {
+  deactivate_conflicting_mod
   mkdir -p "$INSTALLED_MOD_DIR"
   install -m 0644 "$MOD_DIR/mod.json" "$INSTALLED_MOD_DIR/mod.json"
+}
+
+deactivate_conflicting_mod() {
+  local conflicting_dir="$GAME_MODS_DIR/$CONFLICTING_MOD_ID"
+  local disabled_dir="$GAME_DISABLED_MODS_DIR/$CONFLICTING_MOD_ID"
+
+  if [[ ! -d "$conflicting_dir" ]]; then
+    return
+  fi
+
+  mkdir -p "$GAME_DISABLED_MODS_DIR"
+  rm -rf "$disabled_dir"
+  mv "$conflicting_dir" "$disabled_dir"
+  echo "Disabled conflicting beta mod -> $disabled_dir"
 }
 
 install_dll() {

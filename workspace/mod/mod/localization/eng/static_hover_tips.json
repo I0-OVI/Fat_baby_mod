@@ -1,0 +1,6 @@
+{
+  "SPLASH.title": "Splash",
+  "SPLASH.description": "Deal half damage to non-target enemies.",
+  "BURN.title": "Burn",
+  "BURN.description": "If the target has Frostbite, remove Frostbite and deal 2 poise damage."
+}
