@@ -1,8 +1,8 @@
 using Godot;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Cards;
+using FatBaby.ModCode.Cards;
 
-namespace Mod.ModCode.Character;
+namespace FatBaby.ModCode.Character;
 
 public sealed class ScarletCardPool : CardPoolModel
 {
@@ -70,7 +70,7 @@ public sealed class ScarletCardPool : CardPoolModel
         ModelDb.Card<TwinStingPoisonFlower>(),
         ModelDb.Card<Truce>(),
         ModelDb.Card<Intimidation>(),
-        ModelDb.Card<Determination>(),
+        ModelDb.Card<ScarletDetermination>(),
         ModelDb.Card<Search>(),
         ModelDb.Card<BattleCry>(),
         ModelDb.Card<EasyHandling>(),

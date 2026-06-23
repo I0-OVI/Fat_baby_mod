@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Events;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 /// <summary>
 /// OnSetupComplete scrolls before option buttons have a layout size, hiding relic choices on single-line ancients.

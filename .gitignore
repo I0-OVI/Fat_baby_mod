@@ -43,6 +43,8 @@ tools/sts2-mod-uploader/
 # Locally prepared Workshop upload payloads; config/scripts are tracked separately.
 workshop/fat_baby_uploader_workspace/content/
 workshop/fat_baby_uploader_workspace/image.png
+workshop/fat_baby_beta_uploader_workspace/content/
+workshop/fat_baby_beta_uploader_workspace/image.png
 
 # Local handoff drafts (optional)
 handoff/conversation_raw.md

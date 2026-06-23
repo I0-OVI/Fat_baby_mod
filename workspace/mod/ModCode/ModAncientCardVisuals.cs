@@ -3,9 +3,9 @@ using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Character;
+using FatBaby.ModCode.Character;
 
-namespace Mod.ModCode;
+namespace FatBaby.ModCode;
 
 internal static class ModAncientCardVisuals
 {
@@ -14,35 +14,47 @@ internal static class ModAncientCardVisuals
 
     private static readonly Color SilverTitleOutline = new("777A80FF");
 
-    private static Material? _silverBannerMaterial;
-
     internal static bool ShouldUseStandardFrame(CardModel? model) =>
         model is { Rarity: CardRarity.Ancient, Pool: ScarletCardPool };
 
-    internal static Material SilverBannerMaterial =>
-        _silverBannerMaterial ??= PreloadManager.Cache.GetMaterial(SilverBannerMaterialPath);
+    internal static Material CreateSilverBannerMaterial() =>
+        (Material)PreloadManager.Cache.GetMaterial(SilverBannerMaterialPath).Duplicate(deep: true);
 
     internal static Color TitleOutlineColor => SilverTitleOutline;
 
-    internal static Texture2D GetFrameTexture(CardModel model)
+    internal static Texture2D? GetFrameTexture(CardModel model)
     {
         string path = ImageHelper.GetImagePath(
             "atlases/ui_atlas.sprites/card/card_frame_" + GetFrameTypeKey(model.Type) + "_s.tres");
         return ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
     }
 
-    internal static Texture2D GetPortraitBorderTexture(CardModel model)
+    internal static Texture2D? GetPortraitBorderTexture(CardModel model)
     {
         string path = ImageHelper.GetImagePath(
             "atlases/ui_atlas.sprites/card/card_portrait_border_" + GetFrameTypeKey(model.Type) + "_s.tres");
         return ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
     }
 
-    internal static Texture2D GetBannerTexture() =>
+    internal static Texture2D? GetBannerTexture() =>
         ResourceLoader.Load<Texture2D>(
             ImageHelper.GetImagePath("atlases/ui_atlas.sprites/card/card_banner.tres"),
             null,
             ResourceLoader.CacheMode.Reuse);
+
+    internal static Texture2D? GetPortraitTexture(CardModel model)
+    {
+        foreach (string path in model.AllPortraitPaths)
+        {
+            Texture2D? portrait = ResourceLoader.Load<Texture2D>(path, null, ResourceLoader.CacheMode.Reuse);
+            if (portrait != null)
+            {
+                return portrait;
+            }
+        }
+
+        return model.Portrait;
+    }
 
     private static string GetFrameTypeKey(CardType type) => type switch
     {

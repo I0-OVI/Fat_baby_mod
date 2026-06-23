@@ -5,10 +5,10 @@ using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class ScarletCost() : ModCard(0, CardType.Skill, CardRarity.Common, TargetType.Self)
 {

@@ -11,7 +11,7 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
 
-namespace Mod.ModCode.Powers;
+namespace FatBaby.ModCode.Powers;
 
 public sealed class ScarletTemptationPower : CustomPowerModel
 {

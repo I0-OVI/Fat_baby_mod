@@ -1,4 +1,4 @@
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 internal interface IMagicAttributeCard;
 

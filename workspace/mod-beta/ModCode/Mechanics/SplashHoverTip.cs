@@ -1,7 +1,7 @@
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 internal static class SplashHoverTip
 {

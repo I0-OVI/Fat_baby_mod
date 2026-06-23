@@ -9,7 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Monsters;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 /// <summary>
 /// Hidden combat-only tracker for Totem Tablet releases vs Knowledge Demon (no power UI).

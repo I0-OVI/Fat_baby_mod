@@ -10,13 +10,16 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Characters;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Screens;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardLibrary;
+using MegaCrit.Sts2.Core.Nodes.Screens.MainMenu;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.Unlocks;
-using Mod.ModCode;
-using Mod.ModCode.Character;
+using FatBaby.ModCode;
+using FatBaby.ModCode.Character;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 internal static class ScarletCardLibraryUnlocks
 {
@@ -200,6 +203,26 @@ internal static class ScarletCardLibraryUnlocks
     }
 }
 
+[HarmonyPatch(typeof(NCapstoneSubmenuStack), nameof(NCapstoneSubmenuStack.ShowScreen))]
+internal static class ScarletCompendiumRunStatePatch
+{
+    private static void Postfix(CapstoneSubmenuType type, NSubmenu __result)
+    {
+        if (type != CapstoneSubmenuType.Compendium || __result is not NCompendiumSubmenu compendium)
+        {
+            return;
+        }
+
+        RunState? runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState == null)
+        {
+            return;
+        }
+
+        compendium.Initialize(runState);
+    }
+}
+
 [HarmonyPatch(typeof(ProgressState), "get_DiscoveredCards")]
 internal static class ScarletDiscoveredCardsPatch
 {
@@ -331,13 +354,26 @@ internal static class ScarletCardLibraryHolderUpdateStatsPatch
 }
 
 /// <summary>
-/// Combat overlays can report bogus holder positions and trigger a full-grid reindex that
-/// makes the library scroll jump upward and fail to repaint recycled rows.
+/// In combat capstone overlays, GlobalPosition can include transient combat UI transforms.
+/// Drive card-library virtualization from the scroll container offset instead.
 /// </summary>
-[HarmonyPatch(typeof(NCardGrid), "ReallocateAll")]
-internal static class ScarletCardLibraryReallocateAllPatch
+[HarmonyPatch]
+internal static class ScarletCardLibraryReallocateRowsPatch
 {
-    private const int MaxRowJump = 64;
+    private const float CardPadding = 40f;
+    private const float TopMargin = 80f;
+
+    private static IEnumerable<MethodBase> TargetMethods()
+    {
+        foreach (string methodName in new[] { "ReallocateAll", "ReallocateAbove", "ReallocateBelow" })
+        {
+            MethodInfo? method = AccessTools.Method(typeof(NCardGrid), methodName);
+            if (method != null)
+            {
+                yield return method;
+            }
+        }
+    }
 
     [HarmonyPrefix]
     private static bool Prefix(NCardGrid __instance)
@@ -347,24 +383,98 @@ internal static class ScarletCardLibraryReallocateAllPatch
             return true;
         }
 
-        if (AccessTools.Field(typeof(NCardGrid), "_cardRows")?.GetValue(__instance) is not List<List<NGridCardHolder>> rows
+        try
+        {
+            ReconcileRows(__instance);
+        }
+        catch (Exception ex)
+        {
+            MainFile.Logger.Info($"Unable to reconcile Scarlet card library rows: {ex}");
+        }
+
+        return false;
+    }
+
+    private static void ReconcileRows(NCardGrid grid)
+    {
+        if (AccessTools.Field(typeof(NCardGrid), "_cardRows")?.GetValue(grid) is not List<List<NGridCardHolder>> rows
             || rows.Count == 0
-            || rows[0].Count == 0)
+            || rows[0].Count == 0
+            || AccessTools.Field(typeof(NCardGrid), "_cards")?.GetValue(grid) is not List<CardModel> cards
+            || cards.Count == 0
+            || AccessTools.Field(typeof(NCardGrid), "_scrollContainer")?.GetValue(grid) is not Control scrollContainer
+            || AccessTools.Field(typeof(NCardGrid), "_cardSize")?.GetValue(grid) is not Vector2 cardSize)
         {
-            return true;
+            return;
         }
 
-        const float cardPadding = 40f;
-        float cardHeight = AccessTools.Field(typeof(NCardGrid), "_cardSize")?.GetValue(__instance) is Vector2 cardSize
-            ? cardSize.Y
-            : 0f;
-        float rowHeight = cardPadding + cardHeight;
-        if (rowHeight <= 0f)
+        int columns = AccessTools.PropertyGetter(typeof(NCardGrid), "Columns")?.Invoke(grid, []) is int value
+            ? value
+            : 0;
+        float rowHeight = cardSize.Y + CardPadding;
+        if (columns <= 0 || rowHeight <= 0f)
         {
-            return true;
+            return;
         }
 
-        int rowJump = Mathf.RoundToInt(rows[0][0].GlobalPosition.Y / rowHeight);
-        return Math.Abs(rowJump) <= MaxRowJump;
+        float contentTop = -scrollContainer.Position.Y;
+        int firstVisibleRow = Mathf.FloorToInt((contentTop - grid.YOffset - TopMargin) / rowHeight);
+        int desiredFirstRow = Math.Max(0, firstVisibleRow - 1);
+        int totalRows = Mathf.CeilToInt((float)cards.Count / columns);
+        int maxFirstRow = Math.Max(0, totalRows - rows.Count);
+        desiredFirstRow = Math.Min(desiredFirstRow, maxFirstRow);
+
+        int desiredIndex = desiredFirstRow * columns;
+        int currentIndex = AccessTools.Field(typeof(NCardGrid), "_slidingWindowCardIndex")?.GetValue(grid) is int current
+            ? current
+            : -1;
+        if (currentIndex == desiredIndex && RowsMatch(cards, rows, desiredIndex, columns))
+        {
+            return;
+        }
+
+        AccessTools.Field(typeof(NCardGrid), "_slidingWindowCardIndex")?.SetValue(grid, desiredIndex);
+        MethodInfo? assignCardsToRow = AccessTools.Method(grid.GetType(), "AssignCardsToRow")
+            ?? AccessTools.Method(typeof(NCardGrid), "AssignCardsToRow");
+        MethodInfo? updateGridPositions = AccessTools.Method(typeof(NCardGrid), "UpdateGridPositions");
+        MethodInfo? updateGridNavigation = AccessTools.Method(grid.GetType(), "UpdateGridNavigation")
+            ?? AccessTools.Method(typeof(NCardGrid), "UpdateGridNavigation");
+
+        for (int i = 0; i < rows.Count; i++)
+        {
+            assignCardsToRow?.Invoke(grid, [rows[i], desiredIndex + i * columns]);
+        }
+
+        updateGridPositions?.Invoke(grid, [desiredIndex]);
+        updateGridNavigation?.Invoke(grid, []);
+    }
+
+    private static bool RowsMatch(List<CardModel> cards, List<List<NGridCardHolder>> rows, int startIndex, int columns)
+    {
+        for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
+        {
+            List<NGridCardHolder> row = rows[rowIndex];
+            for (int column = 0; column < row.Count; column++)
+            {
+                int cardIndex = startIndex + rowIndex * columns + column;
+                NGridCardHolder holder = row[column];
+                if (cardIndex >= cards.Count)
+                {
+                    if (holder.Visible)
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (!holder.Visible || holder.CardModel != cards[cardIndex])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

@@ -4,9 +4,9 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
-using Mod.ModCode.Character;
+using FatBaby.ModCode.Character;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(NRestSiteCharacter), nameof(NRestSiteCharacter.Create))]
 internal static class ScarletRestSiteCharacterPatch

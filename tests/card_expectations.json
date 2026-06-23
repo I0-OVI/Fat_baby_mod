@@ -676,8 +676,8 @@
       }
     },
     {
-      "class": "Determination",
-      "id": "DETERMINATION",
+      "class": "ScarletDetermination",
+      "id": "SCARLET_DETERMINATION",
       "cost": 1,
       "type": "Skill",
       "rarity": "Common",
@@ -1539,7 +1539,7 @@
         "Retain"
       ],
       "vars": {
-        "Heal": 8,
+        "Heal": 6,
         "Remaining": 0
       }
     }

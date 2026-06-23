@@ -7,10 +7,10 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Commands;
 
-namespace Mod.ModCode.Relics;
+namespace FatBaby.ModCode.Relics;
 
 public sealed class RedTearstoneRingRelic : RelicModel
 {

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Character;
+namespace FatBaby.ModCode.Character;
 
 public sealed class ScarletRelicPool : RelicPoolModel
 {

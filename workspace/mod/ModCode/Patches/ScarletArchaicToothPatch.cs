@@ -3,9 +3,9 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
-using Mod.ModCode.Cards;
+using FatBaby.ModCode.Cards;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 internal static class ScarletArchaicToothMapping
 {

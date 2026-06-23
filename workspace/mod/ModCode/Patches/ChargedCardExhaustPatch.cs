@@ -4,9 +4,9 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Cards;
+using FatBaby.ModCode.Cards;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 /// <summary>
 /// Restart charged-card timers when a card is exhausted without being played.

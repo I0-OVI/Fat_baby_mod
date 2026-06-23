@@ -7,9 +7,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Rooms;
-using Mod.ModCode.Cards;
+using FatBaby.ModCode.Cards;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 /// <summary>
 /// Act 2 Hive boss: playing Totem Tablet three times within two player turns instantly kills Knowledge Demon.

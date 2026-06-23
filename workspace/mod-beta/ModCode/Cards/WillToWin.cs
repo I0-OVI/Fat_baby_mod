@@ -4,10 +4,10 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Commands;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class WillToWin() : ModCard(3, CardType.Power, CardRarity.Rare, TargetType.Self)
 {

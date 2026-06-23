@@ -9,10 +9,10 @@ using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class ReturnPrinciple() : ModCard(2, CardType.Skill, CardRarity.Rare, TargetType.Self)
 {

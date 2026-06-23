@@ -3,9 +3,9 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 /// <summary>
 /// Restores element flask charges when entering or resuming a rest site (in addition to the relic hook).

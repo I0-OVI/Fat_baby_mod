@@ -8,10 +8,10 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Rooms;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Commands;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 public static class Imbalance
 {
@@ -59,7 +59,7 @@ public static class Imbalance
         {
             if (!enemy.HasPower<ImbalancePower>())
             {
-                await ModPowerCmd.Apply<ImbalancePower>(enemy, GetInitialValue(enemy), applier, cardSource, silent: true);
+                await ApplyInitialPower(enemy, applier, cardSource);
             }
         }
     }
@@ -95,7 +95,7 @@ public static class Imbalance
         ImbalancePower? power = target.GetPower<ImbalancePower>();
         if (power == null)
         {
-            await ModPowerCmd.Apply<ImbalancePower>(target, GetInitialValue(target), applier, cardSource, silent: true);
+            await ApplyInitialPower(target, applier, cardSource);
             power = target.GetPower<ImbalancePower>();
         }
 
@@ -103,6 +103,8 @@ public static class Imbalance
         {
             return;
         }
+
+        power.InitializeResetValue(GetInitialValue(target));
 
         if (amount < power.Amount)
         {
@@ -133,7 +135,20 @@ public static class Imbalance
             await VictoryRushPower.Trigger(choiceContext, applier, cardSource);
             await BreakingMomentumPower.Trigger(choiceContext, applier, cardSource);
         }
-        power.SetAmount(GetInitialValue(target), silent: true);
+
+        int nextResetValue = power.IncreaseResetValue(2);
+        power.SetAmount(nextResetValue, silent: true);
+    }
+
+    private static async Task ApplyInitialPower(
+        Creature target,
+        Creature? applier,
+        CardModel? cardSource
+    )
+    {
+        int initialValue = GetInitialValue(target);
+        await ModPowerCmd.Apply<ImbalancePower>(target, initialValue, applier, cardSource, silent: true);
+        target.GetPower<ImbalancePower>()?.InitializeResetValue(initialValue);
     }
 
     private static bool IsGroupElite(ICombatState? combatState)

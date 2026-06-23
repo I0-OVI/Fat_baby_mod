@@ -13,11 +13,11 @@ using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Commands;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 internal static class UtilityCardActions
 {
@@ -140,7 +140,7 @@ public sealed class Intimidation() : ModCard(1, CardType.Skill, CardRarity.Commo
     }
 }
 
-public sealed class Determination() : ModCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
+public sealed class ScarletDetermination() : ModCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {
     public override string PortraitPath => "res://mod/images/card_portraits/determination.png";
 

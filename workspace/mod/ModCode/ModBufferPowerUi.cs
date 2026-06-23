@@ -1,4 +1,4 @@
-namespace Mod.ModCode;
+namespace FatBaby.ModCode;
 
 internal static class ModBufferPowerUi
 {

@@ -14,11 +14,11 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Commands;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 internal static class MagicCardActions
 {

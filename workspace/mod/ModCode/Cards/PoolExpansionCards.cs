@@ -11,12 +11,12 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class FrostbiteGrease() : ModCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {
@@ -95,6 +95,7 @@ public sealed class FlameStrike() : ModCard(1, CardType.Attack, CardRarity.Uncom
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
+        BurnHoverTip.Get(),
         HoverTipFactory.FromPower<FrostbitePower>(),
         HoverTipFactory.FromPower<ImbalancePower>()
     ];
@@ -145,6 +146,7 @@ public sealed class NightAndFlameStanceFire() : ModCard(1, CardType.Attack, Card
 
     protected override IEnumerable<IHoverTip> ExtraHoverTips =>
     [
+        BurnHoverTip.Get(),
         HoverTipFactory.FromPower<FrostbitePower>(),
         HoverTipFactory.FromPower<ImbalancePower>()
     ];

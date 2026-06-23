@@ -7,7 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Multiplayer;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 
-namespace Mod.ModCode.Commands;
+namespace FatBaby.ModCode.Commands;
 
 /// <summary>
 /// Compatibility helpers for game builds where <see cref="PowerCmd.Apply"/> requires a <see cref="PlayerChoiceContext"/>.

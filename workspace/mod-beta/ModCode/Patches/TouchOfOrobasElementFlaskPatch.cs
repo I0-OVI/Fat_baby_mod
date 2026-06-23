@@ -1,9 +1,9 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Relics;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(TouchOfOrobas), nameof(TouchOfOrobas.GetUpgradedStarterRelic))]
 internal static class TouchOfOrobasGetUpgradedStarterRelicPatch

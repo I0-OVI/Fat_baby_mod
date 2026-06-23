@@ -6,7 +6,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 /// <summary>
 /// Queues All In copy cards and drains them after pile-change hooks finish.

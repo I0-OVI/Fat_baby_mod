@@ -2,7 +2,7 @@ using BaseLib.Abstracts;
 using Godot;
 using MegaCrit.Sts2.Core.Assets;
 
-namespace Mod.ModCode.Powers;
+namespace FatBaby.ModCode.Powers;
 
 /// <summary>
 /// Marker base for mod powers that supply textures via <see cref="CustomPowerModel.CustomPackedIconPath"/>.

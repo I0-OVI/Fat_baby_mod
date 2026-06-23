@@ -13,11 +13,11 @@ using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
 using System.Linq;
 using MegaCrit.Sts2.Core.Combat;
-using Mod.ModCode.Cards;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Mechanics;
+using FatBaby.ModCode.Cards;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Mechanics;
 
-namespace Mod.ModCode.Powers;
+namespace FatBaby.ModCode.Powers;
 
 public sealed class ThisRoadIsBlockedPower : CustomPowerModel
 {

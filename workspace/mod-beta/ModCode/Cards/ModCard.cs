@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public abstract class ModCard(int cost, CardType type, CardRarity rarity, TargetType target, bool showInCardLibrary = true)
     : CardModel(cost, type, rarity, target, showInCardLibrary)

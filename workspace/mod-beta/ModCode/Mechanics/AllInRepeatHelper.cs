@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Cards;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Cards;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 /// <summary>
 /// Stacks next-turn repeat counters as each All In copy finishes playing.

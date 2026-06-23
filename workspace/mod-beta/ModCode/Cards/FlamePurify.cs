@@ -6,10 +6,10 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class FlamePurify() : ModCard(1, CardType.Skill, CardRarity.Common, TargetType.Self)
 {

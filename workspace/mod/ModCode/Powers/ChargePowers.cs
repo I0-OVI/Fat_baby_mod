@@ -1,7 +1,7 @@
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Powers;
 
-namespace Mod.ModCode.Powers;
+namespace FatBaby.ModCode.Powers;
 
 public abstract class ChargePower : CustomPowerModel
 {

@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Assets;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Patches;
+using FatBaby.ModCode.Patches;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 internal static class ModRunAssetsPatchLogic
 {

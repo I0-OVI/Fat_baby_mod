@@ -1,6 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Relics;
 
-namespace Mod.ModCode.Relics;
+namespace FatBaby.ModCode.Relics;
 
 /// <summary>
 /// Orobas Touch of Orobas upgrade for the starter Element Flask (5 uses per rest / ancient).

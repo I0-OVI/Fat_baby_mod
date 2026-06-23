@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models.Events;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(TheArchitect), "get_DialogueSet")]
 internal static class TheArchitectScarletDialoguePatch

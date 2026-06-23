@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands.Builders;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 /// <summary>
 /// Lets parry powers interrupt the rest of the current multi-hit attack

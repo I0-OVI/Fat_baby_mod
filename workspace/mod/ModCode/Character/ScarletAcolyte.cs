@@ -3,10 +3,10 @@ using BaseLib.Abstracts;
 using Godot;
 using MegaCrit.Sts2.Core.Entities.Characters;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Cards;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Cards;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Character;
+namespace FatBaby.ModCode.Character;
 
 public sealed class ScarletAcolyte : PlaceholderCharacterModel
 {

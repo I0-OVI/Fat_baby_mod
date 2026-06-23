@@ -6,9 +6,9 @@ using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class ElementFlask() : ModCard(0, CardType.Skill, CardRarity.Token, TargetType.Self, showInCardLibrary: false)
 {
@@ -22,7 +22,7 @@ public sealed class ElementFlask() : ModCard(0, CardType.Skill, CardRarity.Token
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
-        new HealVar(8m),
+        new HealVar(6m),
         new DynamicVar("Remaining", 0m)
     ];
 

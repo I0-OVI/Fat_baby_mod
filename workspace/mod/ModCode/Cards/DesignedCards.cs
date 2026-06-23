@@ -11,10 +11,10 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class BlackFlameRitual() : ModCard(1, CardType.Skill, CardRarity.Uncommon, TargetType.Self)
 {

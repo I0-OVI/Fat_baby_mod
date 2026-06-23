@@ -4,10 +4,10 @@ using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Relics;
+namespace FatBaby.ModCode.Relics;
 
 public sealed class MagicScorpionCharmRelic : RelicModel
 {

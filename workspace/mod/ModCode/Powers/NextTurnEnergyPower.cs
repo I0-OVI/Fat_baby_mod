@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 
-namespace Mod.ModCode.Powers;
+namespace FatBaby.ModCode.Powers;
 
 public sealed class NextTurnEnergyPower : CustomPowerModel
 {

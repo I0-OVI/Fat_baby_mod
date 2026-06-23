@@ -23,8 +23,8 @@ find_file() {
 STABLE_MOD_DIR="$GAME_MACOS_DIR/mods/fat_baby"
 DISABLED_STABLE_MOD_DIR="$GAME_MACOS_DIR/mods-disabled/fat_baby"
 
-DLL="$(find_file fat_baby.dll "$STABLE_MOD_DIR" "$DISABLED_STABLE_MOD_DIR" "$ROOT_DIR/workspace/mod/.godot/mono/temp/bin/Debug")"
-PCK="$(find_file fat_baby.pck "$STABLE_MOD_DIR" "$DISABLED_STABLE_MOD_DIR" "$ROOT_DIR/workspace/mod/build")"
+DLL="$(find_file fat_baby.dll "$ROOT_DIR/workspace/mod/.godot/mono/temp/bin/Debug" "$STABLE_MOD_DIR" "$DISABLED_STABLE_MOD_DIR")"
+PCK="$(find_file mod.pck "$ROOT_DIR/workspace/mod/build")"
 MANIFEST="$(find_file mod.json "$STABLE_MOD_DIR" "$DISABLED_STABLE_MOD_DIR" "$ROOT_DIR/workspace/mod")"
 PREVIEW="$ROOT_DIR/workspace/mod/mod/images/character_select/fat_baby_cover.png"
 

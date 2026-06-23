@@ -14,12 +14,12 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using Mod.ModCode.Cards;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Commands;
+using FatBaby.ModCode.Cards;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Commands;
 
-namespace Mod.ModCode.Relics;
+namespace FatBaby.ModCode.Relics;
 
 public class ElementFlaskRelic : RelicModel
 {

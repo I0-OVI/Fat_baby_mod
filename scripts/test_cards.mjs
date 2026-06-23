@@ -165,6 +165,13 @@ function parseCards() {
 
   for (const file of listFiles(cardsDir, ".cs")) {
     const source = fs.readFileSync(file, "utf8");
+    if (source.includes(": ModCard") || source.includes(": ChargedModCard")) {
+      const expectedNamespace = "namespace FatBaby.ModCode.Cards;";
+      if (!source.includes(expectedNamespace)) {
+        fail(`${path.relative(rootDir, file)}: ModCard classes must use ${expectedNamespace}`);
+      }
+    }
+
     for (const match of source.matchAll(classRegex)) {
       const className = match[1];
       const baseType = match[2];
@@ -404,8 +411,11 @@ function checkWillToWinHpFloor() {
 
 function checkBurningMechanic() {
   const frostbiteMechanicSource = readModCodeText("Mechanics/FrostbiteMechanic.cs");
+  const burnHoverTipSource = readModCodeText("Mechanics/BurnHoverTip.cs");
   const frostPowersSource = readModCodeText("Powers/FrostPowers.cs");
   const poolExpansionSource = readModCodeText("Cards/PoolExpansionCards.cs");
+  const zhsStaticHoverTips = readLocalizationFile("zhs", "static_hover_tips.json");
+  const engStaticHoverTips = readLocalizationFile("eng", "static_hover_tips.json");
 
   if (!/BurnFrostbittenTargets[\s\S]*GetPower<FrostbitePower>[\s\S]*PowerCmd\.Remove\(frostbite\)[\s\S]*Imbalance\.Reduce\(choiceContext,\s*target,\s*2/.test(frostbiteMechanicSource)) {
     fail("FrostbiteMechanic: Burning must remove Frostbite and immediately deal 2 poise damage");
@@ -421,6 +431,18 @@ function checkBurningMechanic() {
 
   if (!/FlameStrike[\s\S]*BurnFrostbittenTargets/.test(poolExpansionSource) || !/NightAndFlameStanceFire[\s\S]*BurnFrostbittenTargets/.test(poolExpansionSource)) {
     fail("PoolExpansionCards: Flame Strike and Night-and-Flame fire stance must trigger Burning");
+  }
+
+  if (!/BURN\.title/.test(burnHoverTipSource) || !/BURN\.description/.test(burnHoverTipSource)) {
+    fail("BurnHoverTip: Burning must use a static sidebar hover tip");
+  }
+
+  if (!/FlameStrike[\s\S]*BurnHoverTip\.Get\(\)/.test(poolExpansionSource) || !/NightAndFlameStanceFire[\s\S]*BurnHoverTip\.Get\(\)/.test(poolExpansionSource)) {
+    fail("PoolExpansionCards: Burning cards must show the Burning sidebar hover tip");
+  }
+
+  if (!zhsStaticHoverTips["BURN.title"] || !zhsStaticHoverTips["BURN.description"] || !engStaticHoverTips["BURN.title"] || !engStaticHoverTips["BURN.description"]) {
+    fail("static_hover_tips: Burning must have zh/eng sidebar text");
   }
 }
 
@@ -646,8 +668,8 @@ function checkCardLibraryScrollPatch() {
     fail("ScarletCardLibraryUnlockPatch: optional recycled-holder patch must skip safely when UpdateStats is absent");
   }
 
-  if (!/HarmonyPatch\(typeof\(NCardGrid\), "ReallocateAll"\)[\s\S]*MaxRowJump/.test(patchSource)) {
-    fail("ScarletCardLibraryUnlockPatch: card library must guard against runaway grid reallocation while scrolling");
+  if (!/ScarletCardLibraryReallocateRowsPatch[\s\S]*TargetMethods\(\)[\s\S]*ReallocateAll[\s\S]*ReallocateAbove[\s\S]*ReallocateBelow[\s\S]*ReconcileRows[\s\S]*_scrollContainer[\s\S]*Position[\s\S]*RowsMatch/.test(patchSource)) {
+    fail("ScarletCardLibraryUnlockPatch: card library must reconcile virtual rows from scroll position while scrolling");
   }
 
   if (!/ScarletCardLibraryOpenedPatch[\s\S]*LoadPortraits\(\)[\s\S]*ResetGridScroll/.test(patchSource)) {
@@ -701,6 +723,31 @@ function checkStackedNextAttackPowers() {
   }
 }
 
+function checkImbalanceResetScaling() {
+  const imbalanceSource = readModCodeText("Mechanics/Imbalance.cs");
+  const imbalancePowerSource = readModCodeText("Powers/ImbalancePower.cs");
+
+  if (!/InitialResetValue[\s\S]*CurrentResetValue[\s\S]*InitializeResetValue[\s\S]*IncreaseResetValue/.test(imbalancePowerSource)) {
+    fail("ImbalancePower: must track initial and current reset values for repeated stuns");
+  }
+
+  if (!/IncreaseResetValue\(int amount\)[\s\S]*Math\.Min\(CurrentResetValue \+ amount,\s*InitialResetValue \+ 10\)/.test(imbalancePowerSource)) {
+    fail("ImbalancePower: reset value must grow by the requested amount and cap at initial + 10");
+  }
+
+  if (!/ApplyInitialPower[\s\S]*GetInitialValue\(target\)[\s\S]*Apply<ImbalancePower>[\s\S]*InitializeResetValue\(initialValue\)/.test(imbalanceSource)) {
+    fail("Imbalance: initial reset value must be captured when applying Imbalance");
+  }
+
+  if (!/Break[\s\S]*CreatureCmd\.Stun\(target\)[\s\S]*IncreaseResetValue\(2\)[\s\S]*SetAmount\(nextResetValue,\s*silent:\s*true\)/.test(imbalanceSource)) {
+    fail("Imbalance: after a stun, reset value must increase by 2 and use that value");
+  }
+
+  if (/Break[\s\S]*SetAmount\(GetInitialValue\(target\)/.test(imbalanceSource)) {
+    fail("Imbalance: repeated stuns must not reset back to the original initial value");
+  }
+}
+
 function checkCardPortraitLoading() {
   const modCardSource = readModCodeText("Cards/ModCard.cs");
   const libraryPatchSource = readModCodeText("Patches/ScarletCardLibraryUnlockPatch.cs");
@@ -733,6 +780,31 @@ function checkCardPortraitLoading() {
         fail(`${path.relative(rootDir, file)}: missing portrait file ${match[1]}`);
       }
     }
+  }
+}
+
+function checkAncientCardVisualFallback() {
+  const ancientVisualSource = readModCodeText("ModAncientCardVisuals.cs");
+  const ancientPatchSource = readModCodeText("Patches/ModAncientCardVisualPatch.cs");
+
+  if (!/Texture2D\?\s+GetFrameTexture\(CardModel model\)[\s\S]*Texture2D\?\s+GetPortraitBorderTexture\(CardModel model\)[\s\S]*Texture2D\?\s+GetBannerTexture\(\)/.test(ancientVisualSource)) {
+    fail("ModAncientCardVisuals: standard Ancient frame texture lookups must be nullable");
+  }
+
+  if (!/GetPortraitTexture\(CardModel model\)[\s\S]*model\.AllPortraitPaths[\s\S]*ResourceLoader\.Load<Texture2D>[\s\S]*return model\.Portrait/.test(ancientVisualSource)) {
+    fail("ModAncientCardVisuals: mod Ancient cards must reload portraits from AllPortraitPaths in combat compendium views");
+  }
+
+  if (!/portraitBorderTexture\s*==\s*null[\s\S]*frameTexture\s*==\s*null[\s\S]*bannerTexture\s*==\s*null[\s\S]*portraitTexture\s*==\s*null[\s\S]*standard frame resources are not loaded[\s\S]*return;[\s\S]*portraitBorder\.Visible\s*=\s*true[\s\S]*ancientPortrait\.Visible\s*=\s*false/.test(ancientPatchSource)) {
+    fail("ModAncientCardVisualPatch: must keep vanilla Ancient visuals when standard frame resources are missing");
+  }
+
+  if (!/portrait\.Texture\s*=\s*portraitTexture/.test(ancientPatchSource) || /portrait\.Texture\s*=\s*model\.Portrait/.test(ancientPatchSource)) {
+    fail("ModAncientCardVisualPatch: must use the resolved portrait texture instead of model.Portrait");
+  }
+
+  if (!/ModCardPortraitReloadPatch[\s\S]*ReloadPortraitFromModelPaths[\s\S]*GetPortraitTexture\(model\)[\s\S]*%Portrait[\s\S]*portrait\.Texture\s*=\s*portraitTexture[\s\S]*%AncientPortrait[\s\S]*ancientPortrait\.Texture\s*=\s*portraitTexture/.test(ancientPatchSource)) {
+    fail("ModAncientCardVisualPatch: combat compendium cards must refresh both standard and Ancient portrait nodes from model paths");
   }
 }
 
@@ -794,6 +866,60 @@ function checkZhsCardStyle(cardId, suffix, text) {
   }
 }
 
+const CUSTOM_MECHANIC_COLOR_TERMS = {
+  eng: [
+    "Scarlet Corruption",
+    "Magic Vulnerability",
+    "magic damage",
+    "Poise damage",
+    "poise damage",
+    "Poise",
+    "Splash",
+    "Repeat",
+    "Frostbite",
+    "Burn",
+  ],
+  zhs: [
+    "猩红腐败",
+    "魔法易伤",
+    "魔法伤害",
+    "削韧",
+    "溅射",
+    "重复",
+    "冻伤",
+    "燃烧",
+  ],
+};
+
+function textOutsideGoldAndPlaceholders(text) {
+  return String(text ?? "")
+    .replace(/\[gold\][\s\S]*?\[\/gold\]/g, "")
+    .replace(/\{[^}]*\}/g, "");
+}
+
+function checkCustomMechanicColors(locale, cardsJson) {
+  for (const [key, value] of Object.entries(cardsJson)) {
+    if (typeof value !== "string" || !/(description|upgradeDescription)$/.test(key)) {
+      continue;
+    }
+
+    if (/\{[^}]*\[gold\]/.test(value)) {
+      fail(`${locale}: ${key} must not color text inside dynamic var placeholders`);
+    }
+
+    if (/\[gold\][^\[]*\[gold\]/.test(value) || /\[gold\]\[gold\]/.test(value)) {
+      fail(`${locale}: ${key} has nested gold tags`);
+    }
+
+    const plainText = textOutsideGoldAndPlaceholders(value);
+    for (const term of CUSTOM_MECHANIC_COLOR_TERMS[locale]) {
+      if (plainText.includes(term)) {
+        fail(`${locale}: ${key} must color custom mechanic term ${term}`);
+      }
+    }
+  }
+}
+
 function checkLocalization() {
   const cards = parseCards();
   const expectedById = new Map(expectation.cards.map((card) => [card.id, card]));
@@ -801,6 +927,7 @@ function checkLocalization() {
 
   for (const locale of ["eng", "zhs"]) {
     const cardsJson = readLocalization(locale);
+    checkCustomMechanicColors(locale, cardsJson);
     const localizedTitleIds = Object.keys(cardsJson)
       .filter((key) => key.endsWith(".title"))
       .map((key) => key.replace(/\.title$/, ""))
@@ -889,7 +1016,9 @@ checkMultiHitAttackCommands();
 checkSmallRoundShieldParry();
 checkCardLibraryScrollPatch();
 checkStackedNextAttackPowers();
+checkImbalanceResetScaling();
 checkCardPortraitLoading();
+checkAncientCardVisualFallback();
 checkLocalization();
 
 if (errors.length > 0) {

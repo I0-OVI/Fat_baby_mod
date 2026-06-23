@@ -1,0 +1,13 @@
+{
+  "title": "胖宝宝/Fat Baby",
+  "description": "Inspired by the Raider and the Onion Knight.\n\nA custom Slay the Spire 2 character mod that weaves in elements from Dark Souls III, Elden Ring, and Elden Ring Nightreign.\n\nThis is a beta build and still subject to balance and content changes. Requires the matching version of BaseLib.\n\nIf you encounter any bugs, please leave a comment. I’ll try to fix them as soon as I see them. Thank you for your subscribing and enjoy the game!\n\n人物参考：洋葱骑士和无赖\n\n融合了魂三 法环 黑环的很多元素\n\n有bug/建议记得反馈  我会第一时间去修的 谢谢大家 大家游玩开心",
+  "visibility": "public",
+  "changeNote": "中文：\n- 解决了和 Ryoshu-良秀 mod 的兼容性问题。\n\nEnglish:\n- Fixed the compatibility issue with Ryoshu mod.",
+  "tags": [
+    "Characters",
+    "Simplified Chinese"
+  ],
+  "dependencies": [
+    3737335127
+  ]
+}

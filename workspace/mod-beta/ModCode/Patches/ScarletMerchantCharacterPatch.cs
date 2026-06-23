@@ -9,9 +9,9 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
-using Mod.ModCode.Character;
+using FatBaby.ModCode.Character;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(NMerchantRoom), "AfterRoomIsLoaded")]
 internal static class ScarletMerchantCharacterPatch

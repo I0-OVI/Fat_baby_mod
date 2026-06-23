@@ -1,8 +1,8 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Mechanics;
+using FatBaby.ModCode.Mechanics;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(CardModel), nameof(CardModel.GetEnchantedReplayCount))]
 internal static class AllInReplayPlayCountPatch

@@ -4,9 +4,9 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
-using Mod.ModCode.Mechanics;
+using FatBaby.ModCode.Mechanics;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(Hook), nameof(Hook.AfterCombatEnd))]
 internal static class MaraisExecutionersGreatswordAfterCombatEndPatch

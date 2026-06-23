@@ -1,9 +1,9 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Hooks;
-using Mod.ModCode.Mechanics;
+using FatBaby.ModCode.Mechanics;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(Hook), nameof(Hook.BeforeSideTurnStart))]
 internal static class TotemTabletKnowledgeDemonPatch

@@ -6,9 +6,9 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Hooks;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
-using Mod.ModCode.Mechanics;
+using FatBaby.ModCode.Mechanics;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
 
 [HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardChangedPiles))]
 internal static class AllInReplayPatch

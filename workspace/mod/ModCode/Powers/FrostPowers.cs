@@ -9,10 +9,10 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Cards;
-using Mod.ModCode.Mechanics;
+using FatBaby.ModCode.Cards;
+using FatBaby.ModCode.Mechanics;
 
-namespace Mod.ModCode.Powers;
+namespace FatBaby.ModCode.Powers;
 
 public sealed class FrostbitePower : ModCustomPowerModel
 {

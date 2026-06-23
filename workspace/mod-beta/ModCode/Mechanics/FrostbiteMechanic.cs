@@ -10,10 +10,10 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 internal static class FrostbiteMechanic
 {

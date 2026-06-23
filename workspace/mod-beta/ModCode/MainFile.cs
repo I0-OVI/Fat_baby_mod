@@ -2,9 +2,9 @@ using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Modding;
 using MegaCrit.Sts2.Core.Saves.Runs;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode;
+namespace FatBaby.ModCode;
 
 [ModInitializer(nameof(Initialize))]
 public partial class MainFile : Node

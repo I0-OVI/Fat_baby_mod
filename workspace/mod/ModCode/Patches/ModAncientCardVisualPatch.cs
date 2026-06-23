@@ -3,7 +3,39 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 
-namespace Mod.ModCode.Patches;
+namespace FatBaby.ModCode.Patches;
+
+[HarmonyPatch(typeof(NCard), "Reload")]
+internal static class ModCardPortraitReloadPatch
+{
+    [HarmonyPostfix]
+    private static void ReloadPortraitFromModelPaths(NCard __instance)
+    {
+        CardModel? model = __instance.Model;
+        if (model == null)
+        {
+            return;
+        }
+
+        Texture2D? portraitTexture = ModAncientCardVisuals.GetPortraitTexture(model);
+        if (portraitTexture == null)
+        {
+            return;
+        }
+
+        TextureRect? portrait = __instance.GetNodeOrNull<TextureRect>("%Portrait");
+        if (portrait != null)
+        {
+            portrait.Texture = portraitTexture;
+        }
+
+        TextureRect? ancientPortrait = __instance.GetNodeOrNull<TextureRect>("%AncientPortrait");
+        if (ancientPortrait != null)
+        {
+            ancientPortrait.Texture = portraitTexture;
+        }
+    }
+}
 
 [HarmonyPatch(typeof(NCard), "Reload")]
 internal static class ModAncientCardVisualReloadPatch
@@ -11,12 +43,13 @@ internal static class ModAncientCardVisualReloadPatch
     [HarmonyPostfix]
     private static void ApplyStandardFrameForModAncient(NCard __instance)
     {
-        CardModel? model = __instance.Model;
-        if (!ModAncientCardVisuals.ShouldUseStandardFrame(model))
+        CardModel? maybeModel = __instance.Model;
+        if (!ModAncientCardVisuals.ShouldUseStandardFrame(maybeModel))
         {
             return;
         }
 
+        CardModel model = maybeModel!;
         TextureRect? portraitBorder = __instance.GetNodeOrNull<TextureRect>("%PortraitBorder");
         TextureRect? portrait = __instance.GetNodeOrNull<TextureRect>("%Portrait");
         TextureRect? frame = __instance.GetNodeOrNull<TextureRect>("%Frame");
@@ -30,7 +63,17 @@ internal static class ModAncientCardVisualReloadPatch
 
         if (portraitBorder == null || portrait == null || frame == null || banner == null)
         {
-            MainFile.Logger.Info($"Unable to apply standard frame to {model!.Id}: card node is missing standard frame parts.");
+            MainFile.Logger.Info($"Unable to apply standard frame to {model.Id}: card node is missing standard frame parts.");
+            return;
+        }
+
+        Texture2D? portraitBorderTexture = ModAncientCardVisuals.GetPortraitBorderTexture(model);
+        Texture2D? frameTexture = ModAncientCardVisuals.GetFrameTexture(model);
+        Texture2D? bannerTexture = ModAncientCardVisuals.GetBannerTexture();
+        Texture2D? portraitTexture = ModAncientCardVisuals.GetPortraitTexture(model);
+        if (portraitBorderTexture == null || frameTexture == null || bannerTexture == null || portraitTexture == null)
+        {
+            MainFile.Logger.Info($"Unable to apply standard frame to {model.Id}: standard frame resources are not loaded.");
             return;
         }
 
@@ -66,33 +109,32 @@ internal static class ModAncientCardVisualReloadPatch
         }
         portrait.Material = null;
 
-        Material silver = ModAncientCardVisuals.SilverBannerMaterial;
-        portrait.Texture = model!.Portrait;
-        portraitBorder.Texture = ModAncientCardVisuals.GetPortraitBorderTexture(model);
-        portraitBorder.Material = silver;
-        frame.Texture = ModAncientCardVisuals.GetFrameTexture(model);
-        frame.Material = silver;
-        banner.Texture = ModAncientCardVisuals.GetBannerTexture();
-        banner.Material = silver;
+        portrait.Texture = portraitTexture;
+        portraitBorder.Texture = portraitBorderTexture;
+        portraitBorder.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
+        frame.Texture = frameTexture;
+        frame.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
+        banner.Texture = bannerTexture;
+        banner.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         if (ancientPortrait != null)
         {
-            ancientPortrait.Material = silver;
+            ancientPortrait.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         }
         if (ancientBorderGlass != null)
         {
-            ancientBorderGlass.Material = silver;
+            ancientBorderGlass.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         }
         if (ancientBorder != null)
         {
-            ancientBorder.Material = silver;
+            ancientBorder.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         }
         if (ancientTextBg != null)
         {
-            ancientTextBg.Material = silver;
+            ancientTextBg.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         }
         if (ancientBanner != null)
         {
-            ancientBanner.Material = silver;
+            ancientBanner.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         }
     }
 }
@@ -103,7 +145,16 @@ internal static class ModAncientCardVisualOverlayPatch
     [HarmonyPostfix]
     private static void HideAncientOverlayForModAncient(NCard __instance)
     {
-        if (!ModAncientCardVisuals.ShouldUseStandardFrame(__instance.Model))
+        CardModel? model = __instance.Model;
+        if (!ModAncientCardVisuals.ShouldUseStandardFrame(model) || model == null)
+        {
+            return;
+        }
+
+        if (ModAncientCardVisuals.GetFrameTexture(model) == null
+            || ModAncientCardVisuals.GetPortraitBorderTexture(model) == null
+            || ModAncientCardVisuals.GetBannerTexture() == null
+            || ModAncientCardVisuals.GetPortraitTexture(model) == null)
         {
             return;
         }
@@ -149,7 +200,7 @@ internal static class ModAncientCardTypePlaquePatch
         NinePatchRect? typePlaque = __instance.GetNodeOrNull<NinePatchRect>("%TypePlaque");
         if (typePlaque != null)
         {
-            typePlaque.Material = ModAncientCardVisuals.SilverBannerMaterial;
+            typePlaque.Material = ModAncientCardVisuals.CreateSilverBannerMaterial();
         }
     }
 }

@@ -13,11 +13,11 @@ using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.ValueProps;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Mechanics;
-using Mod.ModCode.Powers;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Mechanics;
+using FatBaby.ModCode.Powers;
 
-namespace Mod.ModCode.Cards;
+namespace FatBaby.ModCode.Cards;
 
 public sealed class HoarfrostStomp() : ModCard(1, CardType.Attack, CardRarity.Common, TargetType.AllEnemies), IMagicDamageCard
 {

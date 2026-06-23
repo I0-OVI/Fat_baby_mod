@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
 
-namespace Mod.ModCode.Character;
+namespace FatBaby.ModCode.Character;
 
 public sealed class ScarletPotionPool : PotionPoolModel
 {

@@ -7,11 +7,11 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
-using Mod.ModCode.Commands;
-using Mod.ModCode.Powers;
-using Mod.ModCode.Relics;
+using FatBaby.ModCode.Commands;
+using FatBaby.ModCode.Powers;
+using FatBaby.ModCode.Relics;
 
-namespace Mod.ModCode.Mechanics;
+namespace FatBaby.ModCode.Mechanics;
 
 /// <summary>
 /// Tracks Marais Executioner's Greatsword damage bonus across combats within a run.
